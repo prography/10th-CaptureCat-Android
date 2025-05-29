@@ -2,6 +2,7 @@ import com.android.build.api.dsl.LibraryExtension
 import com.prography.convention.ExtensionType
 import com.prography.convention.configureBuildTypes
 import com.prography.convention.configureKotlinAndroid
+import com.prography.convention.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -28,6 +29,11 @@ class AndroidLibraryConventionPlugin: Plugin<Project> {
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     consumerProguardFiles("consumer-rules.pro")
                 }
+            }
+
+            dependencies {
+                add("implementation", libs.findLibrary("coroutines").get())
+                add("implementation", libs.findLibrary("timber").get())
             }
         }
     }

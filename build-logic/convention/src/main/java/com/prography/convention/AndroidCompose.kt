@@ -33,10 +33,8 @@ internal fun Project.configureAndroidCompose(
             add("implementation", libs.findLibrary("compose-tooling").get())
             add("implementation", libs.findLibrary("androidx-ui-tooling-preview-android").get())
 
-
             // 선택: 이미지 관련
             add("implementation", libs.findLibrary("compose-glide").get())
-
 
         }
     }

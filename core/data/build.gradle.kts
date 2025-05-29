@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:domain"))
 
+    implementation(libs.material)
 
     // Retrofit
     implementation(libs.retrofit)
@@ -21,19 +22,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
 
+
     // Serialization
-    // Coroutines
-    implementation(libs.coroutines)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit.serialization)
-
-    // Timber
-    implementation(libs.timber)
-
 }
