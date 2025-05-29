@@ -9,8 +9,8 @@ sealed class BottomNavItem(
     val title: Int,
     val icon: Int
 ) {
-    object Storage : BottomNavItem("storage", R.string.title_storage, R.drawable.ic_tapbar_cards)
+    object Storage : BottomNavItem("storage", R.string.title_storage, R.drawable.ic_tapbar_main)
     object Home : BottomNavItem("home", R.string.title_home, R.drawable.ic_tapbar_main)
-    object Folder : BottomNavItem("random", R.string.title_folder, R.drawable.ic_tapbar_cards)
-    object Search : BottomNavItem("random", R.string.title_search, R.drawable.ic_tapbar_cards)
+    object Folder : BottomNavItem("folder", R.string.title_folder, R.drawable.ic_tapbar_main)
+    object Search : BottomNavItem("search", R.string.title_search, R.drawable.ic_tapbar_main)
 }
