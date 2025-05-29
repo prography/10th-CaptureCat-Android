@@ -1,4 +1,4 @@
-package com.android.prography.presentation.navigation
+package com.prography.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

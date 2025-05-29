@@ -1,4 +1,4 @@
-package com.android.prography.presentation
+package com.prography.presentation
 
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
