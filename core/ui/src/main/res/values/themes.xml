@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Prography" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/black90</item>
+    </style>
+
+    <style name="Theme.Prography.Title">
+        <item name="android:textSize">20dp</item> <!-- ✅ 글자 크기 -->
+        <item name="android:textColor">@color/black</item> <!-- ✅ 글자 색상 -->
+        <item name="android:letterSpacing">-0.03</item> <!-- ✅ 글자 간격 -->
+        <item name="android:fontFamily">@font/pretendard_bold</item> <!-- ✅ 폰트 -->
+        <item name="android:layout_marginTop">20dp</item> <!-- ✅ 상단 마진 -->
+    </style>
+</resources>

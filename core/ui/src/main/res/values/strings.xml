@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">prography</string>
+    <string name="title_storage">임시보관함</string>
+    <string name="title_home">홈</string>
+    <string name="title_folder">폴더</string>
+    <string name="title_search">검색</string>
+</resources>
