@@ -17,4 +17,6 @@ dependencies {
 
     implementation(project(":feature:home"))
     implementation(project(":feature:auth"))
+
+    implementation(libs.splashscreen)
 }

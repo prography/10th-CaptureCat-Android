@@ -38,6 +38,7 @@ shimmer ="0.5.0"
 lottie = "6.0.0"
 siwpeable-cards = "0.1.0"
 androidxActivity = "1.10.1"
+splashscreen = "1.0.1"
 
 compose-bom = "2024.03.00" # 최신 BOM 버전
 compose-ui = "1.6.6"
@@ -129,6 +130,9 @@ paging-rxjava2 = { module = "androidx.paging:paging-rxjava2", version.ref = "pag
 paging-rxjava3 = { module = "androidx.paging:paging-rxjava3", version.ref = "paging" }
 paging-guava = { module = "androidx.paging:paging-guava", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+
+# SplashScreen
+splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 
 # Jetpack Compose
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }

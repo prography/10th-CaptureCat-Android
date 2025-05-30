@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash 전용 테마 -->
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <!-- Splash 화면 배경 -->
+        <item name="windowSplashScreenBackground">@color/black</item>
+
+        <!-- 애니메이션 아이콘 -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_tapbar_main</item>
+
+        <!-- 지속시간 -->
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+
+        <!-- 상태바 색상 -->
+        <item name="android:statusBarColor">@color/black</item>
+
+        <!-- Splash 끝나고 적용할 테마 지정! -->
+        <item name="postSplashScreenTheme">@style/Theme.Prography</item>
+    </style>
+</resources>
