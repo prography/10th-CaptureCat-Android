@@ -1,6 +1,6 @@
 package com.prography.data.mapper
 
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.remote.entity.PhotoResponse
 import com.prography.domain.model.ImageUrls
 import com.prography.domain.model.PhotoModel
 import com.prography.domain.model.UiPhotoModel

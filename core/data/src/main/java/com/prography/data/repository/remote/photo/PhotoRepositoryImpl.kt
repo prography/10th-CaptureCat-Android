@@ -1,6 +1,7 @@
 package com.prography.data.repository.remote.photo
 
 import com.prography.data.mapper.toUiPhotoResponseModel
+import com.prography.data.remote.datasource.PhotoRemoteDataSourceImpl
 import com.prography.domain.model.UiPhotoModel
 import com.prography.domain.repository.PhotoRepository
 import com.prography.domain.util.NetworkState

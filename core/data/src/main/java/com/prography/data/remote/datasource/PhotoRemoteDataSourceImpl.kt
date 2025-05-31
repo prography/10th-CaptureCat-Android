@@ -1,8 +1,7 @@
-package com.prography.data.repository.remote.photo
+package com.prography.data.remote.datasource
 
 import com.android.prography.data.api.PhotoService
-import com.android.prography.data.repository.remote.photo.PhotoRemoteDataSource
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.remote.entity.PhotoResponse
 import com.prography.domain.util.NetworkState
 import javax.inject.Inject
 

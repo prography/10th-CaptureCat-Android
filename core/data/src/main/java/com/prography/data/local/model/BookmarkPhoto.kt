@@ -1,7 +1,8 @@
-package com.prography.data.entity
+package com.prography.data.local.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.prography.data.remote.entity.ImageUrls
 
 @Entity(tableName = "bookmark_photos")
 data class BookmarkPhoto(

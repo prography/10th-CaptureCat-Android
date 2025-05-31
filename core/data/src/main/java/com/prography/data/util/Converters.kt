@@ -3,7 +3,7 @@ package com.prography.data.util
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.prography.data.entity.ImageUrls
+import com.prography.data.remote.entity.ImageUrls
 
 class Converters {
     private val gson = Gson()

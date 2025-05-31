@@ -1,10 +1,10 @@
-package com.prography.data.api
+package com.prography.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.prography.data.entity.BookmarkPhoto
+import com.prography.data.local.model.BookmarkPhoto
 import kotlinx.coroutines.flow.Flow
 
 @Dao

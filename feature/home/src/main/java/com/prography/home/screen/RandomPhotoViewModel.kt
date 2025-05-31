@@ -1,8 +1,5 @@
 package com.prography.home.screen
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -12,16 +9,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import com.prography.data.api.BookmarkPhotoDao
-import com.prography.data.entity.BookmarkPhoto
-import com.prography.data.entity.ImageUrls
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.local.dao.BookmarkPhotoDao
+import com.prography.data.local.model.BookmarkPhoto
+import com.prography.data.remote.entity.ImageUrls
 import com.prography.domain.model.PhotoModel
 import com.prography.domain.model.UiPhotoModel
 import com.prography.domain.usecase.GetRandomImageUseCase
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.ext.parseErrorMsg
-import kotlinx.coroutines.delay
 
 @HiltViewModel
 class RandomPhotoViewModel @Inject constructor(

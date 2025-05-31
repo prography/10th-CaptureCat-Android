@@ -1,6 +1,6 @@
-package com.android.prography.data.repository.remote.photo
+package com.prography.data.remote.datasource
 
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.remote.entity.PhotoResponse
 import com.prography.domain.util.NetworkState
 
 interface PhotoRemoteDataSource {

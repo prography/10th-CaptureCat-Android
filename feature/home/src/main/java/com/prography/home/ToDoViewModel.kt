@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.GetRandomImageUseCase
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.remote.entity.PhotoResponse
 import com.prography.domain.model.PhotoModel
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.ext.parseErrorMsg

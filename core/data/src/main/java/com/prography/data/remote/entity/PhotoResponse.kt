@@ -1,4 +1,4 @@
-package com.prography.data.entity
+package com.prography.data.remote.entity
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,7 +1,7 @@
 package com.android.prography.presentation.module
 
 import com.android.prography.data.api.PhotoService
-import com.prography.data.repository.remote.photo.PhotoRemoteDataSourceImpl
+import com.prography.data.remote.datasource.PhotoRemoteDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

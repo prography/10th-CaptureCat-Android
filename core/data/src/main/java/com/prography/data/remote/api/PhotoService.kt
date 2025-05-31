@@ -1,5 +1,5 @@
 package com.android.prography.data.api
-import com.prography.data.entity.PhotoResponse
+import com.prography.data.remote.entity.PhotoResponse
 import com.prography.domain.util.NetworkState
 import retrofit2.http.GET
 import retrofit2.http.Query

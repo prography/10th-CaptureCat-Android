@@ -2,8 +2,8 @@ package com.android.prography.presentation.module
 
 import android.content.Context
 import androidx.room.Room
-import com.prography.data.repository.remote.photo.AppDatabase
-import com.prography.data.api.BookmarkPhotoDao
+import com.prography.data.local.db.AppDatabase
+import com.prography.data.local.dao.BookmarkPhotoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
