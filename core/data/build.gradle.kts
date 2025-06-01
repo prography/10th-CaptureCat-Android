@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.multi.module.android.room)
     alias(libs.plugins.multi.module.android.application.hilt)
 
-    kotlin("plugin.serialization") version "2.1.10"
+    kotlin("plugin.serialization") version "2.1.20"
 }
 
 android {
