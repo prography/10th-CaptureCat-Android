@@ -1,5 +1,6 @@
 package com.prography.presentation
 
+import AppNavGraph
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 import com.prography.ui.theme.PrographyTheme
@@ -9,9 +10,15 @@ import androidx.activity.enableEdgeToEdge
 import com.prography.ui.common.GlobalUiHandler
 import android.os.Handler
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.prography.navigation.NavigationHelper
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+
+    @Inject
+    lateinit var navigationHelper: NavigationHelper
 
     var isReady = false
 
@@ -29,7 +36,7 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             PrographyTheme {
-                MainApp() // ✅ 여기서 navigation 시작
+                AppNavGraph(navigationHelper = navigationHelper)
                 GlobalUiHandler()
             }
         }

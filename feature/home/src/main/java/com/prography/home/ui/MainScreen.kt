@@ -1,4 +1,4 @@
-package com.prography.home.screen
+package com.prography.home.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.prography.home.bottomNav.BottomNavigationBar
 import com.prography.home.bottomNav.MainNavigationHost
+import com.prography.navigation.NavigationHelper
 
 @Composable
-fun HomeScaffold(
-) {
+fun MainScreen(navigationHelper: NavigationHelper) {
+
     val navController = rememberNavController()
 
 

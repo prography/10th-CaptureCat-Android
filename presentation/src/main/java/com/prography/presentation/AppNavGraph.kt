@@ -1,26 +1,44 @@
-package com.prography.presentation
-
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
-import com.prography.home.navigation.homeScreen
-import com.prography.home.navigation.navigateToHome
-import com.prography.auth.route.navigation.loginScreen
-import com.prography.navigation.Screen
+import com.prography.auth.route.navigation.LoginRoute
+import com.prography.home.route.MainRoute
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Login.route
+    navigationHelper: NavigationHelper,
+    startDestination: String = AppRoute.Login.toString()
 ) {
+
+    LaunchedEffect(Unit) {
+        navigationHelper.navigationFlow.collectLatest { event ->
+            when (event) {
+                is NavigationEvent.To -> {
+                    navController.navigate(event.route.toString()) {
+                        if (event.popUpTo) popUpTo(0) { inclusive = true }
+                    }
+                }
+                is NavigationEvent.Up -> navController.popBackStack()
+                is NavigationEvent.TopLevelTo -> { /* 탭 이동 처리 */ }
+                is NavigationEvent.BottomBarTo -> { /* 바텀 이동 처리 */ }
+            }
+        }
+    }
+
     NavHost(navController = navController, startDestination = startDestination) {
-        loginScreen(navigateToHome = {
-            navController.navigateToHome(navOptions{
-                popUpTo(Screen.Home.route){ inclusive = true }
-            })
-        })
-        homeScreen()
+        composable(AppRoute.Login.toString()) {
+            LoginRoute(navigationHelper = navigationHelper)
+        }
+        composable(AppRoute.Main.toString()) {
+            MainRoute(navigationHelper = navigationHelper)
+        }
     }
 }

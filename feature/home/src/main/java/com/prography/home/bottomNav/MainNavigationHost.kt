@@ -5,9 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.prography.home.MainContent
+import com.prography.home.ui.home.MainContent
 import com.prography.home.ScreenshotGalleryScreen
-import com.prography.home.screen.HomeScreen
+import com.prography.home.ui.HomeScreen
 
 @Composable
 fun MainNavigationHost(

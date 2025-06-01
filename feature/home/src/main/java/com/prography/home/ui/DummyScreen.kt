@@ -1,4 +1,4 @@
-package com.prography.home.screen
+package com.prography.home.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(onLogout: () -> Unit) {
+fun HomeScreen(
+    onLogout: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -27,19 +27,6 @@ fun HomeScreen(onLogout: () -> Unit) {
             Button(onClick = onLogout) {
                 Text("로그아웃")
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    MaterialTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.White
-        ) {
-            HomeScreen(onLogout = {}) // 미리보기용 빈 람다
         }
     }
 }
