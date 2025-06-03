@@ -13,6 +13,7 @@ android {
 dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:domain"))
+    implementation(project(":core:datastore"))
 
     implementation(libs.material)
 
