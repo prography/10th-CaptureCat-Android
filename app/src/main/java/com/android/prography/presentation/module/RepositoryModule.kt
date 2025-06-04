@@ -1,9 +1,12 @@
 package com.android.prography.presentation.module
 
+import com.prography.data.local.datasource.PhotoLocalDataSource
 import com.prography.data.remote.datasource.PhotoRemoteDataSourceImpl
+import com.prography.data.repository.local.user.PhotoLocalRepositoryImpl
 import com.prography.data.repository.local.user.UserPreferenceRepositoryImpl
 import com.prography.data.repository.remote.photo.PhotoRepositoryImpl
 import com.prography.datastore.user.UserPreferenceDataStore
+import com.prography.domain.repository.PhotoLocalRepository
 import com.prography.domain.repository.PhotoRepository
 import com.prography.domain.repository.UserPreferenceRepository
 import dagger.Module
@@ -31,4 +34,10 @@ object RepositoryModule {
     fun provideUserPreferenceRepository(
         userPreferenceDataStore: UserPreferenceDataStore
     ): UserPreferenceRepository = UserPreferenceRepositoryImpl(userPreferenceDataStore)
+
+    @Provides
+    @Singleton
+    fun providePhotoLocalRepository(
+        photoLocalDataSource: PhotoLocalDataSource
+    ): PhotoLocalRepository = PhotoLocalRepositoryImpl(photoLocalDataSource)
 }

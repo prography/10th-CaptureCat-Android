@@ -4,16 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.prography.database.model.BookmarkPhoto
+import com.prography.database.model.PhotoLocalModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookmarkPhotoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBookmark(photo: BookmarkPhoto)
+    suspend fun insertBookmark(photo: PhotoLocalModel)
 
     @Query("SELECT * FROM bookmark_photos")
-    fun getAllBookmarks(): Flow<List<BookmarkPhoto>>
+    fun getAllBookmarks(): Flow<List<PhotoLocalModel>>
 
     // 특정 북마크 삭제
     @Query("DELETE FROM bookmark_photos WHERE id = :photoId")

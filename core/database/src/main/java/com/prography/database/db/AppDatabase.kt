@@ -6,10 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.prography.database.dao.BookmarkPhotoDao
-import com.prography.database.model.BookmarkPhoto
+import com.prography.database.model.PhotoLocalModel
 import com.prography.database.util.Converters
 
-@Database(entities = [BookmarkPhoto::class], version = 1, exportSchema = false)
+@Database(entities = [PhotoLocalModel::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkPhotoDao(): BookmarkPhotoDao

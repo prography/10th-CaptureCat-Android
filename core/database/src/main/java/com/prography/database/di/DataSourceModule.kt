@@ -2,12 +2,12 @@ package com.prography.database.di
 
 import com.prography.data.local.datasource.PhotoLocalDataSource
 import com.prography.database.dao.BookmarkPhotoDao
-import com.prography.database.datasource.PhotoDataSourceImpl
+import com.prography.database.datasource.PhotoLocalDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,6 +18,6 @@ object DataSourceModule {
     fun providePhotoDataSource(
         bookmarkPhotoDao: BookmarkPhotoDao
     ): PhotoLocalDataSource {
-        return PhotoDataSourceImpl(bookmarkPhotoDao)
+        return PhotoLocalDataSourceImpl(bookmarkPhotoDao)
     }
 }

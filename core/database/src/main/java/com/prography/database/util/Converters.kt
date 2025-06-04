@@ -3,19 +3,18 @@ package com.prography.database.util
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.prography.data.remote.entity.ImageUrls
 
 class Converters {
     private val gson = Gson()
 
     @TypeConverter
-    fun fromImageUrls(imageUrls: ImageUrls): String {
+    fun fromImageUrls(imageUrls: List<String>): String {
         return gson.toJson(imageUrls)
     }
 
     @TypeConverter
-    fun toImageUrls(imageUrlsString: String): ImageUrls {
-        val type = object : TypeToken<ImageUrls>() {}.type
+    fun toImageUrls(imageUrlsString: String): List<String> {
+        val type = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(imageUrlsString, type)
     }
 }
