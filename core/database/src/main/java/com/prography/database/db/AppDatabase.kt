@@ -1,13 +1,13 @@
-package com.prography.data.local.db
+package com.prography.database.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.prography.data.local.dao.BookmarkPhotoDao
-import com.prography.data.util.Converters
-import com.prography.data.local.model.BookmarkPhoto
+import com.prography.database.dao.BookmarkPhotoDao
+import com.prography.database.model.BookmarkPhoto
+import com.prography.database.util.Converters
 
 @Database(entities = [BookmarkPhoto::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)

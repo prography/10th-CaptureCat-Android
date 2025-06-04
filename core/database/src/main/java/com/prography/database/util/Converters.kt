@@ -1,4 +1,4 @@
-package com.prography.data.util
+package com.prography.database.util
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

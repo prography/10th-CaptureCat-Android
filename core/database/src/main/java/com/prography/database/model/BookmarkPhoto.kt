@@ -1,4 +1,4 @@
-package com.prography.data.local.model
+package com.prography.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

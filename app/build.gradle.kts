@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.multi.module.android.application.hilt)
     alias(libs.plugins.multi.module.android.room)
 
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -21,6 +21,7 @@ dependencies {
 
     implementation(project(":core:navigation"))
     implementation(project(":core:data"))
+    implementation(project(":core:database"))
     implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
