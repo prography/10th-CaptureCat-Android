@@ -1,12 +1,8 @@
 package com.prography.database.datasource
 
-import com.prography.data.local.datasource.PhotoLocalDataSource
-import com.prography.data.local.entity.PhotoLocalEntity
 import com.prography.database.dao.BookmarkPhotoDao
-import com.prography.database.mapper.PhotoMapper.toEntity
-import com.prography.database.mapper.PhotoMapper.toModel
+import com.prography.database.model.PhotoLocalModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -14,16 +10,12 @@ class PhotoLocalDataSourceImpl @Inject constructor(
     private val bookmarkPhotoDao: BookmarkPhotoDao
 ) : PhotoLocalDataSource {
 
-    override suspend fun insertBookmark(photo: PhotoLocalEntity) {
-        bookmarkPhotoDao.insertBookmark(photo.toModel())
+    override suspend fun insertBookmark(photo: PhotoLocalModel) {
+        bookmarkPhotoDao.insertBookmark(photo)
     }
 
-    override fun getAllBookmarks(): Flow<List<PhotoLocalEntity>> {
-
+    override fun getAllBookmarks(): Flow<List<PhotoLocalModel>> {
         return bookmarkPhotoDao.getAllBookmarks()
-            .map {
-                it.map { photoLocal -> photoLocal.toEntity() }
-            }
     }
 
     override suspend fun deleteBookmark(photoId: String) {

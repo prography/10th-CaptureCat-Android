@@ -16,24 +16,7 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":presentation"))
-
-    implementation(project(":core:navigation"))
-    implementation(project(":core:data"))
-    implementation(project(":core:database"))
-    implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
-
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-    implementation(libs.gson)
-
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.retrofit.serialization)
-
+    implementation(project(":presentation"))
     implementation(libs.timber)
 }

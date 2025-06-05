@@ -1,19 +1,18 @@
 package com.prography.data.mapper
 
-import com.prography.data.local.entity.PhotoLocalEntity
-import com.prography.domain.model.BookmarkPhoto
+import com.prography.database.model.PhotoLocalModel
+import com.prography.domain.model.UiPhotoHomeModel
 
 object PhotoLocalMapper {
-    fun PhotoLocalEntity.toDomain(): BookmarkPhoto {
-        return BookmarkPhoto(
+    fun PhotoLocalModel.toDomain(): UiPhotoHomeModel {
+        return UiPhotoHomeModel(
             id = this.id,
-            imageUrl = this.imageUrl,
-            description = ""
+            imageUrl = this.imageUrl
         )
     }
 
-    fun BookmarkPhoto.toEntity(): PhotoLocalEntity {
-        return PhotoLocalEntity(
+    fun UiPhotoHomeModel.toEntity(): PhotoLocalModel {
+        return PhotoLocalModel(
             id = this.id,
             imageUrl = this.imageUrl
         )

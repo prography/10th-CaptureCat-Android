@@ -1,6 +1,6 @@
 package com.prography.database.di
 
-import com.prography.data.local.datasource.PhotoLocalDataSource
+import com.prography.database.datasource.PhotoLocalDataSource
 import com.prography.database.dao.BookmarkPhotoDao
 import com.prography.database.datasource.PhotoLocalDataSourceImpl
 import dagger.Module
