@@ -9,13 +9,14 @@ import com.prography.home.route.MainRoute
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
+import com.prography.onboarding.navigation.OnboardingRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
     navigationHelper: NavigationHelper,
-    startDestination: String = AppRoute.Login.toString()
+    startDestination: String = AppRoute.Onboarding.toString()
 ) {
 
     LaunchedEffect(Unit) {
@@ -34,6 +35,9 @@ fun AppNavGraph(
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
+        composable(AppRoute.Onboarding.toString()) {
+            OnboardingRoute(navigationHelper = navigationHelper)
+        }
         composable(AppRoute.Login.toString()) {
             LoginRoute(navigationHelper = navigationHelper)
         }

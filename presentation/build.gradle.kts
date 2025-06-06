@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:datastore"))
 
+    implementation(project(":feature:onboarding"))
     implementation(project(":feature:home"))
     implementation(project(":feature:auth"))
 
