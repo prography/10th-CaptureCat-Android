@@ -15,9 +15,15 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.derivedStateOf
 import com.prography.navigation.NavigationHelper
+import com.prography.navigation.AppRoute
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,19 +44,33 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 2초 후에 스플래시 화면 종료
         splashScreen.setKeepOnScreenCondition { !isReady }
         isReady = true
-        
+
+        viewModel.initChecking()
+
         setContent {
             PrographyTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(WindowInsets.systemBars.asPaddingValues()) // 상단 + 하단 모두 자동 적용
-                ) {
-                    AppNavGraph(navigationHelper = navigationHelper)
-                    GlobalUiHandler()
+                val isOnboardingShown by viewModel.isOnboardingShown.collectAsStateWithLifecycle()
+
+                if (isOnboardingShown != null) {
+                    val startDestination = if (isOnboardingShown == true) {
+                        AppRoute.Main.toString()
+                    } else {
+                        AppRoute.Onboarding.toString()
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(WindowInsets.systemBars.asPaddingValues())
+                    ) {
+                        AppNavGraph(
+                            navigationHelper = navigationHelper,
+                            startDestination = startDestination
+                        )
+                        GlobalUiHandler()
+                    }
                 }
             }
         }

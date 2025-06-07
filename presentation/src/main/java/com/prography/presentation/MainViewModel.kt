@@ -6,6 +6,8 @@ import com.prography.domain.usecase.photo.GetAllBookmarksUseCase
 import com.prography.domain.usecase.user.GetOnboardingShownUseCase
 import com.prography.domain.usecase.user.SetOnboardingShownUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,9 +19,13 @@ class MainViewModel @Inject constructor(
     private val getAllBookmarksUseCase: GetAllBookmarksUseCase
 ) : ViewModel() {
 
-    fun initChecking(){
+    private val _isOnboardingShown = MutableStateFlow<Boolean?>(null)
+    val isOnboardingShown: StateFlow<Boolean?> = _isOnboardingShown
+
+    fun initChecking() {
         viewModelScope.launch {
-            getAllBookmarksUseCase().collect { shown ->
+            getOnboardingShown().collect { shown ->
+                _isOnboardingShown.value = shown
                 Timber.d("Shown: $shown")
             }
         }
