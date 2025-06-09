@@ -12,7 +12,7 @@ sealed class BottomNavItem(
     @DrawableRes val selectedIcon: Int,
     @DrawableRes val unselectedIcon: Int
 ) {
-    object Storage : BottomNavItem("storage", R.string.title_storage, R.drawable.ic_home_storage_selected, R.drawable.ic_home_storage)
-    object Home : BottomNavItem("home", R.string.title_home, R.drawable.ic_home_selected, R.drawable.ic_home)
-    object Search : BottomNavItem("search", R.string.title_search, R.drawable.ic_search, R.drawable.ic_search)
+    object Storage : BottomNavItem("storage", R.string.tab_storage, R.drawable.ic_home_storage_selected, R.drawable.ic_home_storage)
+    object Home : BottomNavItem("home", R.string.tab_home, R.drawable.ic_home_selected, R.drawable.ic_home)
+    object Search : BottomNavItem("search", R.string.tab_search, R.drawable.ic_search, R.drawable.ic_search)
 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(
+fun DummyScreen(
     onLogout: () -> Unit) {
     Box(
         modifier = Modifier
