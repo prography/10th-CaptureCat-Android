@@ -19,6 +19,9 @@ fun MainNavigationHost(
         startDestination = BottomNavItem.Home.route,
         modifier = modifier
     ) {
+        composable(BottomNavItem.Storage.route) {
+            HomeScreen(onLogout = { /* ... */ })
+        }
         composable(BottomNavItem.Home.route) {
             MainContent(
                 onNavigateToScreenshotGallery = {
@@ -26,16 +29,9 @@ fun MainNavigationHost(
                 }
             )
         }
-        composable(BottomNavItem.Folder.route) {
-            HomeScreen(onLogout = { /* ... */ })
-        }
         composable(BottomNavItem.Search.route) {
             HomeScreen(onLogout = { /* ... */ })
         }
-        composable(BottomNavItem.Storage.route) {
-            HomeScreen(onLogout = { /* ... */ })
-        }
-
         composable("screenshot_gallery") {
             ScreenshotGalleryScreen(onNavigateUp = { navController.navigateUp() })
         }
