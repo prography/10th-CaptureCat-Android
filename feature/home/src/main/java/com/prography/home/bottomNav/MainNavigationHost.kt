@@ -2,6 +2,7 @@ package com.prography.home.bottomNav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,7 +24,17 @@ fun MainNavigationHost(
             DummyScreen(onLogout = { /* ... */ })
         }
         composable(BottomNavItem.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToStorage = {
+                    navController.navigate(BottomNavItem.Storage.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
         composable(BottomNavItem.Search.route) {
             DummyScreen(onLogout = { /* ... */ })

@@ -1,5 +1,7 @@
 package com.prography.home.ui.home
 
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,29 +12,42 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.home.R
 import com.prography.ui.component.UiPrimaryButton
+import com.prography.ui.theme.PrographyTheme
+import com.prography.ui.theme.myFontFamily
+import timber.log.Timber
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onNavigateToStorage: () -> Unit = {}
+) {
     val hasScreenshots = false // 예시
 
     if (!hasScreenshots) {
         HomeEmptyScreen(
-            onSaveScreenshotClick = { /* TODO: 저장 액션 */ }
+            onSaveScreenshotClick = { onNavigateToStorage() }
         )
     } else {
         // TODO: 데이터 있을 때 화면
@@ -53,15 +68,26 @@ fun HomeEmptyScreen(
             // 상단 안내 카드
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF6F6F6)),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "캡쳐캣은 처음이시죠? 생산성있게 활용하는 방법을 확인해 보세요!",
-                        style = MaterialTheme.typography.bodyLarge
+                        text = "캡처캣은 처음이시죠? 생산성있게 활용하는 방법을 확인해 보세요!",
+                        style = typography.bodyLarge
                     )
-                    TextButton(onClick = { /* TODO: 사용법 보기 클릭 처리 */ }) {
-                        Text("사용법 보기 >")
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        TextButton(onClick = { /* TODO: 사용법 보기 클릭 처리 */ }) {
+                            Text(text = "사용법 보기",
+                                color = Color.Black,
+                                style = typography.bodyMedium)
+                        }
+                        Icon(
+                            painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_forward),
+                            contentDescription = ""
+                        )
                     }
                 }
             }
@@ -82,9 +108,9 @@ fun HomeEmptyScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("저장된 스크린샷이 없어요", style = MaterialTheme.typography.bodyLarge)
+                Text("저장된 스크린샷이 없어요", style = typography.bodyLarge)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("스크린샷을 저장하고 관리해보세요!", style = MaterialTheme.typography.bodyMedium)
+                Text("스크린샷을 저장하고 관리해보세요!", style = typography.bodyMedium)
             }
         }
 
@@ -119,27 +145,9 @@ fun FilterChip(text: String, isSelected: Boolean) {
 @Preview(showBackground = true)
 @Composable
 fun HomeEmptyScreenPreview() {
-    HomeEmptyScreen(
-        onSaveScreenshotClick = {} // 미리보기용 빈 콜백
-    )
-}
-
-@Composable
-fun ExampleContent(
-    onNavigateToScreenshotGallery: () -> Unit
-) {
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 메인 화면 콘텐츠
-
-        // 스크린샷 갤러리 이동 버튼
-        Button(
-            onClick = onNavigateToScreenshotGallery,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        ) {
-            Text("스크린샷 갤러리")
-        }
+    PrographyTheme {
+        HomeEmptyScreen(
+            onSaveScreenshotClick = {} // 미리보기용 빈 콜백
+        )
     }
 }
