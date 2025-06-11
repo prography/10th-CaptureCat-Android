@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.prography.home.ui.home.HomeScreen
-import com.prography.home.ScreenshotGalleryScreen
+import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
 import com.prography.home.ui.DummyScreen
 
 @Composable
@@ -21,7 +21,7 @@ fun MainNavigationHost(
         modifier = modifier
     ) {
         composable(BottomNavItem.Storage.route) {
-            DummyScreen(onLogout = { /* ... */ })
+            ScreenshotGalleryScreen(onNavigateUp = { navController.navigateUp() })
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(

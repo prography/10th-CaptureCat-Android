@@ -1,26 +1,20 @@
-package com.prography.home
+package com.prography.home.ui.storage.screen
 
-import android.content.Intent
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import com.prography.home.ui.storage.permission.ScreenshotPermissionGate
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 
+@Composable
+fun ScreenshotGalleryScreen(onNavigateUp: () -> Unit) {
+    ScreenshotPermissionGate(
+        onPermissionGranted = {
+            ScreenshotOrganizeScreen()
+        }
+    )
+}
+
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotGalleryScreen(
@@ -146,7 +140,9 @@ fun ScreenshotGrid(
                 modifier = Modifier
                     .padding(4.dp)
                     .aspectRatio(0.75f)
-                    .clickable { /* 클릭 시 동작 (필요시 추가) */ }
+                    .clickable { */
+/* 클릭 시 동작 (필요시 추가) *//*
+ }
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = { onLongPress(uri) }
@@ -162,4 +158,4 @@ fun ScreenshotGrid(
             }
         }
     }
-}
+}*/

@@ -17,6 +17,9 @@ abstract class BaseComposeViewModel<UIState, UIEffect, UIAction>(
     private val _uiState = MutableStateFlow(initialState)
     val uiState: StateFlow<UIState> = _uiState
 
+    val currentState: UIState
+        get() = _uiState.value
+
     private val _effect = MutableSharedFlow<UIEffect>()
     val effect: SharedFlow<UIEffect> = _effect
 
