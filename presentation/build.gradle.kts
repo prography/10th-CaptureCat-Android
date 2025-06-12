@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:home"))
     implementation(project(":feature:auth"))
+    implementation(project(":feature:organize"))
 
     implementation(libs.splashscreen)
 }

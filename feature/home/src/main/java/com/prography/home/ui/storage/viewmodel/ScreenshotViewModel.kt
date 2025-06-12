@@ -7,6 +7,10 @@ import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.home.ui.storage.contract.*
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
+import com.prography.navigation.OrganizeDataCache
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
     private val app: Application,
-    private val deletedScreenshotRepository: DeletedScreenshotRepository
+    private val deletedScreenshotRepository: DeletedScreenshotRepository,
+    private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
 ) {
@@ -170,7 +175,35 @@ class ScreenshotViewModel @Inject constructor(
                 updateState { copy(showDeleteDialog = false) }
             }
 
-            ScreenshotAction.OrganizeSelected -> { }
+            ScreenshotAction.OrganizeSelected -> {
+                // 선택된 스크린샷들을 정리하기 화면으로 전달
+                val selectedItems = currentState.groupedScreenshots.values.flatten()
+                    .filter { it.isSelected }
+
+                if (selectedItems.isNotEmpty()) {
+                    // OrganizeDataCache에 선택된 스크린샷 데이터를 저장
+                    val cacheData = selectedItems.map { item ->
+                        OrganizeDataCache.ScreenshotData(
+                            id = item.id,
+                            uri = item.uri,
+                            fileName = item.fileName
+                        )
+                    }
+                    OrganizeDataCache.setScreenshots(cacheData)
+
+                    // 정리하기 화면으로 이동
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Organize))
+
+                    // 선택 상태 초기화
+                    updateState {
+                        copy(
+                            selectedCount = 0,
+                            isSelectionMode = false,
+                            isAllSelected = false
+                        )
+                    }
+                }
+            }
         }
     }
 }

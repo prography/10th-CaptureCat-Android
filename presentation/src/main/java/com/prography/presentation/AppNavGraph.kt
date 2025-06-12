@@ -10,6 +10,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.onboarding.navigation.OnboardingRoute
+import com.prography.organize.navigation.OrganizeRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -43,6 +44,9 @@ fun AppNavGraph(
         }
         composable(AppRoute.Main.toString()) {
             MainRoute(navigationHelper = navigationHelper)
+        }
+        composable(AppRoute.Organize.toString()) {
+            OrganizeRoute(navigationHelper = navigationHelper)
         }
     }
 }

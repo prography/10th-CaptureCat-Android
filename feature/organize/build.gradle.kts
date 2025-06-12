@@ -4,12 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.prography.home"
+    namespace = "com.prography.organize"
 }
 
 dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
-
-    implementation(libs.android.permissions)
 }

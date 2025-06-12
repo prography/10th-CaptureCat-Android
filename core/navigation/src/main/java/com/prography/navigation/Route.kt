@@ -14,4 +14,7 @@ sealed interface AppRoute : Route {
 
     @Serializable
     data object Main : AppRoute
+
+    @Serializable
+    data object Organize : AppRoute
 }
