@@ -37,16 +37,17 @@ fun DeleteConfirmDialog(
         Dialog(onDismissRequest = onDismiss) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .background(Color.White)
-                        .padding(24.dp),
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "삭제하시겠습니까?",
+                        text = "삭제할까요?",
+                        modifier = Modifier.fillMaxWidth(),
                         style = TextStyle(
                             fontSize = 18.sp,
                             lineHeight = 26.sp,
@@ -55,15 +56,16 @@ fun DeleteConfirmDialog(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "${selectedCount}개의 이미지를 삭제하시겠습니까?\n삭제된 후에는 다시 볼 수 없습니다.",
+                        text = "${selectedCount}개의 항목을 삭제하시겠습니까?\n" +
+                                "공유 중이나 즐겨찾는 파일도 함께 삭제되며, 삭제된 항목은 복구할 수 없습니다.",
                         style = TextStyle(
                             fontSize = 14.sp,
-                            lineHeight = 20.sp,
+                            lineHeight = 22.sp,
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                            color = Color(0xFF666666)
+                            color = Color.Black
                         )
                     )
 
@@ -79,8 +81,8 @@ fun DeleteConfirmDialog(
                                 .weight(1f)
                                 .height(48.dp)
                                 .background(
-                                    color = Color(0xFFF5F5F5),
-                                    shape = RoundedCornerShape(8.dp)
+                                    color = Color(0xFFFFE2C8),
+                                    shape = RoundedCornerShape(6.dp)
                                 )
                         ) {
                             Text(
@@ -88,7 +90,7 @@ fun DeleteConfirmDialog(
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily(Font(R.font.pretendard_medium)),
-                                    color = Color(0xFF666666)
+                                    color = Color(0xFFFF6F0F)
                                 )
                             )
                         }
@@ -100,7 +102,7 @@ fun DeleteConfirmDialog(
                                 .height(48.dp)
                                 .background(
                                     color = Color(0xFFFF6F0F),
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(6.dp)
                                 )
                         ) {
                             Text(
