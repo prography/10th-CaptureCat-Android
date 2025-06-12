@@ -1,10 +1,13 @@
 package com.prography.data.di
 
+import com.prography.database.datasource.DeletedScreenshotDataSource
 import com.prography.database.datasource.PhotoLocalDataSource
+import com.prography.data.local.DeletedScreenshotRepositoryImpl
 import com.prography.data.local.repository.PhotoLocalRepositoryImpl
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
 import com.prography.data.remote.repository.PhotoRepositoryImpl
 import com.prography.datastore.user.UserPreferenceDataStore
+import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.domain.repository.PhotoLocalRepository
 import com.prography.domain.repository.PhotoRepository
 import com.prography.domain.repository.UserPreferenceRepository
@@ -40,4 +43,10 @@ object RepositoryModule {
     fun providePhotoLocalRepository(
         photoLocalDataSource: PhotoLocalDataSource
     ): PhotoLocalRepository = PhotoLocalRepositoryImpl(photoLocalDataSource)
+
+    @Provides
+    @Singleton
+    fun provideDeletedScreenshotRepository(
+        deletedScreenshotDataSource: DeletedScreenshotDataSource
+    ): DeletedScreenshotRepository = DeletedScreenshotRepositoryImpl(deletedScreenshotDataSource)
 }

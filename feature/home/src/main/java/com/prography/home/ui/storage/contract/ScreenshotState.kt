@@ -7,12 +7,14 @@ data class ScreenshotState(
     val isSelectionMode: Boolean = false,
     val selectedCount: Int = 0,
     val totalCount: Int = 0,
-    val isAllSelected: Boolean = false
+    val isAllSelected: Boolean = false,
+    val showDeleteDialog: Boolean = false
 )
 
 data class ScreenshotItem(
     val id: String,
     val uri: Uri,
     val dateGroup: String,
-    val isSelected: Boolean
+    val isSelected: Boolean,
+    val fileName: String? = null
 )

@@ -6,13 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.prography.database.dao.BookmarkPhotoDao
+import com.prography.database.dao.DeletedScreenshotDao
+import com.prography.database.model.DeletedScreenshotEntity
 import com.prography.database.model.PhotoLocalModel
 import com.prography.database.util.Converters
 
-@Database(entities = [PhotoLocalModel::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        PhotoLocalModel::class,
+        DeletedScreenshotEntity::class
+    ],
+    version = 2,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkPhotoDao(): BookmarkPhotoDao
+    abstract fun deletedScreenshotDao(): DeletedScreenshotDao
 
     companion object {
         @Volatile
@@ -24,7 +34,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // 개발 중이므로 간단히 처리
+                    .build()
                 INSTANCE = instance
                 instance
             }

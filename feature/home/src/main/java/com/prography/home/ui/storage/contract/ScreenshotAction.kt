@@ -5,5 +5,7 @@ sealed interface ScreenshotAction {
     object SelectAll : ScreenshotAction
     object CancelSelection : ScreenshotAction
     object DeleteSelected : ScreenshotAction
+    object ConfirmDelete : ScreenshotAction
+    object DismissDeleteDialog : ScreenshotAction
     object OrganizeSelected : ScreenshotAction
 }

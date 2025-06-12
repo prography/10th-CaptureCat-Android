@@ -2,20 +2,24 @@ package com.prography.home.ui.storage.viewmodel
 
 import android.app.Application
 import android.content.ContentUris
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
+import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.home.ui.storage.contract.*
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
-    private val app: Application
+    private val app: Application,
+    private val deletedScreenshotRepository: DeletedScreenshotRepository
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
 ) {
@@ -27,12 +31,14 @@ class ScreenshotViewModel @Inject constructor(
 
     private fun loadScreenshots() {
         viewModelScope.launch(Dispatchers.IO) {
+            val deletedFileNames = deletedScreenshotRepository.getDeletedFileNames().toSet()
             val items = mutableListOf<ScreenshotItem>()
             val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATE_ADDED,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.DISPLAY_NAME
             )
             val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
             val selectionArgs = arrayOf("Screenshots")
@@ -42,10 +48,16 @@ class ScreenshotViewModel @Inject constructor(
             cursor?.use {
                 val idCol = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
                 val dateCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
+                val nameCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
 
                 while (it.moveToNext()) {
                     val id = it.getLong(idCol)
                     val dateSeconds = it.getLong(dateCol)
+                    val fileName = it.getString(nameCol)
+
+                    // 삭제된 파일은 제외
+                    if (fileName in deletedFileNames) continue
+
                     val uriItem = ContentUris.withAppendedId(uri, id)
                     val dateStr = dateFormat.format(Date(dateSeconds * 1000))
 
@@ -54,7 +66,8 @@ class ScreenshotViewModel @Inject constructor(
                             id = id.toString(),
                             uri = uriItem,
                             dateGroup = dateStr,
-                            isSelected = false
+                            isSelected = false,
+                            fileName = fileName
                         )
                     )
                 }
@@ -122,7 +135,41 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
-            ScreenshotAction.DeleteSelected -> { }
+            ScreenshotAction.DeleteSelected -> {
+                updateState { copy(showDeleteDialog = true) }
+            }
+
+            ScreenshotAction.ConfirmDelete -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val selectedItems = currentState.groupedScreenshots.values.flatten()
+                        .filter { it.isSelected }
+
+                    val fileNames = selectedItems.mapNotNull { it.fileName }
+
+                    if (fileNames.isNotEmpty()) {
+                        deletedScreenshotRepository.addDeletedScreenshots(fileNames)
+                        emitEffect(ScreenshotEffect.ShowDeleteToast)
+                    }
+
+                    // 다이얼로그 닫고 선택 해제
+                    updateState {
+                        copy(
+                            showDeleteDialog = false,
+                            selectedCount = 0,
+                            isSelectionMode = false,
+                            isAllSelected = false
+                        )
+                    }
+
+                    // 스크린샷 목록 다시 로드
+                    loadScreenshots()
+                }
+            }
+
+            ScreenshotAction.DismissDeleteDialog -> {
+                updateState { copy(showDeleteDialog = false) }
+            }
+
             ScreenshotAction.OrganizeSelected -> { }
         }
     }

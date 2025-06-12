@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.home.ui.storage.contract.ScreenshotAction
 import com.prography.home.ui.storage.contract.ScreenshotState
+import com.prography.ui.component.DeleteConfirmDialog
 
 @Composable
 fun ScreenshotOrganizeContent(
@@ -73,4 +74,12 @@ fun ScreenshotOrganizeContent(
             }
         }
     }
+
+    // 삭제 확인 다이얼로그
+    DeleteConfirmDialog(
+        isVisible = state.showDeleteDialog,
+        selectedCount = state.selectedCount,
+        onDismiss = { onAction(ScreenshotAction.DismissDeleteDialog) },
+        onConfirm = { onAction(ScreenshotAction.ConfirmDelete) }
+    )
 }
