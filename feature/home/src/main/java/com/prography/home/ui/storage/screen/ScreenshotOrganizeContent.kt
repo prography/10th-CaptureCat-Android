@@ -19,7 +19,7 @@ import com.prography.home.ui.storage.contract.ScreenshotState
 @Composable
 fun ScreenshotOrganizeContent(
     state: ScreenshotState,
-    onAction: (ScreenshotAction) -> Unit,
+    onAction: (ScreenshotAction) -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
         ScreenshotTopBar(
@@ -62,7 +62,7 @@ fun ScreenshotOrganizeContent(
                                         painter = painterResource(id = com.prography.ui.R.drawable.ic_check_box),
                                         contentDescription = null,
                                         modifier = Modifier
-                                                .align(Alignment.TopStart)
+                                            .align(Alignment.TopStart)
                                             .padding(4.dp)
                                     )
                                 }
@@ -71,13 +71,6 @@ fun ScreenshotOrganizeContent(
                     }
                 }
             }
-        }
-
-        if (state.isSelectionMode) {
-            ScreenshotBottomBar(
-                selectedCount = state.selectedCount,
-                onAction = onAction
-            )
         }
     }
 }

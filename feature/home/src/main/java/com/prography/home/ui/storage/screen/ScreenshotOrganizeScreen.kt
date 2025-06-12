@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ScreenshotOrganizeScreen(
-    viewModel: ScreenshotViewModel = hiltViewModel()
+    viewModel: ScreenshotViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect

@@ -2,18 +2,21 @@ package com.prography.home.bottomNav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
+import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.home.ui.DummyScreen
 
 @Composable
 fun MainNavigationHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    screenshotViewModel: ScreenshotViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -21,7 +24,10 @@ fun MainNavigationHost(
         modifier = modifier
     ) {
         composable(BottomNavItem.Storage.route) {
-            ScreenshotGalleryScreen(onNavigateUp = { navController.navigateUp() })
+            ScreenshotGalleryScreen(
+                onNavigateUp = { navController.navigateUp() },
+                screenshotViewModel = screenshotViewModel
+            )
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(
@@ -40,7 +46,10 @@ fun MainNavigationHost(
             DummyScreen(onLogout = { /* ... */ })
         }
         composable("screenshot_gallery") {
-            ScreenshotGalleryScreen(onNavigateUp = { navController.navigateUp() })
+            ScreenshotGalleryScreen(
+                onNavigateUp = { navController.navigateUp() },
+                screenshotViewModel = screenshotViewModel
+            )
         }
     }
 }

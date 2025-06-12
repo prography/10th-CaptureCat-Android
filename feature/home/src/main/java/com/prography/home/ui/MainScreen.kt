@@ -7,33 +7,57 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.prography.home.bottomNav.BottomNavItem
 import com.prography.home.bottomNav.BottomNavigationBar
 import com.prography.home.bottomNav.MainNavigationHost
+import com.prography.home.ui.storage.screen.ScreenshotBottomBar
+import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.navigation.NavigationHelper
 
 @Composable
 fun MainScreen(navigationHelper: NavigationHelper) {
 
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
+    val screenshotViewModel: ScreenshotViewModel = hiltViewModel()
+    val screenshotState by screenshotViewModel.uiState.collectAsState()
+
+    val showScreenshotBottomBar =
+        currentRoute == BottomNavItem.Storage.route && screenshotState.isSelectionMode
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-                onItemSelected = { /* 탭 클릭 시 */ }
-            )
+            if (showScreenshotBottomBar) {
+                ScreenshotBottomBar(
+                    selectedCount = screenshotState.selectedCount,
+                    onAction = { screenshotViewModel.sendAction(it) }
+                )
+            } else {
+                BottomNavigationBar(
+                    navController = navController,
+                    onItemSelected = { /* 탭 클릭 시 */ }
+                )
+            }
         }
     ) { innerPadding ->
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
         ) {
-            MainNavigationHost(navController = navController)
+            MainNavigationHost(
+                navController = navController,
+                screenshotViewModel = screenshotViewModel
+            )
         }
     }
 }
