@@ -68,11 +68,14 @@ fun OrganizeScreen(
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize(),
-                    key = { index -> items.getOrNull(index)?.id ?: index }
+                    key = { index -> items.getOrNull(index)?.id ?: index },
+                    pageSpacing = 16.dp,
+                    contentPadding = PaddingValues(horizontal = 32.dp)
                 ) { page ->
                     items.getOrNull(page)?.let { screenshot ->
                         OrganizeImageCard(
                             screenshot = screenshot,
+                            isCurrentPage = page == pagerState.currentPage,
                             onFavoriteToggle = { isFavorite ->
                                 items = items.toMutableList().apply {
                                     val index = indexOfFirst { it.id == screenshot.id }

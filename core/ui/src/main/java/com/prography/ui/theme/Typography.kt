@@ -3,6 +3,7 @@
 package com.prography.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -18,6 +19,13 @@ val myFontFamily = FontFamily(
 )
 
 val AppTypography = Typography(
+    headlineMedium = TextStyle(
+        color = Color.White,
+        fontFamily = myFontFamily,
+        fontSize = 19.sp,
+        lineHeight = 26.sp,
+        fontWeight = FontWeight.SemiBold,
+    ),
     displayLarge = TextStyle(
         fontFamily = myFontFamily,
         fontSize = 32.sp,
