@@ -24,11 +24,23 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Bold,
         lineHeight = 40.sp
     ),
+    displaySmall = TextStyle(
+        fontFamily = myFontFamily,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.Normal
+    ),
     titleLarge = TextStyle(
         fontFamily = myFontFamily,
         fontSize = 22.sp,
         fontWeight = FontWeight.SemiBold,
         lineHeight = 28.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = myFontFamily,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.Medium
     ),
     bodyLarge = TextStyle(
         fontFamily = myFontFamily,
@@ -41,5 +53,11 @@ val AppTypography = Typography(
         fontSize = 12.sp,
         fontWeight = FontWeight.Normal,
         lineHeight = 16.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = myFontFamily,
+        fontSize = 12.sp,
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.SemiBold
     )
 )

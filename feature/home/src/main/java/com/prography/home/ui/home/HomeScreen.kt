@@ -31,8 +31,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.prography.home.R
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.PrographyTheme
@@ -64,65 +66,77 @@ fun HomeEmptyScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            // 상단 안내 카드
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    painter = painterResource(id = com.prography.ui.R.drawable.ic_settings),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(bottom = 21.dp)
+                )
+            }
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF6F6F6)),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "캡처캣은 처음이시죠? 생산성있게 활용하는 방법을 확인해 보세요!",
-                        style = typography.bodyLarge
+                        style = typography.displaySmall
                     )
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        TextButton(onClick = { /* TODO: 사용법 보기 클릭 처리 */ }) {
-                            Text(text = "사용법 보기",
-                                color = Color.Black,
-                                style = typography.bodyMedium)
-                        }
+                        modifier = Modifier.padding(0.dp,8.dp,0.dp,0.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "사용방법 보기",
+                            color = Color.Black,
+                            style = typography.labelSmall,
+                            modifier = Modifier.padding(0.dp,0.dp,4.dp,0.dp),
+                        )
                         Icon(
                             painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_forward),
-                            contentDescription = ""
+                            contentDescription = null
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // 필터 탭 (전체 / 미분류)
             Row {
                 FilterChip(text = "전체", isSelected = true)
                 Spacer(modifier = Modifier.width(8.dp))
                 FilterChip(text = "미분류", isSelected = false)
             }
-
-            Spacer(modifier = Modifier.height(80.dp))
-
-            // "스크린샷이 없어요" 안내 텍스트
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("저장된 스크린샷이 없어요", style = typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("스크린샷을 저장하고 관리해보세요!", style = typography.bodyMedium)
-            }
         }
-
-        // 하단 버튼
-        UiPrimaryButton(
-            text = "스크린샷 저장하기",
-            onClick = onSaveScreenshotClick,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-        )
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center // ✅ 여기!
+        ) {
+            Text(
+                text = "저장된 스크린샷이 없어요\n스크린샷을 저장하고 관리해보세요!",
+                style = typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            UiPrimaryButton(
+                text = "스크린샷 저장하기",
+                fontSize = 16.sp,
+                onClick = onSaveScreenshotClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -130,15 +144,15 @@ fun HomeEmptyScreen(
 fun FilterChip(text: String, isSelected: Boolean) {
     Surface(
         color = if (isSelected) Color.Black else Color(0xFFF3F3F3),
-        shape = MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(50.dp),
         modifier = Modifier
             .height(36.dp)
     ) {
         Text(
             text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.bodyMedium
+            color = if (isSelected) Color.White else Color(0xFF393A40),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            style = MaterialTheme.typography.titleSmall
         )
     }
 }

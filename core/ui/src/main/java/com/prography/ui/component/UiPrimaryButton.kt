@@ -1,6 +1,7 @@
 package com.prography.ui.component
 
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ fun UiPrimaryButton(
     Button(
         onClick = onClick,
         modifier = modifier.height(55.dp),
-        shape = MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6F0F))
     ) {
         Text(
