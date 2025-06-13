@@ -1,8 +1,15 @@
 package com.prography.home.bottomNav
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,9 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -47,40 +61,44 @@ fun BottomNavigationBar(
         items.forEach { item ->
             val selected = currentRoute == item.route
 
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        painter = painterResource(id = if (selected) item.selectedIcon else item.unselectedIcon),
-                        contentDescription = stringResource(item.title)
-                    )
-                },
-                label = {
-                    Text(
-                        text = stringResource(item.title),
-                        fontSize = 10.sp
-                    )
-                },
-                selected = selected,
-                onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(
+                        interactionSource = NoRippleInteractionSource,
+                        indication = null
+                    ) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            restoreState = true
+                            launchSingleTop = true
                         }
-                        restoreState = true
-                        launchSingleTop = true
+                        onItemSelected(item)
                     }
-                    onItemSelected(item)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent,
-                    selectedIconColor = Color.Black,
-                    unselectedIconColor = Color.Black,
-                    selectedTextColor = Color.Black,
-                    unselectedTextColor = Color.Black
-                ),
-                interactionSource = NoRippleInteractionSource,
-            )
+            ) {
+                Icon(
+                    painter = painterResource(id = if (selected) item.selectedIcon else item.unselectedIcon),
+                    contentDescription = stringResource(item.title),
+                    tint = Color.Black
+                )
 
+                Text(
+                    text = stringResource(item.title),
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        lineHeight = 16.sp,
+                        fontFamily = FontFamily(Font(com.prography.ui.R.font.pretendard_medium)),
+                        fontWeight = FontWeight(500),
+                        color = Color(0xFF000000),
+                        textAlign = TextAlign.Center,
+                    ),
+                    modifier = Modifier.padding(top = 2.dp) // 아주 작은 간격만 유지
+                )
+            }
         }
     }
 }

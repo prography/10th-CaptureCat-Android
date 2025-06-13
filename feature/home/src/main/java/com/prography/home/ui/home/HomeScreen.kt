@@ -80,7 +80,7 @@ fun HomeEmptyScreen(
                 )
             }
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF6F6F6)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F3F6)),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
