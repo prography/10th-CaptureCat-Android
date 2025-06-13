@@ -8,4 +8,5 @@ sealed interface ScreenshotAction {
     object ConfirmDelete : ScreenshotAction
     object DismissDeleteDialog : ScreenshotAction
     object OrganizeSelected : ScreenshotAction
+    object OrganizeCompleted : ScreenshotAction
 }

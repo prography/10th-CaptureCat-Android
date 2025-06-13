@@ -191,17 +191,23 @@ class ScreenshotViewModel @Inject constructor(
                     }
                     OrganizeDataCache.setScreenshots(cacheData)
 
-                    // 정리하기 화면으로 이동
+                    // 정리하기 화면으로 이동 (선택 상태는 유지)
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Organize))
+                }
+            }
 
-                    // 선택 상태 초기화
-                    updateState {
-                        copy(
-                            selectedCount = 0,
-                            isSelectionMode = false,
-                            isAllSelected = false
-                        )
-                    }
+            ScreenshotAction.OrganizeCompleted -> {
+                // 정리하기 완료 시 선택 상태 초기화
+                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
+                    list.map { it.copy(isSelected = false) }
+                }
+                updateState {
+                    copy(
+                        groupedScreenshots = updated,
+                        selectedCount = 0,
+                        isSelectionMode = false,
+                        isAllSelected = false
+                    )
                 }
             }
         }

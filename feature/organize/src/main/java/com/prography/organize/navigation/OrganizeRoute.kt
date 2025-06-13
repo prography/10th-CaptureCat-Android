@@ -56,6 +56,8 @@ fun OrganizeRoute(
             navigationHelper.navigate(NavigationEvent.Up)
         },
         onComplete = {
+            // 완료 상태 설정
+            OrganizeDataCache.setCompleted()
             // 메인 화면으로 돌아가기 (전체 스택 정리)
             navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
         }
