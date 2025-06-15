@@ -22,10 +22,10 @@ import com.google.accompanist.permissions.shouldShowRationale
 fun ScreenshotPermissionGate(
     onPermissionGranted: @Composable () -> Unit
 ) {
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        android.Manifest.permission.READ_MEDIA_IMAGES
-    } else {
-        android.Manifest.permission.READ_EXTERNAL_STORAGE
+    val permission = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> android.Manifest.permission.READ_MEDIA_IMAGES
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> android.Manifest.permission.READ_EXTERNAL_STORAGE
+        else -> android.Manifest.permission.READ_EXTERNAL_STORAGE
     }
 
     val permissionState = rememberPermissionState(permission = permission)
