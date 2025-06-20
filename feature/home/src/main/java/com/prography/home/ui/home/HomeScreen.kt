@@ -1,9 +1,6 @@
 package com.prography.home.ui.home
 
-import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -22,12 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,11 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prography.home.R
+import com.prography.ui.R
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.PrographyTheme
-import com.prography.ui.theme.myFontFamily
-import timber.log.Timber
 
 
 @Composable
@@ -86,20 +77,20 @@ fun HomeEmptyScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "캡처캣은 처음이시죠? 생산성있게 활용하는 방법을 확인해 보세요!",
+                        text = stringResource(R.string.home_guide),
                         style = typography.displaySmall
                     )
                     Row(
                         modifier = Modifier.padding(0.dp,8.dp,0.dp,0.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "사용방법 보기",
+                            text = stringResource(R.string.home_guide_show),
                             color = Color.Black,
                             style = typography.labelSmall,
                             modifier = Modifier.padding(0.dp,0.dp,4.dp,0.dp),
                         )
                         Icon(
-                            painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_forward),
+                            painter = painterResource(id = R.drawable.ic_arrow_forward),
                             contentDescription = null
                         )
                     }
@@ -119,10 +110,10 @@ fun HomeEmptyScreen(
                 .fillMaxWidth()
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center // ✅ 여기!
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "저장된 스크린샷이 없어요\n스크린샷을 저장하고 관리해보세요!",
+                text = stringResource(R.string.home_empty_screenshot_info),
                 style = typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -131,7 +122,7 @@ fun HomeEmptyScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             UiPrimaryButton(
-                text = "스크린샷 저장하기",
+                text = stringResource(R.string.home_screenshot_save),
                 fontSize = 16.sp,
                 onClick = onSaveScreenshotClick,
                 modifier = Modifier.fillMaxWidth()

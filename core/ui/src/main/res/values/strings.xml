@@ -1,7 +1,17 @@
 <resources>
-    <string name="app_name">prography</string>
+    <string name="app_name">캡처캣</string>
+
+    <string name="login_kakao">카카오로 로그인</string>
+    <string name="login_google">구글로 로그인</string>
+
     <string name="tab_storage">임시보관함</string>
     <string name="tab_home">홈</string>
-    <string name="title_folder">폴더</string>
     <string name="tab_search">검색</string>
+
+    <string name="home_guide">캡처캣은 처음이시죠? 생산성있게 활용하는 방법을\n확인해 보세요!</string>
+    <string name="home_guide_show">사용방법 보기</string>
+    <string name="home_empty_screenshot_info">저장된 스크린샷이 없어요\n스크린샷을 저장하고 관리해보세요!</string>
+    <string name="home_screenshot_save">스크린샷 저장하기</string>
+
+    <string name="organize_count_message">%d건의 스크린샷을\n정리해보세요</string>
 </resources>

@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prography.home.R
+import com.prography.ui.R
 import com.prography.home.ui.storage.contract.ScreenshotAction
 import com.prography.ui.theme.PrographyTheme
 
@@ -57,10 +58,10 @@ fun ScreenshotTopBar(
                 .padding(horizontal = 16.dp, vertical = 20.dp)
         ) {
             Text(
-                text = if (isSelectionMode) "선택 $selectedCount" else "${totalCount}건의 스크린샷을\n정리해보세요",
+                text = if (isSelectionMode) "선택 $selectedCount" else stringResource(R.string.organize_count_message, totalCount),
                 fontSize = 19.sp,
                 lineHeight = 26.sp,
-                fontFamily = FontFamily(Font(com.prography.ui.R.font.pretendard_semibold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = Color.White
             )
         }

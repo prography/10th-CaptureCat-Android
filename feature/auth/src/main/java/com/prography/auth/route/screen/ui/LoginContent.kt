@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -75,7 +76,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "카카오 로그인",
+                        text = stringResource(R.string.login_kakao),
                         color = Color.Black,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.prography_pretendard_semibold))
@@ -97,7 +98,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp) // ✅ 여기!
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_google_login),
@@ -106,7 +107,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
                         modifier = Modifier.size(18.dp) // 아이콘 크기 조절
                     )
                     Text(
-                        text = "Google 로그인",
+                        text = stringResource(R.string.login_google),
                         color = Color.Black,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.prography_pretendard_semibold))
