@@ -11,6 +11,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor() : BaseComposeViewModel<LoginState, LoginEffect, LoginAction>(
     initialState = LoginState()
 ) {
+
     override fun handleAction(action: LoginAction) {
         when (action) {
             LoginAction.ClickKakao -> emitEffect(LoginEffect.StartKakaoLogin)

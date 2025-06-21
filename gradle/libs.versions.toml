@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.3"
+credentialsPlayServicesAuth = "1.5.0"
 javaxInject = "1"
 kotlin = "2.1.20"
 serialization= "1.8.0"
@@ -57,7 +58,7 @@ navigationComposeJvmstubs = "2.9.0"
 navigationRuntimeAndroid = "2.9.0"
 jetbrainsKotlinJvm = "2.1.20"
 desugar_jdk_libs = "2.0.4"
-
+firebase-bom = "33.15.0"
 
 lifecycleRuntimeKtx = "2.8.3"
 androidPermission = "0.34.0"
@@ -69,10 +70,16 @@ projectVersionCode = "1"
 projectMinSdkVersion = "24"
 projectTargetSdkVersion = "35"
 projectCompileSdkVersion = "35"
+googleid = "1.1.1"
+firebaseAuthKtx = "23.2.1"
+
+playServicesAuth = "21.3.0"
 
 [libraries]
 
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialsPlayServicesAuth" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -165,7 +172,12 @@ android-permissions = { group = "com.google.accompanist", name = "accompanist-pe
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 
 [bundles]
 compose = [
@@ -193,6 +205,7 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.re
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 
 multi-module-android-application = { id = "multi.module.android.application", version = "unspecified"}
 multi-module-android-application-compose = { id = "multi.module.android.application.compose", version = "unspecified"}
