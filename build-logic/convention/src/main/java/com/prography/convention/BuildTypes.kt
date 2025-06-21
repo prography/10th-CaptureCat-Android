@@ -7,6 +7,7 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import java.util.Properties
 
 internal fun Project.configureBuildTypes(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
@@ -17,19 +18,19 @@ internal fun Project.configureBuildTypes(
             buildConfig = true
         }
 
-        val apiKey = gradleLocalProperties(rootDir, providers).getProperty("API_KEY")
+        val properties = gradleLocalProperties(rootDir, providers)
         when (extensionType) {
             ExtensionType.APPLICATION -> {
                 extensions.configure<ApplicationExtension> {
                     buildTypes {
                         debug {
-                            configureDebugBuildType(apiKey)
+                            configureDebugBuildType(properties)
                         }
                         create("staging") {
-                            configureStagingBuildType(apiKey)
+                            configureStagingBuildType(properties)
                         }
                         release {
-                            configureReleaseBuildType(commonExtension, apiKey)
+                            configureReleaseBuildType(commonExtension, properties)
                         }
                     }
                 }
@@ -38,13 +39,13 @@ internal fun Project.configureBuildTypes(
                 extensions.configure<LibraryExtension> {
                     buildTypes {
                         debug {
-                            configureDebugBuildType(apiKey)
+                            configureDebugBuildType(properties)
                         }
                         create("staging") {
-                            configureStagingBuildType(apiKey)
+                            configureStagingBuildType(properties)
                         }
                         release {
-                            configureReleaseBuildType(commonExtension, apiKey)
+                            configureReleaseBuildType(commonExtension, properties)
                         }
                     }
                 }
@@ -53,21 +54,22 @@ internal fun Project.configureBuildTypes(
     }
 }
 
-private fun BuildType.configureDebugBuildType(apiKey: String) {
-    buildConfigField("String", "API_KEY", "\"$apiKey\"")
-    buildConfigField("String", "BASE_URL", "\"DEBUG_API_URL\"")
+private fun BuildType.configureDebugBuildType(properties: Properties) {
+    buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+    buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\"")
+    buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
 }
 
-private fun BuildType.configureStagingBuildType(apiKey: String) {
-    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+private fun BuildType.configureStagingBuildType(properties: Properties) {
+    buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
     buildConfigField("String", "BASE_URL", "\"STAGING_API_URL\"")
 }
 
 private fun BuildType.configureReleaseBuildType(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
-    apiKey: String
+    properties: Properties
 ) {
-    buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
     buildConfigField("String", "BASE_URL", "\"RELEASE_API_URL\"")
 
     isMinifyEnabled = true
