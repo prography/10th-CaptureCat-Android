@@ -63,6 +63,8 @@ firebase-bom = "33.15.0"
 lifecycleRuntimeKtx = "2.8.3"
 androidPermission = "0.34.0"
 
+kakaoAPI = "2.21.4"
+
 # Project versions
 projectApplicationId = "com.android.prography"
 projectVersionName = "1.0"
@@ -167,6 +169,8 @@ androidx-navigation-runtime-android = { group = "androidx.navigation", name = "n
 androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivity" }
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 android-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "androidPermission" }
+kakao-all = { module = "com.kakao.sdk:v2-all", version.ref = "kakaoAPI"}
+kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakaoAPI"}
 
 # Gradle
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

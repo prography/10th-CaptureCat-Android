@@ -11,6 +11,10 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
 import com.prography.auth.BuildConfig
 import com.prography.auth.route.screen.contract.LoginEffect
 import com.prography.auth.route.screen.viewmodel.LoginViewModel
@@ -35,7 +39,16 @@ fun LoginScreen(
         effectFlow.collectLatest { effect ->
             when (effect) {
                 LoginEffect.StartKakaoLogin -> {
-                    // 카카오 SDK 호출
+                    handleKakaoLogin(
+                        context = context,
+                        onSuccess = { token ->
+                            Timber.d("Kakao login success. Token: $token")
+                            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                        },
+                        onFailure = { error ->
+                            Timber.e("Kakao login failed: $error")
+                        }
+                    )
                 }
                 LoginEffect.StartGoogleLogin -> {
                     handleGoogleLogin(
@@ -62,13 +75,58 @@ fun LoginScreen(
     )
 }
 
+suspend fun handleKakaoLogin(
+    context: Context,
+    onSuccess: (String) -> Unit,
+    onFailure: (Throwable) -> Unit
+) {
+    try {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            when {
+                error is ClientError && error.reason == ClientErrorCause.Cancelled -> {
+                    onFailure(IllegalStateException("User cancelled Kakao login dialog"))
+                }
+                error != null -> {
+                    onFailure(error)
+                }
+                token != null -> {
+                    onSuccess(token.accessToken)
+                }
+                else -> {
+                    onFailure(IllegalStateException("Kakao login failed: Token is null"))
+                }
+            }
+        }
+
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+            UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
+                if (error != null) {
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        onFailure(IllegalStateException("User cancelled Kakao login dialog"))
+                    } else {
+                        UserApiClient.instance.loginWithKakaoAccount(context = context, callback =callback)
+                    }
+                } else if (token != null) {
+                    onSuccess(token.accessToken)
+                } else {
+                    onFailure(IllegalStateException("Kakao login failed without error or token"))
+                }
+            }
+        } else {
+            UserApiClient.instance.loginWithKakaoAccount(context = context, callback = callback)
+        }
+    } catch (e: Throwable) {
+        onFailure(e)
+    }
+}
+
 suspend fun handleGoogleLogin(
     context: Context,
     onSuccess: (FirebaseUser) -> Unit,
     onFailure: (Throwable) -> Unit
 ) {
     try {
-        val credentialManager = androidx.credentials.CredentialManager.create(context)
+        val credentialManager = CredentialManager.create(context)
 
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)

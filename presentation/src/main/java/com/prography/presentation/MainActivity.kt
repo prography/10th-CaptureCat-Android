@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
                 if (isOnboardingShown != null) {
                     val startDestination = if (isOnboardingShown == true) {
-                        AppRoute.Main.toString()
+                        AppRoute.Login.toString()
                     } else {
                         AppRoute.Onboarding.toString()
                     }

@@ -25,6 +25,7 @@ internal fun Project.configureBuildTypes(
                     buildTypes {
                         debug {
                             configureDebugBuildType(properties)
+                            resValue("string", "kakao_native_app_key", "\"kakao${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
                         }
                         create("staging") {
                             configureStagingBuildType(properties)
@@ -58,6 +59,7 @@ private fun BuildType.configureDebugBuildType(properties: Properties) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
     buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\"")
     buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
+    buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
 }
 
 private fun BuildType.configureStagingBuildType(properties: Properties) {
