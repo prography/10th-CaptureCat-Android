@@ -1,4 +1,4 @@
-package com.prography.data.local
+package com.prography.data.local.repository
 
 import com.prography.database.datasource.DeletedScreenshotDataSource
 import com.prography.database.model.DeletedScreenshotEntity

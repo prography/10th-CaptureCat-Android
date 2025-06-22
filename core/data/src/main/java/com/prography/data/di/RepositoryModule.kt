@@ -2,7 +2,7 @@ package com.prography.data.di
 
 import com.prography.database.datasource.DeletedScreenshotDataSource
 import com.prography.database.datasource.PhotoLocalDataSource
-import com.prography.data.local.DeletedScreenshotRepositoryImpl
+import com.prography.data.local.repository.DeletedScreenshotRepositoryImpl
 import com.prography.data.local.repository.PhotoLocalRepositoryImpl
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
 import com.prography.data.remote.repository.PhotoRepositoryImpl
