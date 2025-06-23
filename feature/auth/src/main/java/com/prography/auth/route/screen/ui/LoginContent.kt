@@ -57,7 +57,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
             Button(
                 onClick = { onAction(LoginAction.ClickKakao) },
                 modifier = Modifier
-                    .width(343.dp)
+                    .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -88,7 +88,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
                 onClick = { onAction(LoginAction.ClickGoogle) },
                 modifier = Modifier
                     .border(1.dp, Color(0xFF747775),shape = RoundedCornerShape(size = 4.dp))
-                    .width(343.dp)
+                    .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(

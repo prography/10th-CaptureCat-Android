@@ -52,23 +52,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PrographyTheme {
-                val isOnboardingShown by viewModel.isOnboardingShown.collectAsStateWithLifecycle()
+                val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
 
-                if (isOnboardingShown != null) {
-                    val startDestination = if (isOnboardingShown == true) {
-                        AppRoute.Login.toString()
-                    } else {
-                        AppRoute.Onboarding.toString()
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(WindowInsets.navigationBars.asPaddingValues())
-                    ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(WindowInsets.navigationBars.asPaddingValues())
+                ) {
+                    if (startDestination != null) {
                         AppNavGraph(
                             navigationHelper = navigationHelper,
-                            startDestination = startDestination
+                            startDestination = startDestination!!
                         )
                         GlobalUiHandler()
                     }

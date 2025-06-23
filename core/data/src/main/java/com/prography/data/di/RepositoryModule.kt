@@ -5,11 +5,11 @@ import com.prography.database.datasource.PhotoLocalDataSource
 import com.prography.data.local.repository.DeletedScreenshotRepositoryImpl
 import com.prography.data.local.repository.PhotoLocalRepositoryImpl
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
-import com.prography.data.remote.repository.PhotoRepositoryImpl
+import com.prography.data.remote.repository.PhotoRemoteRepositoryImpl
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.domain.repository.PhotoLocalRepository
-import com.prography.domain.repository.PhotoRepository
+import com.prography.domain.repository.PhotoRemoteRepository
 import com.prography.domain.repository.UserPreferenceRepository
 import com.prography.network.datasource.PhotoRemoteDataSourceImpl
 import dagger.Module
@@ -26,8 +26,8 @@ object RepositoryModule {
     @Provides
     fun providePhotoRepository(
         photoRemoteDataSourceImpl: PhotoRemoteDataSourceImpl
-    ) : PhotoRepository {
-        return PhotoRepositoryImpl(
+    ) : PhotoRemoteRepository {
+        return PhotoRemoteRepositoryImpl(
             photoRemoteDataSourceImpl
         )
     }

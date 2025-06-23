@@ -2,14 +2,14 @@ package com.prography.data.remote.repository
 
 import com.prography.data.mapper.toUiPhotoResponseModel
 import com.prography.domain.model.UiPhotoModel
-import com.prography.domain.repository.PhotoRepository
+import com.prography.domain.repository.PhotoRemoteRepository
 import com.prography.domain.util.NetworkState
 import com.prography.network.datasource.PhotoRemoteDataSourceImpl
 import timber.log.Timber
 import javax.inject.Inject
 
-class PhotoRepositoryImpl @Inject constructor(private val photoRemoteDataSourceImpl: PhotoRemoteDataSourceImpl) :
-    PhotoRepository {
+class PhotoRemoteRepositoryImpl @Inject constructor(private val photoRemoteDataSourceImpl: PhotoRemoteDataSourceImpl) :
+    PhotoRemoteRepository {
     override suspend fun getRandomPhotos(accessKey: String, countIdx : Int): Result<UiPhotoModel> {
         when (val data = photoRemoteDataSourceImpl.getRandomPhotos(accessKey, countIdx)) {
             is NetworkState.Success -> return Result.success(data.body.toUiPhotoResponseModel())

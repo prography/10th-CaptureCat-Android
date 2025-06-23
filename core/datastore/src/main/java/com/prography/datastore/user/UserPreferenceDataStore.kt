@@ -37,4 +37,11 @@ class UserPreferenceDataStore(private val context: Context) {
             it[UserPreferenceKeys.REFRESH_TOKEN] = refresh
         }
     }
+
+    suspend fun clearTokens() {
+        dataStore.edit { preferences ->
+            preferences.remove(UserPreferenceKeys.ACCESS_TOKEN)
+            preferences.remove(UserPreferenceKeys.REFRESH_TOKEN)
+        }
+    }
 }
