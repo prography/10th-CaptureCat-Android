@@ -11,3 +11,45 @@ val DarkGray = Color(0xFF121212)
 
 val Purple80 = Color(0xFFD0BCFF)
 val Pink80 = Color(0xFFEFB8C8)
+
+// Background & Overlay
+val Background = Color(0xFFFFFFFF)
+val OverlayDim = Color(0xFF000000)
+
+// Grayscale
+val Gray01 = Color(0xFFF7F8FA)
+val Gray02 = Color(0xFFF2F3F6)
+val Gray03 = Color(0xFFEAECEE)
+val Gray04 = Color(0xFFDCDDEE)
+val Gray05 = Color(0xFFD1D3D8)
+val Gray06 = Color(0xFFADB1BA)
+val Gray07 = Color(0xFF868B94)
+val Gray08 = Color(0xFF4D5159)
+val Gray09 = Color(0xFF393A40)
+val Gray10 = Color(0xFF212124)
+
+// Pure
+val PureWhite = Color(0xFFFFFFFF)
+val PureBlack = Color(0xFF000000)
+
+// Feedback
+val Error = Color(0xFFFA2314)
+val Success = Color(0xFF00E0F7)
+
+// Accent & Primary
+val Accent = Color(0xFF009CEB)
+val Primary = Color(0xFFFF6600)
+val PrimaryPress = Color(0xFFFA6616)
+val PrimaryLow = Color(0xFFFFE2C8)
+
+// Secondary
+val Secondary = Color(0xFF212124)
+val SecondaryLow = Color(0x0D212124)
+
+// Text
+val Text01 = Color(0xFF212124)
+val Text02 = Color(0xFF4D5159)
+val Text03 = Color(0xFF868B94)
+
+// Divider
+val Divider = Color(0xFF001758)
