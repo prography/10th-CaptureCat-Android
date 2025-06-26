@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -60,12 +61,15 @@ fun GlobalUiHandler() {
         toastMessage = null
     }
 
-    // 로딩 오버레이
+    // 로딩 오버레이 (터치 이벤트 차단)
     if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
+                .background(Color.Black.copy(alpha = 0.3f))
+                .pointerInput(Unit) {
+                    // 모든 터치 이벤트를 소비하여 하위 컴포넌트로 전달되지 않도록 함
+                },
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(

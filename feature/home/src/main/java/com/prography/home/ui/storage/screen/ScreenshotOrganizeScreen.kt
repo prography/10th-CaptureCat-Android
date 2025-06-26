@@ -15,17 +15,6 @@ fun ScreenshotOrganizeScreen(
     viewModel: ScreenshotViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
-    val effectFlow = viewModel.effect
-
-    LaunchedEffect(Unit) {
-        effectFlow.collectLatest { effect ->
-            when (effect) {
-                ScreenshotEffect.ShowDeleteToast -> {
-
-                }
-            }
-        }
-    }
 
     ScreenshotOrganizeContent(
         state = state,
