@@ -18,7 +18,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.tooling.preview.Preview
+
 import com.prography.ui.R
+import com.prography.ui.theme.Primary
+import com.prography.ui.theme.Text01
+import com.prography.ui.theme.headline03Bold
+import com.prography.ui.theme.headline03Regular
 
 @Composable
 fun OrganizeTopBar(
@@ -30,55 +36,61 @@ fun OrganizeTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFFF6F0F))
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
-        // 뒤로가기 버튼
-        Icon(
-            painter = painterResource(id = R.drawable.ic_close),
-            contentDescription = "뒤로가기",
-            tint = Color.White,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .size(24.dp)
-                .clickable { onNavigateUp() }
-        )
+
 
         // 제목
         Row(
-            modifier = Modifier.align(Alignment.Center),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.align(Alignment.CenterStart)
         ) {
-            Text(
-                text = "태그하기 $currentIndex",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.pretendard_semibold))
-                )
+            // 뒤로가기 버튼
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_backward),
+                contentDescription = "뒤로가기",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { onNavigateUp() }
             )
             Text(
-                text = " / $totalCount",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular))
-                )
+                text = if (currentIndex == 0) "태그하기" else "태그하기 $currentIndex/$totalCount",
+                style = headline03Bold,
+                color = Text01
             )
         }
 
         // 완료 버튼
         Text(
-            text = "완료",
-            style = TextStyle(
-                fontSize = 16.sp,
-                color = Color.White,
-                fontFamily = FontFamily.Default
-            ),
+            text = "저장",
+            style = headline03Regular,
+            color = Primary,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .clickable { onComplete() }
         )
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun OrganizeTopBarBatchModePreview() {
+    OrganizeTopBar(
+        currentIndex = 0, // 한번에 모드일 때는 0
+        totalCount = 15,
+        onNavigateUp = { },
+        onComplete = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrganizeTopBarSingleModePreview() {
+    OrganizeTopBar(
+        currentIndex = 3, // 한장씩 모드일 때는 현재 페이지
+        totalCount = 8,
+        onNavigateUp = { },
+        onComplete = { }
+    )
 }

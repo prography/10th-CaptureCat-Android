@@ -39,12 +39,10 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 스플래시 화면 설치 (setContent 전에 호출해야 함)
-        val splashScreen = installSplashScreen()
 
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         splashScreen.setKeepOnScreenCondition { !isReady }
         isReady = true
 
