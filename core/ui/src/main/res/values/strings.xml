@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">캡처캣</string>
 
+    <string name="onboarding_title">시작하기 전에</string>
+    <string name="onboarding_info">로그인하면 모든 디바이스에서 관리하고,\n갤러리에서 지워도 캡처캣에 안전하게 보관돼요.</string>
+    <string name="onboarding_next">다음에 하기</string>
+    <string name="onboarding_login">로그인 하기</string>
+
     <string name="login_kakao">카카오로 로그인</string>
     <string name="login_google">구글로 로그인</string>
 

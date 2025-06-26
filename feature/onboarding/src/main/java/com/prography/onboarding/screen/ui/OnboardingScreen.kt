@@ -20,8 +20,6 @@ fun OnboardingScreen(
     navigationHelper: NavigationHelper,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
-
-    val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
 
     LaunchedEffect(Unit) {
@@ -39,7 +37,6 @@ fun OnboardingScreen(
     }
 
     OnboardingContent(
-        state = state,
         onAction = { viewModel.sendAction(it) }
     )
 }

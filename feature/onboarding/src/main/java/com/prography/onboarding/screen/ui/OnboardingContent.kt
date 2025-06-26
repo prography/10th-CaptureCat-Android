@@ -1,51 +1,42 @@
 package com.prography.onboarding.screen.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.prography.onboarding.R
 import com.prography.onboarding.screen.contract.OnboardingAction
-import com.prography.onboarding.screen.contract.OnboardingState
 import com.prography.ui.component.UiPrimaryButton
-import com.prography.ui.component.UiUnderlinedTextButton
+import com.prography.ui.theme.Gray08
+import com.prography.ui.theme.Text01
+import com.prography.ui.theme.Text02
+import com.prography.ui.theme.body01Regular
+import com.prography.ui.theme.headline01Bold
 
 @Composable
 fun OnboardingContent(
-    state: OnboardingState, onAction: (OnboardingAction) -> Unit
+    onAction: (OnboardingAction) -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(16.dp)
     )
     {
@@ -57,34 +48,32 @@ fun OnboardingContent(
         ) {
             Image(
                 modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(8.dp)
-                    .size(40.dp),
-                painter = painterResource(id = com.prography.ui.R.drawable.ic_close),
+                    .align(Alignment.Start)
+                    .padding(8.dp),
+                painter = painterResource(id = com.prography.ui.R.drawable.ic_close_black),
                 contentDescription = "",
                 contentScale = ContentScale.Fit
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "시작하기 전에",
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    lineHeight = 36.sp,
-                    fontWeight = FontWeight(600),
-                    color = Color(0xFF000000),
-                )
+                text = stringResource(id = com.prography.ui.R.string.onboarding_title),
+                style = headline01Bold,
+                color = Text01
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "로그인을 하면 스크린샷 기록을\n모든 디바이스에서 관리할 수 있어요.",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight(400),
-                    color = Color(0xFF000000),
-
-                    textAlign = TextAlign.Center,
-                )
+                text = stringResource(id = com.prography.ui.R.string.onboarding_info),
+                style = body01Regular.copy(textAlign = TextAlign.Center),
+                color = Text02
+            )
+            Spacer(modifier = Modifier.height(79.dp))
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                painter = painterResource(id = com.prography.ui.R.drawable.ic_onboarding_logo),
+                contentDescription = "",
+                contentScale = ContentScale.Fit
             )
         }
         Column(
@@ -94,16 +83,17 @@ fun OnboardingContent(
         )
         {
             UiPrimaryButton(
-                text = "로그인",
+                text = stringResource(id = com.prography.ui.R.string.onboarding_login),
                 onClick = { onAction(OnboardingAction.LoginClicked) },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            UiUnderlinedTextButton(
-                fullText = "나중에 할게요",
-                underlineTarget = "나중에 할게요",
-                fontSize = 14.sp,
-                onClick = { onAction(OnboardingAction.SkipClicked) }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(id = com.prography.ui.R.string.onboarding_next),
+                color = Gray08,
+                modifier = Modifier.padding(14.dp, 20.dp).clickable {
+                    onAction(OnboardingAction.SkipClicked)
+                }
             )
         }
     }
@@ -113,7 +103,6 @@ fun OnboardingContent(
 @Preview(showBackground = true)
 fun LoginContentPreview() {
     OnboardingContent(
-        state = OnboardingState(), // 기본 상태 or 샘플 데이터
         onAction = {} // 빈 람다 전달
     )
 }
