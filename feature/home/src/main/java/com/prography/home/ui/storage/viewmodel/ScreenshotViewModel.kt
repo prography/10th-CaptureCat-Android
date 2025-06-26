@@ -4,17 +4,18 @@ import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.home.ui.storage.contract.*
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
-import com.prography.navigation.OrganizeDataCache
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +32,10 @@ class ScreenshotViewModel @Inject constructor(
     private val dateFormat = SimpleDateFormat("yyyy년 M월 d일 (E)", Locale.KOREA)
 
     init {
+        loadScreenshots()
+    }
+
+    fun refreshScreenshots() {
         loadScreenshots()
     }
 
@@ -76,16 +81,18 @@ class ScreenshotViewModel @Inject constructor(
                         )
                     )
                 }
-            }
+            } ?: Timber.d("ScreenshotViewModel", "Cursor is null - no access to media store")
 
             val grouped = items.groupBy { it.dateGroup }
+            Timber.d("ScreenshotViewModel", "Loading completed: ${items.size} screenshots found")
+
             updateState {
                 copy(
                     groupedScreenshots = grouped,
                     totalCount = items.size,
                     selectedCount = 0,
-                    isAllSelected = false,
-                    isSelectionMode = false
+                    isSelectionMode = false,
+                    isAllSelected = false
                 )
             }
         }
@@ -115,11 +122,10 @@ class ScreenshotViewModel @Inject constructor(
                 val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
                     list.map { it.copy(isSelected = true) }
                 }
-                val all = updated.values.flatten()
                 updateState {
                     copy(
                         groupedScreenshots = updated,
-                        selectedCount = all.size,
+                        selectedCount = currentState.totalCount,
                         isSelectionMode = true,
                         isAllSelected = true
                     )
@@ -153,7 +159,7 @@ class ScreenshotViewModel @Inject constructor(
 
                     if (fileNames.isNotEmpty()) {
                         deletedScreenshotRepository.addDeletedScreenshots(fileNames)
-                        emitEffect(ScreenshotEffect.ShowDeleteToast)
+                        showToast("선택된 스크린샷이 삭제되었습니다")
                     }
 
                     // 다이얼로그 닫고 선택 해제
@@ -180,24 +186,20 @@ class ScreenshotViewModel @Inject constructor(
                 val selectedItems = currentState.groupedScreenshots.values.flatten()
                     .filter { it.isSelected }
 
-                if (selectedItems.isNotEmpty()) {
-                    // OrganizeDataCache에 선택된 스크린샷 데이터를 저장
-                    val cacheData = selectedItems.map { item ->
-                        OrganizeDataCache.ScreenshotData(
-                            id = item.id,
-                            uri = item.uri,
-                            fileName = item.fileName
-                        )
-                    }
-                    OrganizeDataCache.setScreenshots(cacheData)
-
-                    // 정리하기 화면으로 이동 (선택 상태는 유지)
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Organize))
+                if (selectedItems.isEmpty()) {
+                    showToast("정리할 스크린샷을 선택해주세요")
+                    return@handleAction
                 }
+
+                val selectedIds = selectedItems.map { it.id }
+
+                // 정리하기 화면으로 이동 (ID만 전달)
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedIds))
+                )
             }
 
             ScreenshotAction.OrganizeCompleted -> {
-                // 정리하기 완료 시 선택 상태 초기화
                 val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
                     list.map { it.copy(isSelected = false) }
                 }

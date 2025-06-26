@@ -4,6 +4,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.prography.auth.route.navigation.LoginRoute
 import com.prography.home.route.MainRoute
 import com.prography.navigation.AppRoute
@@ -17,14 +18,14 @@ import kotlinx.coroutines.flow.collectLatest
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
     navigationHelper: NavigationHelper,
-    startDestination: String = AppRoute.Onboarding.toString()
+    startDestination: AppRoute = AppRoute.Onboarding
 ) {
 
     LaunchedEffect(Unit) {
         navigationHelper.navigationFlow.collectLatest { event ->
             when (event) {
                 is NavigationEvent.To -> {
-                    navController.navigate(event.route.toString()) {
+                    navController.navigate(event.route) {
                         if (event.popUpTo) popUpTo(0) { inclusive = true }
                     }
                 }
@@ -36,17 +37,21 @@ fun AppNavGraph(
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
-        composable(AppRoute.Onboarding.toString()) {
+        composable<AppRoute.Onboarding> {
             OnboardingRoute(navigationHelper = navigationHelper)
         }
-        composable(AppRoute.Login.toString()) {
+        composable<AppRoute.Login> {
             LoginRoute(navigationHelper = navigationHelper)
         }
-        composable(AppRoute.Main.toString()) {
+        composable<AppRoute.Main> {
             MainRoute(navigationHelper = navigationHelper)
         }
-        composable(AppRoute.Organize.toString()) {
-            OrganizeRoute(navigationHelper = navigationHelper)
+        composable<AppRoute.Organize> { backStackEntry ->
+            val organize = backStackEntry.toRoute<AppRoute.Organize>()
+            OrganizeRoute(
+                navigationHelper = navigationHelper,
+                screenshotIds = organize.screenshotIds
+            )
         }
     }
 }
