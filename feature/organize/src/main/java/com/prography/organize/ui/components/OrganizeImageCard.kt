@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,11 +86,11 @@ fun OrganizeImageCard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(0.75f)
+                .aspectRatio(0.65f)
                 .offset(y = 42.dp)
                 .graphicsLayer {
                     translationY = offsetY
-                    alpha = deleteAlpha * if (isCurrentPage) 1f else 0.6f
+                    alpha = deleteAlpha * if (isCurrentPage) 1f else 0.5f
                     scaleX = pageScale * deleteScale
                     scaleY = pageScale * deleteScale
                 }
@@ -112,16 +113,14 @@ fun OrganizeImageCard(
                         }
                     }
                 },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(26.dp),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Box(
                 modifier = Modifier
+                    .border(width = 1.dp, color = Color(0x0D001758), shape = RoundedCornerShape(size = 26.dp))
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .blur(
-                        radius = if (isCurrentPage) 0.dp else 4.dp
-                    )
+                    .clip(RoundedCornerShape(26.dp))
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(screenshot.uri),

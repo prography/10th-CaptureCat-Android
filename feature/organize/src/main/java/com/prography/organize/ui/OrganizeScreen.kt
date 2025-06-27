@@ -4,30 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
 import com.prography.organize.model.OrganizeScreenshotItem
@@ -37,7 +30,6 @@ import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.body02Regular
-import com.prography.ui.theme.subhead01Bold
 import com.prography.ui.theme.subhead02Bold
 import kotlinx.coroutines.launch
 
@@ -99,57 +91,61 @@ fun OrganizeStackedCards(
     onFavoriteToggle: (String, Boolean) -> Unit
 ) {
     val density = LocalDensity.current
+    val screenshot = screenshots.firstOrNull() ?: return
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 34.dp, horizontal = 50.dp),
+            .padding(vertical = 34.dp),
         contentAlignment = Alignment.Center
     ) {
-        // 2장까지만 스택으로 보여줌 (뒤에서부터 그리기)
-        val visibleItems = screenshots.take(2)
-
-        // 뒤에서부터 그려야 맨 앞이 위에 보임
-        visibleItems.reversed().forEachIndexed { reverseIndex, screenshot ->
-            val index = visibleItems.size - 1 - reverseIndex // 실제 인덱스
-
-            // 뒤로 갈수록 더 많이 오프셋과 회전
-            val offsetX = (index * 1).dp  // X축 오프셋
-            val offsetY = (index * 1).dp   // Y축 오프셋
-            val scale = 1f - (index * 0.00f)  // 크기 변화 (더 작게)
-            val cardAlpha = 1f - (index * 0.08f)  // 투명도 (더 작게)
-            val rotation = index * -8f  // 뒤로 갈수록 왼쪽으로 10도씩 회전
-
-            Card(
+        // 🔹 뒤 배경용 그라디언트 카드
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 50.dp)
+                .aspectRatio(0.65f)
+                .graphicsLayer {
+                    translationX = with(density) { 1.dp.toPx() }
+                    translationY = with(density) { 1.dp.toPx() }
+                    scaleX = 1f
+                    scaleY = 1f
+                    alpha = 0.92f
+                    rotationZ = -8f
+                },
+            shape = RoundedCornerShape(26.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.65f)
-                    .graphicsLayer {
-                        translationX = with(density) { offsetX.toPx() }
-                        translationY = with(density) { offsetY.toPx() }
-                        scaleX = scale
-                        scaleY = scale
-                        alpha = cardAlpha
-                        rotationZ = rotation  // Z축 회전 (평면 회전)
-                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin.Center
-                    },
-                shape = RoundedCornerShape(26.dp),
-                elevation = CardDefaults.cardElevation((1 + index * 2).dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    // 이미지
-                    AsyncImage(
-                        model = screenshot.uri,
-                        contentDescription = "스크린샷",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFA5AEBF),
+                                Color(0xFF4D5159)
+                            )
+                        )
                     )
+            )
+        }
 
-                    // 한번에 모드에서는 즐겨찾기 버튼 없음
-                    // (한장씩 모드에서만 표시)
-                }
+        // 🔸 실제 이미지 카드
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 50.dp)
+                .aspectRatio(0.65f),
+            shape = RoundedCornerShape(26.dp),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = screenshot.uri,
+                    contentDescription = "스크린샷",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
@@ -187,7 +183,6 @@ fun OrganizeScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Top Bar with Mode Toggle
         OrganizeTopBar(
             currentIndex = if (organizeMode == OrganizeMode.SINGLE && items.isNotEmpty())
                 pagerState.currentPage + 1 else 0,
@@ -196,41 +191,14 @@ fun OrganizeScreen(
             onComplete = onComplete
         )
 
-        // Mode Toggle Buttons (임시)
         Box(
-            modifier = Modifier.fillMaxWidth(), // 상위 너비는 꽉 채우고
-            contentAlignment = Alignment.Center // 그 안에서 Row를 중앙 정렬
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Row(
-                modifier = Modifier
-                    .background(color = Gray03, shape = RoundedCornerShape(size = 9.dp))
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    onClick = { organizeMode = OrganizeMode.BATCH },
-                    colors = ButtonColors(containerColor = Color.White, contentColor = Text01,
-                        disabledContainerColor = Color.Transparent, disabledContentColor = Text01),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    elevation = null
-                ) {
-                    Text(text= "한번에",style = subhead02Bold)
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(
-                    onClick = { organizeMode = OrganizeMode.SINGLE },
-                    colors = if (organizeMode == OrganizeMode.SINGLE)
-                        ButtonDefaults.buttonColors()
-                    else
-                        ButtonDefaults.outlinedButtonColors(),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    elevation = null
-                ) {
-                    Text("한장씩", style = subhead02Bold)
-                }
-            }
+            OrganizeModeToggle(
+                currentMode = organizeMode,
+                onModeChange = { newMode -> organizeMode = newMode }
+            )
         }
 
         // Content based on mode
@@ -268,7 +236,7 @@ fun OrganizeScreen(
                             modifier = Modifier.fillMaxSize(),
                             key = { index -> items.getOrNull(index)?.id ?: index },
                             pageSpacing = 16.dp,
-                            contentPadding = PaddingValues(horizontal = 32.dp)
+                            contentPadding = PaddingValues(horizontal = 60.dp)
                         ) { page ->
                             items.getOrNull(page)?.let { screenshot ->
                                 OrganizeImageCard(
@@ -342,6 +310,81 @@ fun CompletionMessage(onComplete: () -> Unit) {
     }
 }
 
+@Composable
+fun OrganizeModeToggle(
+    currentMode: OrganizeMode,
+    onModeChange: (OrganizeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .background(
+                color = Gray03,
+                shape = RoundedCornerShape(9.dp)
+            )
+            .padding(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        // 한번에 버튼
+        Box(
+            modifier = Modifier
+                .clickable { onModeChange(OrganizeMode.BATCH) }
+                .then(
+                    if (currentMode == OrganizeMode.BATCH) {
+                        Modifier.shadow(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(7.dp),
+                            spotColor = Color.Black.copy(0.25f)
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    color = if (currentMode == OrganizeMode.BATCH) Color.White else Color.Transparent,
+                    shape = RoundedCornerShape(7.dp)
+                )
+                .padding(horizontal = 34.dp, vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "한번에",
+                style = if (currentMode == OrganizeMode.BATCH) subhead02Bold else body02Regular ,
+                color = if (currentMode == OrganizeMode.BATCH) Text01 else Color.Gray
+            )
+        }
+
+        // 한장씩 버튼
+        Box(
+            modifier = Modifier
+                .clickable { onModeChange(OrganizeMode.SINGLE) }
+                .then(
+                    if (currentMode == OrganizeMode.SINGLE) {
+                        Modifier.shadow(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(7.dp),
+                            spotColor = Color.Black.copy(0.25f)
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    color = if (currentMode == OrganizeMode.SINGLE) Color.White else Color.Transparent,
+                    shape = RoundedCornerShape(7.dp)
+                )
+                .padding(horizontal = 34.dp, vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "한장씩",
+                style = if (currentMode == OrganizeMode.SINGLE) subhead02Bold else body02Regular ,
+                color = if (currentMode == OrganizeMode.SINGLE) Text01 else Color.Gray
+            )
+        }
+    }
+}
+
 // Preview 함수들
 @Preview(showBackground = true, heightDp = 800, widthDp = 400)
 @Composable
@@ -405,15 +448,64 @@ fun OrganizeScreenSingleModePreview() {
         )
     )
 
-    // 한장씩 모드로 시작하는 버전
+    // 한장씩 모드로 시작하는 커스텀 화면
     var organizeMode by remember { mutableStateOf(OrganizeMode.SINGLE) }
+    var items by remember { mutableStateOf(mockScreenshots) }
+    val pagerState = rememberPagerState(initialPage = 0) { items.size }
 
-    OrganizeScreen(
-        screenshots = mockScreenshots,
-        currentIndex = 0,
-        onNavigateUp = { },
-        onComplete = { }
-    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // Top Bar
+        OrganizeTopBar(
+            currentIndex = if (items.isNotEmpty()) pagerState.currentPage + 1 else 0,
+            totalCount = items.size,
+            onNavigateUp = { },
+            onComplete = { }
+        )
+
+        // Mode Toggle (한장씩 선택된 상태)
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            OrganizeModeToggle(
+                currentMode = organizeMode,
+                onModeChange = {
+                    organizeMode = it
+                }
+            )
+        }
+
+        // 한장씩 모드 콘텐츠
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                key = { index -> items.getOrNull(index)?.id ?: index },
+                pageSpacing = 12.dp,
+                contentPadding = PaddingValues(horizontal = 60.dp)
+            ) { page ->
+                items.getOrNull(page)?.let { screenshot ->
+                    OrganizeImageCard(
+                        screenshot = screenshot,
+                        isCurrentPage = page == pagerState.currentPage,
+                        onFavoriteToggle = { _ -> },
+                        onDelete = { }
+                    )
+                }
+            }
+        }
+
+        // 하단 태그 영역
+        OrganizeBottomControls()
+    }
 }
 
 @Preview(showBackground = true)
@@ -444,36 +536,4 @@ fun OrganizeStackedCardsPreview() {
         screenshots = mockScreenshots,
         onFavoriteToggle = { _, _ -> }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun OrganizeBatchBottomControlsPreview() {
-    OrganizeBottomControls()
-}
-
-@Preview(showBackground = true, heightDp = 80)
-@Composable
-fun TagChipPreview() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(16.dp)
-    ) {
-        TagChip(
-            text = "소원",
-            isSelected = true,
-            onClick = { }
-        )
-        TagChip(
-            text = "여행",
-            isSelected = false,
-            onClick = { }
-        )
-        TagChip(
-            text = "태그 추가 +",
-            isSelected = false,
-            isAddButton = true,
-            onClick = { }
-        )
-    }
 }

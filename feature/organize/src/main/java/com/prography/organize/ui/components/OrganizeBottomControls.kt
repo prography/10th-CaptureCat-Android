@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prography.organize.ui.TagChip
 import com.prography.ui.theme.Text01
+import com.prography.ui.theme.Text03
+import com.prography.ui.theme.caption02Regular
 import com.prography.ui.theme.subhead01Bold
 
 data class TagItem(
@@ -37,6 +39,9 @@ fun OrganizeBottomControls(
     )
 
     val actualTags = if (tags.isEmpty()) defaultTags else tags
+    // 선택된 태그 개수 계산
+    val selectedCount = actualTags.count { it.isSelected }
+
     // 태그 추가 버튼을 마지막에 추가
     val allTags = actualTags + TagItem("add", "태그 추가 +", false, true)
 
@@ -46,12 +51,25 @@ fun OrganizeBottomControls(
             .background(Color.White)
             .padding(top = 20.dp, bottom = 26.dp, start = 16.dp, end = 16.dp)
     ) {
-        Text(
-            text = "최근 추가한 태그",
-            style = subhead01Bold,
-            color = Text01,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
+        // 제목과 개수 제한 표시
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "최근 추가한 태그",
+                style = subhead01Bold,
+                color = Text01
+            )
+
+            Text(
+                text = "태그는 최대 4개까지 지정할 수 있어요",
+                style = caption02Regular,
+                color = Text03
+            )
+        }
 
         // FlowRow로 완전히 wrap 크기의 태그들 표시 (최대 2줄)
         FlowRow(
@@ -76,6 +94,11 @@ fun OrganizeBottomControls(
                         if (tag.isAddButton) {
                             onAddTag()
                         } else {
+                            // 최대 4개 제한 체크
+                            if (!tag.isSelected && selectedCount >= 4) {
+                                // 이미 4개가 선택되어 있으면 선택 불가
+                                return@TagChip
+                            }
                             onTagToggle(tag.id)
                         }
                     }
@@ -96,12 +119,12 @@ fun OrganizeBottomControlsPreview() {
 @Composable
 fun OrganizeBottomControlsWidePreview() {
     val customTags = listOf(
-        TagItem("1", "긴 태그 이름", true),
-        TagItem("2", "짧은", false),
-        TagItem("3", "매우 긴 태그 이름이어서 길게 표시될 것", false),
-        TagItem("4", "중간", true),
-        TagItem("5", "UI", false),
-        TagItem("6", "디자인", true)
+        TagItem("1", "소원", true),
+        TagItem("2", "여행", true),
+        TagItem("3", "레퍼런스", true),
+        TagItem("4", "다이소", true), // 4개 선택된 상태
+        TagItem("5", "쇼핑", false),
+        TagItem("6", "음식", false)
     )
 
     OrganizeBottomControls(

@@ -37,7 +37,11 @@ import com.prography.ui.R
 
 @Composable
 fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
         Text(
             text = "나중에 하기",
             fontSize = 14.sp,
@@ -87,7 +91,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
             Button(
                 onClick = { onAction(LoginAction.ClickGoogle) },
                 modifier = Modifier
-                    .border(1.dp, Color(0xFF747775),shape = RoundedCornerShape(size = 4.dp))
+                    .border(1.dp, Color(0xFF747775), shape = RoundedCornerShape(size = 4.dp))
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(4.dp),

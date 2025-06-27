@@ -54,7 +54,7 @@ fun OrganizeTopBar(
                     .clickable { onNavigateUp() }
             )
             Text(
-                text = if (currentIndex == 0) "태그하기" else "태그하기 $currentIndex/$totalCount",
+                text = if (currentIndex == 0) "태그하기 ${totalCount}장" else "태그하기 $currentIndex/$totalCount",
                 style = headline03Bold,
                 color = Text01
             )
