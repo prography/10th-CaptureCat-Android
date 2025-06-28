@@ -60,7 +60,7 @@ fun ScreenshotOrganizeContent(
                     Box(
                         modifier = Modifier
                             .border(
-                                width = if (screenshot.isSelected) 3.dp else 2.dp,
+                                width = 2.dp,
                                 color = if (screenshot.isSelected) Primary else Gray04
                             )
                             .fillMaxWidth()
