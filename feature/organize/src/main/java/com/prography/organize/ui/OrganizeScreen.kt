@@ -3,6 +3,7 @@ package com.prography.organize.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -328,7 +329,10 @@ fun OrganizeModeToggle(
         // 한번에 버튼
         Box(
             modifier = Modifier
-                .clickable { onModeChange(OrganizeMode.BATCH) }
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onModeChange(OrganizeMode.BATCH) }
                 .then(
                     if (currentMode == OrganizeMode.BATCH) {
                         Modifier.shadow(
@@ -357,7 +361,10 @@ fun OrganizeModeToggle(
         // 한장씩 버튼
         Box(
             modifier = Modifier
-                .clickable { onModeChange(OrganizeMode.SINGLE) }
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onModeChange(OrganizeMode.SINGLE) }
                 .then(
                     if (currentMode == OrganizeMode.SINGLE) {
                         Modifier.shadow(
