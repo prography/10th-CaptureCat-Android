@@ -30,8 +30,6 @@ fun AppNavGraph(
                     }
                 }
                 is NavigationEvent.Up -> navController.popBackStack()
-                is NavigationEvent.TopLevelTo -> { /* 탭 이동 처리 */ }
-                is NavigationEvent.BottomBarTo -> { /* 바텀 이동 처리 */ }
             }
         }
     }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.*
@@ -55,12 +56,12 @@ class MainActivity : ComponentActivity() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(WindowInsets.navigationBars.asPaddingValues())
+                        .navigationBarsPadding()
                 ) {
-                    if (startDestination != null) {
+                    startDestination?.let {
                         AppNavGraph(
                             navigationHelper = navigationHelper,
-                            startDestination = startDestination!!
+                            startDestination = it
                         )
                         GlobalUiHandler()
                     }

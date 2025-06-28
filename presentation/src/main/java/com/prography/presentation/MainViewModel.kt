@@ -3,6 +3,8 @@ package com.prography.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.repository.UserPreferenceRepository
+import com.prography.domain.usecase.user.GetOnboardingShownUseCase
+import com.prography.domain.usecase.user.SetOnboardingShownUseCase
 import com.prography.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val getOnboardingShownUseCase: GetOnboardingShownUseCase,
+    private val setOnboardingShownUseCase: SetOnboardingShownUseCase,
     private val userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
 
@@ -24,7 +28,7 @@ class MainViewModel @Inject constructor(
 
     fun initChecking() {
         viewModelScope.launch {
-            val isOnboardingShown = userPreferenceRepository.isOnboardingShown.first()
+            val isOnboardingShown = getOnboardingShownUseCase.invoke().first()
             val accessToken = userPreferenceRepository.accessToken.first()
 
             _startDestination.value  = when {
