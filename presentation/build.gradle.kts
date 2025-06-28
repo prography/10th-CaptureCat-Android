@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:organize"))
+    implementation(project(":feature:start"))
 
     implementation(libs.splashscreen)
 }

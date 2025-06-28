@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.android.start.StartRoute
+import com.android.start.ScreenshotItem
 import com.prography.auth.route.navigation.LoginRoute
 import com.prography.home.route.MainRoute
 import com.prography.navigation.AppRoute
@@ -40,6 +42,9 @@ fun AppNavGraph(
         }
         composable<AppRoute.Login> {
             LoginRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.Start> {
+            StartRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.Main> {
             MainRoute(navigationHelper = navigationHelper)
