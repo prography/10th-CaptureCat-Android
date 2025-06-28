@@ -18,5 +18,5 @@
     <string name="home_empty_screenshot_info">저장된 스크린샷이 없어요\n스크린샷을 저장하고 관리해보세요!</string>
     <string name="home_screenshot_save">스크린샷 저장하기</string>
 
-    <string name="organize_count_message">%d건의 스크린샷을\n정리해보세요</string>
+    <string name="organize_count_message">%d장의 스크린샷이 있어요</string>
 </resources>

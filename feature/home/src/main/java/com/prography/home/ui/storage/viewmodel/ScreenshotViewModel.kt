@@ -24,7 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
     private val app: Application,
-    private val deletedScreenshotRepository: DeletedScreenshotRepository,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
@@ -41,7 +40,6 @@ class ScreenshotViewModel @Inject constructor(
 
     private fun loadScreenshots() {
         viewModelScope.launch(Dispatchers.IO) {
-            val deletedFileNames = deletedScreenshotRepository.getDeletedFileNames().toSet()
             val items = mutableListOf<ScreenshotItem>()
             val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
@@ -64,9 +62,6 @@ class ScreenshotViewModel @Inject constructor(
                     val id = it.getLong(idCol)
                     val dateSeconds = it.getLong(dateCol)
                     val fileName = it.getString(nameCol)
-
-                    // 삭제된 파일은 제외
-                    if (fileName in deletedFileNames) continue
 
                     val uriItem = ContentUris.withAppendedId(uri, id)
                     val dateStr = dateFormat.format(Date(dateSeconds * 1000))
@@ -118,16 +113,22 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
+            ScreenshotAction.ShowDeleteDialog -> {
+                updateState { copy(showDeleteDialog = true) }
+            }
+
             ScreenshotAction.SelectAll -> {
                 val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
                     list.map { it.copy(isSelected = true) }
                 }
+                val isAllSelected = updated.values.flatten().all { it.isSelected }
+
                 updateState {
                     copy(
                         groupedScreenshots = updated,
                         selectedCount = currentState.totalCount,
                         isSelectionMode = true,
-                        isAllSelected = true
+                        isAllSelected = isAllSelected
                     )
                 }
             }
@@ -158,7 +159,6 @@ class ScreenshotViewModel @Inject constructor(
                     val fileNames = selectedItems.mapNotNull { it.fileName }
 
                     if (fileNames.isNotEmpty()) {
-                        deletedScreenshotRepository.addDeletedScreenshots(fileNames)
                         showToast("선택된 스크린샷이 삭제되었습니다")
                     }
 
@@ -211,6 +211,10 @@ class ScreenshotViewModel @Inject constructor(
                         isAllSelected = false
                     )
                 }
+            }
+
+            ScreenshotAction.RefreshScreenshots -> {
+                // loadScreenshots()
             }
         }
     }
