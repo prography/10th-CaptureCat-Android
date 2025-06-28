@@ -47,30 +47,7 @@ fun ScreenshotOrganizeContent(
                 selectedCount = state.selectedCount,
                 totalCount = state.groupedScreenshots.values.flatten().size,
                 isAllSelected = state.isAllSelected,
-                onAction = { action ->
-                    when (action) {
-                        ScreenshotAction.SelectAll -> {
-                            val updatedScreenshots = state.groupedScreenshots.values.flatten()
-                                .map { it.copy(isSelected = true) }
-
-                            val updatedState = ScreenshotState(
-                                groupedScreenshots = mapOf("" to updatedScreenshots),
-                                totalCount = updatedScreenshots.size,
-                                selectedCount = updatedScreenshots.size,
-                                isAllSelected = true
-                            )
-                        }
-
-                        ScreenshotAction.DeleteSelected -> {
-                            val selectedItemCount = state.selectedCount
-                            if (selectedItemCount > 0) {
-                                onAction(ScreenshotAction.ShowDeleteDialog)
-                            }
-                        }
-
-                        else -> onAction(action)
-                    }
-                }
+                onAction = { onAction(it) }
             )
 
             LazyVerticalGrid(
