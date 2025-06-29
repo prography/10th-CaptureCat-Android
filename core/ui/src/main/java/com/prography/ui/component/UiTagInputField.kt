@@ -67,18 +67,26 @@ fun TagInputField(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                val fixedHeight = 38.dp // 원하는 고정 높이
+
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
-                    textStyle = body02Regular.copy(color = Text02),
+                    textStyle = body02Regular,
                     decorationBox = { innerTextField ->
-                        Box(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(fixedHeight),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholder,
                                     color = Text03,
-                                    style = body02Regular
+                                    style = body02Regular,
+                                    maxLines = 1
                                 )
                             }
                             innerTextField()
@@ -88,6 +96,7 @@ fun TagInputField(
                         .weight(1f)
                         .align(Alignment.CenterVertically)
                 )
+
 
                 if (value.isNotEmpty()) {
                     IconButton(onClick = onClear) {
@@ -114,12 +123,6 @@ fun TagInputField(
                     style = caption02Regular
                 )
             }
-
-            Text(
-                text = counterText,
-                color = Text02,
-                style = body02Regular
-            )
         }
     }
 }

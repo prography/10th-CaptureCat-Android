@@ -23,9 +23,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.components.*
+import com.prography.organize.ui.viewmodel.OrganizeViewModel
 import com.prography.ui.theme.Gray03
 import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Primary
@@ -158,12 +160,17 @@ fun OrganizeScreen(
     screenshots: List<OrganizeScreenshotItem>,
     currentIndex: Int = 0,
     onNavigateUp: () -> Unit,
-    onComplete: () -> Unit
+    onComplete: () -> Unit,
+    viewModel: OrganizeViewModel = hiltViewModel()
 ) {
+
+    val tagItems by viewModel.tagItems.collectAsState()
     var items by remember { mutableStateOf(screenshots) }
     var organizeMode by remember { mutableStateOf(OrganizeMode.BATCH) } // 디폴트: 한번에
     val pagerState = rememberPagerState(initialPage = currentIndex) { items.size }
     val coroutineScope = rememberCoroutineScope()
+
+    var showAddTagBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(screenshots) {
         if (items != screenshots && screenshots.isNotEmpty()) {
@@ -292,7 +299,20 @@ fun OrganizeScreen(
                 }
             }
         }
-        OrganizeBottomControls()
+        OrganizeBottomControls(
+            tags = tagItems,
+            onTagToggle = viewModel::toggleTag,
+            onAddTag = { showAddTagBottomSheet = true }
+        )
+    }
+    if (showAddTagBottomSheet) {
+        TagAddBottomSheet(
+            onAdd = { tagName ->
+                viewModel.addTag(tagName)
+                showAddTagBottomSheet = false
+            },
+            onDismiss = { showAddTagBottomSheet = false }
+        )
     }
 }
 

@@ -12,6 +12,8 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.common.GlobalUiManager
+import com.prography.ui.common.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -103,6 +105,10 @@ class ScreenshotViewModel @Inject constructor(
                 }
                 val flat = updated.values.flatten()
                 val count = flat.count { it.isSelected }
+                if (count > 20) {
+                    showToast("최대 20장까지 선택할 수 있어요.")
+                    return // 더 이상 처리하지 않음
+                }
                 updateState {
                     copy(
                         groupedScreenshots = updated,
@@ -118,17 +124,20 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.SelectAll -> {
+                val totalCount = currentState.totalCount
+                if (totalCount > 20) {
+                    showToast("최대 20장까지 선택할 수 있어요.")
+                    return // 초과 시 선택 중단
+                }
                 val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
                     list.map { it.copy(isSelected = true) }
                 }
-                val isAllSelected = updated.values.flatten().all { it.isSelected }
-
                 updateState {
                     copy(
                         groupedScreenshots = updated,
-                        selectedCount = currentState.totalCount,
+                        selectedCount = totalCount,
                         isSelectionMode = true,
-                        isAllSelected = isAllSelected
+                        isAllSelected = true
                     )
                 }
             }
