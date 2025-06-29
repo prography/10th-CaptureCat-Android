@@ -34,6 +34,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.prography.ui.theme.Gray06
+import com.prography.ui.theme.Gray09
+import com.prography.ui.theme.caption01SemiBold
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -83,19 +86,13 @@ fun BottomNavigationBar(
                 Icon(
                     painter = painterResource(id = if (selected) item.selectedIcon else item.unselectedIcon),
                     contentDescription = stringResource(item.title),
-                    tint = Color.Black
+                    tint = Color.Unspecified
                 )
 
                 Text(
                     text = stringResource(item.title),
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        lineHeight = 16.sp,
-                        fontFamily = FontFamily(Font(com.prography.ui.R.font.pretendard_medium)),
-                        fontWeight = FontWeight(500),
-                        color = Color(0xFF000000),
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = caption01SemiBold,
+                    color = if (selected) Gray09 else Gray06,
                     modifier = Modifier.padding(top = 2.dp) // 아주 작은 간격만 유지
                 )
             }
