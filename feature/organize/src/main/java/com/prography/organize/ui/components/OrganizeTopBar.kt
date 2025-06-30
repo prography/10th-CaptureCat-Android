@@ -25,6 +25,7 @@ import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.headline03Bold
 import com.prography.ui.theme.headline03Regular
+import com.prography.ui.theme.subhead01Bold
 
 @Composable
 fun OrganizeTopBar(
@@ -54,7 +55,7 @@ fun OrganizeTopBar(
                     .clickable { onNavigateUp() }
             )
             Text(
-                text = if (currentIndex == 0) "태그하기 ${totalCount}장" else "태그하기 $currentIndex/$totalCount",
+                text = if (currentIndex == 0) "태그하기 ${totalCount}" else "태그하기 $currentIndex/$totalCount",
                 style = headline03Bold,
                 color = Text01
             )
@@ -63,11 +64,12 @@ fun OrganizeTopBar(
         // 완료 버튼
         Text(
             text = "저장",
-            style = headline03Regular,
+            style = subhead01Bold,
             color = Primary,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .clickable { onComplete() }
+                .padding(vertical = 8.dp, horizontal = 14.dp)
         )
     }
 }

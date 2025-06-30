@@ -1,5 +1,6 @@
 package com.prography.organize.ui.components
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -53,14 +54,20 @@ fun OrganizeImageCard(
 
     val deleteAlpha by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
-        animationSpec = tween(300),
+        animationSpec = tween(
+            durationMillis = 300,   // 300~500 정도 추천
+            easing = LinearOutSlowInEasing // 초반 빠르고 끝은 부드럽게 감속
+        ),
         label = "deleteAlpha"
     )
 
     // 페이지 전환 애니메이션
     val pageScale by animateFloatAsState(
-        targetValue = if (isCurrentPage) 1f else 0.85f,
-        animationSpec = tween(300),
+        targetValue = if (isCurrentPage) 1f else 0.8f,
+        animationSpec = tween(
+            durationMillis = 300,   // 300~500 정도 추천
+            easing = LinearOutSlowInEasing // 초반 빠르고 끝은 부드럽게 감속
+        ),
         label = "pageScale"
     )
 
@@ -87,11 +94,9 @@ fun OrganizeImageCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(0.65f)
-                .offset(y = 42.dp)
                 .graphicsLayer {
                     translationY = offsetY
                     alpha = deleteAlpha * if (isCurrentPage) 1f else 0.5f
-                    scaleX = pageScale * deleteScale
                     scaleY = pageScale * deleteScale
                 }
                 .pointerInput(Unit) {

@@ -97,10 +97,7 @@ fun OrganizeStackedCards(
     val screenshot = screenshots.firstOrNull() ?: return
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 34.dp),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
         // 🔹 뒤 배경용 그라디언트 카드
         Card(
@@ -209,11 +206,12 @@ fun OrganizeScreen(
             )
         }
 
-        // Content based on mode
+        Spacer(modifier = Modifier.height(12.dp))
+
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth().padding(top = 17.dp)
         ) {
             when (organizeMode) {
                 OrganizeMode.BATCH -> {
@@ -243,8 +241,8 @@ fun OrganizeScreen(
                             state = pagerState,
                             modifier = Modifier.fillMaxSize(),
                             key = { index -> items.getOrNull(index)?.id ?: index },
-                            pageSpacing = 16.dp,
-                            contentPadding = PaddingValues(horizontal = 60.dp)
+                            pageSpacing = 12.dp,
+                            contentPadding = PaddingValues(horizontal = 50.dp)
                         ) { page ->
                             items.getOrNull(page)?.let { screenshot ->
                                 OrganizeImageCard(
@@ -299,11 +297,21 @@ fun OrganizeScreen(
                 }
             }
         }
-        OrganizeBottomControls(
-            tags = tagItems,
-            onTagToggle = viewModel::toggleTag,
-            onAddTag = { showAddTagBottomSheet = true }
-        )
+
+        Spacer(modifier = Modifier.height(26.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 122.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            OrganizeBottomControls(
+                tags = tagItems,
+                onTagToggle = viewModel::toggleTag,
+                onAddTag = { showAddTagBottomSheet = true }
+            )
+        }
     }
     if (showAddTagBottomSheet) {
         TagAddBottomSheet(
@@ -509,7 +517,6 @@ fun OrganizeScreenSingleModePreview() {
         // 한장씩 모드 콘텐츠
         Box(
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth()
         ) {
             HorizontalPager(
@@ -517,7 +524,7 @@ fun OrganizeScreenSingleModePreview() {
                 modifier = Modifier.fillMaxSize(),
                 key = { index -> items.getOrNull(index)?.id ?: index },
                 pageSpacing = 12.dp,
-                contentPadding = PaddingValues(horizontal = 60.dp)
+                contentPadding = PaddingValues(horizontal = 50.dp)
             ) { page ->
                 items.getOrNull(page)?.let { screenshot ->
                     OrganizeImageCard(
