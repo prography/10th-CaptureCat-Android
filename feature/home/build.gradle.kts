@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":core:domain"))
 
     implementation(libs.android.permissions)
+    implementation(libs.coil.compose)
 }
