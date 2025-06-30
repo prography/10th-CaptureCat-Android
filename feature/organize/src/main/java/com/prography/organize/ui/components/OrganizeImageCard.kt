@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -123,7 +124,11 @@ fun OrganizeImageCard(
         ) {
             Box(
                 modifier = Modifier
-                    .border(width = 1.dp, color = Color(0x0D001758), shape = RoundedCornerShape(size = 26.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0x0D001758),
+                        shape = RoundedCornerShape(size = 26.dp)
+                    )
                     .fillMaxSize()
                     .clip(RoundedCornerShape(26.dp))
             ) {
@@ -132,6 +137,25 @@ fun OrganizeImageCard(
                     contentDescription = "스크린샷",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
+                )
+
+                Icon(
+                    painter = painterResource(
+                        if (screenshot.isFavorite) {
+                            com.prography.ui.R.drawable.ic_favorite_checked
+                        } else {
+                            com.prography.ui.R.drawable.ic_favorite_unchecked
+                        }
+                    ),
+                    contentDescription = if (screenshot.isFavorite) "즐겨찾기 해제" else "즐겨찾기 추가",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                        .size(24.dp)
+                        .clickable {
+                            onFavoriteToggle(!screenshot.isFavorite)
+                        }
                 )
 
                 // 삭제 표시 gradient 오버레이
