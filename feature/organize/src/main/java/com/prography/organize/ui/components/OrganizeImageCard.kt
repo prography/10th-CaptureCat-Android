@@ -7,6 +7,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitDragOrCancellation
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.awaitVerticalDragOrCancellation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +39,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.prography.organize.R
 import com.prography.organize.model.OrganizeScreenshotItem
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 
 @Composable
 fun OrganizeImageCard(
@@ -101,24 +108,31 @@ fun OrganizeImageCard(
                     scaleY = pageScale * deleteScale
                 }
                 .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { isDragging = true },
-                        onDragEnd = {
+                    awaitEachGesture {
+                        val down = awaitFirstDown()
+
+                        // 가로보다 세로가 더 큰 경우만 우리가 처리
+                        val drag = awaitDragOrCancellation(down.id)
+                        if (drag != null && abs(drag.positionChange().y) > abs(drag.positionChange().x)) {
+                            isDragging = true
+                            var currentY = offsetY
+                            while (true) {
+                                val event = awaitDragOrCancellation(down.id) ?: break
+                                val delta = event.positionChange().y
+                                currentY += delta
+                                if (currentY > 0f) currentY = 0f
+                                offsetY = currentY
+                            }
+                            isDragging = false
                             if (offsetY < deleteThreshold && !isDeleting) {
                                 isDeleting = true
                             } else {
                                 offsetY = 0f
                             }
-                            isDragging = false
-                        }
-                    ) { _, dragAmount ->
-                        if (!isDeleting) {
-                            offsetY += dragAmount.y
-                            // 아래로 드래그는 제한
-                            if (offsetY > 0) offsetY = 0f
                         }
                     }
-                },
+                }
+            ,
             shape = RoundedCornerShape(26.dp),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
