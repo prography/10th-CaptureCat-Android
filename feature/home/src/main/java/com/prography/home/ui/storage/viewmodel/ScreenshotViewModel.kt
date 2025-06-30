@@ -2,18 +2,13 @@ package com.prography.home.ui.storage.viewmodel
 
 import android.app.Application
 import android.content.ContentUris
-import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.prography.domain.repository.DeletedScreenshotRepository
 import com.prography.home.ui.storage.contract.*
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
-import com.prography.ui.common.GlobalUiManager
-import com.prography.ui.common.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

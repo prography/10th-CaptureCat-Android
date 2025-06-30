@@ -5,24 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.prography.database.dao.BookmarkPhotoDao
-import com.prography.database.dao.DeletedScreenshotDao
-import com.prography.database.model.DeletedScreenshotEntity
-import com.prography.database.model.PhotoLocalModel
+import com.prography.database.dao.ScreenshotDao
+import com.prography.database.model.ScreenshotEntity
 import com.prography.database.util.Converters
 
 @Database(
     entities = [
-        PhotoLocalModel::class,
-        DeletedScreenshotEntity::class
+        ScreenshotEntity::class
     ],
     version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun bookmarkPhotoDao(): BookmarkPhotoDao
-    abstract fun deletedScreenshotDao(): DeletedScreenshotDao
+    abstract fun screenshotDao(): ScreenshotDao
 
     companion object {
         @Volatile
