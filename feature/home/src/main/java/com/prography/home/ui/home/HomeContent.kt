@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.ui.tooling.preview.Preview
+import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
 
 @Composable
@@ -63,43 +64,10 @@ fun HomeContent(
             }
         }
 
-        // Favorite HorizontalPager
-        if (state.screenshots.any { it.isFavorite }) {
-            item {
-                val pagerState = rememberPagerState(
-                    pageCount = { state.screenshots.count { it.isFavorite } }
-                )
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    pageSpacing = 16.dp,
-                    contentPadding = PaddingValues(horizontal = 50.dp)
-                ) { page ->
-                    val screenshot = state.screenshots.filter { it.isFavorite }[page]
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(0.65f)
-                            .border(
-                                width = 1.dp,
-                                color = Color(0x0D001758),
-                                shape = RoundedCornerShape(size = 16.dp)
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.LightGray),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(screenshot.uri),
-                            contentDescription = screenshot.appName,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-            }
+        item {
+            FavoriteCardDeck(
+                screenshots = state.screenshots
+            )
         }
 
         // Sticky Filter Chips
@@ -171,7 +139,7 @@ fun ScreenshotItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 6.dp, bottom = 6.dp)
+                .padding(start = 12.dp, bottom = 9.dp)
         ) {
             screenshot.tags.forEach { tag ->
                 Text(
@@ -179,7 +147,7 @@ fun ScreenshotItem(
                     style = caption01SemiBold,
                     color = Color.White,
                     modifier = Modifier
-                        .background(Color(0x66000000), RoundedCornerShape(6.dp))
+                        .background(Color(0x66000000), RoundedCornerShape(4.5.dp))
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 )
             }
