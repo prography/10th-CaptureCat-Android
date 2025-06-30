@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.component.ButtonState
 import com.prography.ui.component.UiPrimaryButton
+import com.prography.ui.component.UiTagChip
 import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Gray06
 import com.prography.ui.theme.Primary
@@ -85,7 +86,7 @@ fun StartTagScreen(
             ) {
                 tagOptions.forEach { tag ->
                     val isSelected = tag in selectedTags
-                    TagChip(
+                    UiTagChip(
                         text = tag,
                         isSelected = isSelected,
                         onClick = {
@@ -121,58 +122,6 @@ fun StartTagScreen(
         }
     }
 }
-
-@Composable
-fun TagChip(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    // 색상 애니메이션
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) Primary else PureWhite,
-        animationSpec = tween(durationMillis = 250)
-    )
-    val borderColor by animateColorAsState(
-        targetValue = if (isSelected) Color.Transparent else Gray04,
-        animationSpec = tween(durationMillis = 250)
-    )
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) PureWhite else Text01,
-        animationSpec = tween(durationMillis = 250)
-    )
-
-    val fontWeight by animateIntAsState(
-        targetValue = if (isSelected) FontWeight.Bold.weight else FontWeight.Normal.weight,
-        animationSpec = tween(250)
-    )
-
-    Box(
-        modifier = Modifier
-            .border(
-                width = if (isSelected) 0.dp else 1.5.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .background(color = backgroundColor, shape = RoundedCornerShape(20.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onClick()
-            }
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            fontWeight = FontWeight(fontWeight),
-            style = if (isSelected) subhead02Bold else body02Regular,
-            color = textColor
-        )
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable

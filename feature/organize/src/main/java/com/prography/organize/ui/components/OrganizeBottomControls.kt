@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prography.organize.ui.TagChip
+import com.prography.ui.component.UiTagChip
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.caption02Regular
@@ -86,23 +86,27 @@ fun OrganizeBottomControls(
             }
 
             displayTags.forEach { tag ->
-                TagChip(
-                    text = tag.text,
-                    isSelected = tag.isSelected,
-                    isAddButton = tag.isAddButton,
-                    onClick = {
-                        if (tag.isAddButton) {
-                            onAddTag()
-                        } else {
+                if (tag.isAddButton) {
+                    // 태그 추가 버튼은 별도 스타일로 표시
+                    UiTagChip(
+                        text = tag.text,
+                        isSelected = false, // 추가 버튼은 항상 비선택 상태
+                        onClick = { onAddTag() }
+                    )
+                } else {
+                    UiTagChip(
+                        text = tag.text,
+                        isSelected = tag.isSelected,
+                        onClick = {
                             // 최대 4개 제한 체크
                             if (!tag.isSelected && selectedCount >= 4) {
                                 // 이미 4개가 선택되어 있으면 선택 불가
-                                return@TagChip
+                                return@UiTagChip
                             }
                             onTagToggle(tag.id)
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }

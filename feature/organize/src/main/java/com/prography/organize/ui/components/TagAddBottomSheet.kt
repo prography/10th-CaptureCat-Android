@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -27,8 +26,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.prography.organize.ui.TagChip
 import com.prography.ui.component.TagInputField
+import com.prography.ui.component.UiPrimaryButton
+import com.prography.ui.component.ButtonState
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.caption02Regular
@@ -87,14 +87,14 @@ fun TagAddBottomSheet(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
+            UiPrimaryButton(
+                text = "완료",
                 onClick = {
                     if (text.isNotBlank()) onAdd(text)
                 },
+                state = if (text.isNotBlank()) ButtonState.Enabled else ButtonState.Disabled,
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("완료")
-            }
+            )
         }
     }
 }

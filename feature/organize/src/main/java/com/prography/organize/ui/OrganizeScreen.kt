@@ -28,6 +28,7 @@ import coil3.compose.AsyncImage
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.components.*
 import com.prography.organize.ui.viewmodel.OrganizeViewModel
+import com.prography.ui.component.UiTagChip
 import com.prography.ui.theme.Gray03
 import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Primary
@@ -39,53 +40,6 @@ import kotlinx.coroutines.launch
 enum class OrganizeMode {
     BATCH,      // 한번에
     SINGLE      // 한장씩
-}
-
-@Composable
-fun TagChip(
-    text: String,
-    isSelected: Boolean,
-    isAddButton: Boolean = false,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .then(
-                if (!isSelected) {
-                    Modifier.border(
-                        width = 1.5.dp,
-                        color = Gray04,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .background(
-                color = when {
-                    isSelected -> Primary
-                    else -> Color.Transparent
-                },
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = when {
-                isSelected -> subhead02Bold
-                else -> body02Regular
-            },
-            color = when {
-                isSelected -> Color.White
-                else -> Color.Black
-            },
-            maxLines = 1, // 한 줄로 제한
-            overflow = TextOverflow.Ellipsis // 긴 텍스트는 ... 처리
-        )
-    }
 }
 
 @Composable
@@ -211,7 +165,8 @@ fun OrganizeScreen(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth().padding(top = 17.dp)
+                .fillMaxWidth()
+                .padding(top = 17.dp)
         ) {
             when (organizeMode) {
                 OrganizeMode.BATCH -> {
