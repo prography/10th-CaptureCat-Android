@@ -2,9 +2,11 @@ package com.prography.data.di
 
 import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.local.ScreenshotLocalDataSourceImpl
+import com.prography.data.local.repository.AuthRepositoryImpl
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
 import com.prography.database.dao.ScreenshotDao
 import com.prography.datastore.user.UserPreferenceDataStore
+import com.prography.domain.repository.AuthRepository
 import com.prography.domain.repository.UserPreferenceRepository
 import dagger.Module
 import dagger.Provides
@@ -21,6 +23,13 @@ object RepositoryModule {
     fun provideUserPreferenceRepository(
         userPreferenceDataStore: UserPreferenceDataStore
     ): UserPreferenceRepository = UserPreferenceRepositoryImpl(userPreferenceDataStore)
+
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        userPreferenceDataStore: UserPreferenceDataStore
+    ): AuthRepository = AuthRepositoryImpl(userPreferenceDataStore)
 
     @Provides
     fun provideLocalDataSource(

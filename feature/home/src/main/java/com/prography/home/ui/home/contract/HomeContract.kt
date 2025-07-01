@@ -6,6 +6,7 @@ import com.prography.domain.model.UiScreenshotModel
 sealed class HomeAction {
     object LoadScreenshots : HomeAction()
     data class SelectTag(val tag: String) : HomeAction()
+    object NavigateToSettings : HomeAction()
 }
 
 // Define Effects

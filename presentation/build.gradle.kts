@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:organize"))
     implementation(project(":feature:start"))
+    implementation(project(":feature:setting"))
 
     implementation(libs.splashscreen)
 }

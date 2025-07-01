@@ -14,6 +14,8 @@ import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.onboarding.navigation.OnboardingRoute
 import com.prography.organize.navigation.OrganizeRoute
+import com.prography.setting.route.SettingRoute
+import com.prography.setting.route.WithdrawRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -55,6 +57,12 @@ fun AppNavGraph(
                 navigationHelper = navigationHelper,
                 screenshotIds = organize.screenshotIds
             )
+        }
+        composable<AppRoute.SettingRoute.Setting> {
+            SettingRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.SettingRoute.Withdraw> {
+            WithdrawRoute(navigationHelper = navigationHelper)
         }
     }
 }
