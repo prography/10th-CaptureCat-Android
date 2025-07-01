@@ -53,7 +53,7 @@ fun SettingContent(
             )
         }
 
-        if (!state.isLoggedIn) {
+        if (state.isLoggedIn) {
             MemberSettingContent(onAction = onAction)
         } else {
             GuestSettingContent(onAction = onAction)
