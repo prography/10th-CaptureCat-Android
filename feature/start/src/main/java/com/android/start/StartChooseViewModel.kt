@@ -22,6 +22,10 @@ class StartChooseViewModel @Inject constructor(
     // 선택된 스크린샷 리스트
     val selectedScreenshots = mutableStateListOf<ScreenshotItem>()
 
+    init {
+        loadScreenshots()
+    }
+
     /**
      * 선택된 스크린샷 추가/삭제.
      */
@@ -34,26 +38,6 @@ class StartChooseViewModel @Inject constructor(
     }
 
     /**
-     * 초기 데이터를 추가.
-     */
-    fun loadMockScreenshots() {
-        screenshots.clear()
-        screenshots.addAll(
-            listOf(
-                ScreenshotItem("1", "https://via.placeholder.com/150"),
-                ScreenshotItem("2", "https://via.placeholder.com/150"),
-                ScreenshotItem("3", "https://via.placeholder.com/150"),
-                ScreenshotItem("4", "https://via.placeholder.com/150"),
-                ScreenshotItem("5", "https://via.placeholder.com/150"),
-                ScreenshotItem("6", "https://via.placeholder.com/150"),
-                ScreenshotItem("7", "https://via.placeholder.com/150"),
-                ScreenshotItem("8", "https://via.placeholder.com/150"),
-                ScreenshotItem("9", "https://via.placeholder.com/150")
-            )
-        )
-    }
-
-    /**
      * 기기에서 실제 스크린샷 이미지를 로드합니다.
      */
     fun loadScreenshots() {
@@ -61,37 +45,41 @@ class StartChooseViewModel @Inject constructor(
             val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
                 MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DISPLAY_NAME
+                MediaStore.Images.Media.RELATIVE_PATH, // 더 정확한 위치 필터링
             )
-            val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
-            val selectionArgs = arrayOf("Screenshots")
+
             val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
             val items = mutableListOf<ScreenshotItem>()
 
-            val cursor = app.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
+            val cursor = app.contentResolver.query(uri, projection, null, null, sortOrder)
             cursor?.use {
                 val idCol = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-                val nameCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
+                val pathCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)
 
                 while (it.moveToNext()) {
                     val id = it.getLong(idCol)
-                    val fileName = it.getString(nameCol)
+                    val relativePath = it.getString(pathCol)
+
+                    // 경로에 "Screenshots"가 포함된 경우만 필터링 (더 범용적)
+                    if (!relativePath.contains("Screenshots", ignoreCase = true)) continue
+
                     val imageUri = ContentUris.withAppendedId(uri, id)
 
                     items.add(
                         ScreenshotItem(
                             id = id.toString(),
-                            uri = imageUri.toString(), // URI를 문자열로 저장
+                            uri = imageUri.toString()
                         )
                     )
                 }
             }
 
-            // 데이터를 UI에 반영
-            screenshots.clear()
-            screenshots.addAll(items)
+            // 메인 스레드에서 리스트 업데이트
+            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                screenshots.clear()
+                screenshots.addAll(items)
+            }
         }
     }
 }

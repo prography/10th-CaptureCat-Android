@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import com.prography.navigation.NavigationHelper
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
+import com.prography.util.permission.ScreenshotPermissionGate
 
 @Composable
 fun StartRoute(navigationHelper: NavigationHelper) {
@@ -20,11 +21,15 @@ fun StartRoute(navigationHelper: NavigationHelper) {
         }
         ScreenState.CHOOSE_SCREEN -> {
             // 선택 완료 후 캡처 스크린샷 관리 화면
-            StartChooseScreen(
-                maxSelectableImages = 10,
-                onFinishSelection = { selectedImages ->
-                    navigationHelper.navigate(
-                        NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedImages.map { it.id }))
+            ScreenshotPermissionGate(
+                onPermissionGranted = {
+                    StartChooseScreen(
+                        maxSelectableImages = 10,
+                        onFinishSelection = { selectedImages ->
+                            navigationHelper.navigate(
+                                NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedImages.map { it.id }))
+                            )
+                        }
                     )
                 }
             )

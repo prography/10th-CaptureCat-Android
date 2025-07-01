@@ -1,11 +1,8 @@
 package com.prography.home.ui.storage.screen
 
-import android.util.Log
 import androidx.compose.runtime.*
-import com.prography.home.ui.storage.permission.ScreenshotPermissionGate
+import com.prography.util.permission.ScreenshotPermissionGate
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
-import com.prography.navigation.NavigationEvent
-import com.prography.navigation.NavigationHelper
 
 @Composable
 fun ScreenshotGalleryScreen(
