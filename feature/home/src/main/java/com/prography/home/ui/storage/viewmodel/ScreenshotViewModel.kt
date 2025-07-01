@@ -156,30 +156,24 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.ConfirmDelete -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    val selectedItems = currentState.groupedScreenshots.values.flatten()
-                        .filter { it.isSelected }
+                val selectedItems = currentState.groupedScreenshots.values.flatten().filter { it.isSelected }
+                val deletedIds = selectedItems.map { it.id }
 
-                    val fileNames = selectedItems.mapNotNull { it.fileName }
+                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
+                    list.filterNot { it.id in deletedIds }
+                }
 
-                    if (fileNames.isNotEmpty()) {
-                        showToast("선택된 스크린샷이 삭제되었습니다")
-                    }
-
-                    // 다이얼로그 닫고 선택 해제
-                    updateState {
-                        copy(
-                            showDeleteDialog = false,
-                            selectedCount = 0,
-                            isSelectionMode = false,
-                            isAllSelected = false
-                        )
-                    }
-
-                    // 스크린샷 목록 다시 로드
-                    loadScreenshots()
+                updateState {
+                    copy(
+                        groupedScreenshots = updated,
+                        selectedCount = 0,
+                        isSelectionMode = false,
+                        isAllSelected = false,
+                        showDeleteDialog = false
+                    )
                 }
             }
+
 
             ScreenshotAction.DismissDeleteDialog -> {
                 updateState { copy(showDeleteDialog = false) }
@@ -218,7 +212,7 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.RefreshScreenshots -> {
-                // loadScreenshots()
+                loadScreenshots()
             }
         }
     }

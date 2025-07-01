@@ -1,5 +1,12 @@
 package com.prography.home.ui.storage.screen
 
+import android.app.Activity
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +35,7 @@ import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Gray04
 import coil3.compose.rememberAsyncImagePainter
+import com.prography.home.ui.storage.permission.DeleteHelper
 import com.prography.ui.theme.OverlayDim
 import com.prography.ui.theme.PureWhite
 import com.prography.ui.theme.subhead02Bold
@@ -38,7 +46,16 @@ fun ScreenshotOrganizeContent(
     state: ScreenshotState,
     onAction: (ScreenshotAction) -> Unit
 ) {
-    val context = LocalContext.current // Get context for ContentResolver
+
+    val context = LocalContext.current
+    val deleteLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Android 11 이상에서 삭제 성공한 경우 → 선택된 ID 기준 필터링
+            onAction(ScreenshotAction.ConfirmDelete)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -119,19 +136,17 @@ fun ScreenshotOrganizeContent(
         selectedCount = state.selectedCount,
         onDismiss = { onAction(ScreenshotAction.DismissDeleteDialog) },
         onConfirm = {
-            onAction(ScreenshotAction.ConfirmDelete)
-            // Implement deletion logic using ContentResolver
             val selectedItems = state.groupedScreenshots.values.flatten()
                 .filter { it.isSelected }
-            selectedItems.forEach { screenshot ->
-                try {
-                    context.contentResolver.delete(screenshot.uri, null, null)
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to delete file: ${screenshot.uri}")
+
+            DeleteHelper.deleteScreenshots(
+                context = context,
+                screenshots = selectedItems,
+                deleteLauncher = deleteLauncher,
+                onDeleteCompleted = { deletedIds ->
+                    onAction(ScreenshotAction.ConfirmDelete)
                 }
-            }
-            // Refresh screenshots
-            onAction(ScreenshotAction.RefreshScreenshots)
+            )
         }
     )
 }
