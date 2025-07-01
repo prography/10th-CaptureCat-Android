@@ -44,87 +44,15 @@ fun DeleteConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    if (isVisible) {
-        Dialog(onDismissRequest = onDismiss) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "삭제할까요?",
-                            style = headline02Bold,
-                            color = Text01,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = "${selectedCount}개의 항목을 삭제하시겠습니까?\n" +
-                                    "삭제된 항목 임시보관함에서 복구할 수 없습니다.",
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            style = body02Regular,
-                            color = Text02,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            TextButton(
-                                onClick = onDismiss,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                                    .background(
-                                        color = Gray02,
-                                        shape = RoundedCornerShape(6.dp)
-                                    )
-                            ) {
-                                Text(
-                                    text = "취소",
-                                    style = subhead02Bold,
-                                    color = Text03,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-
-                            TextButton(
-                                onClick = onConfirm,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                                    .background(
-                                        color = Primary,
-                                        shape = RoundedCornerShape(6.dp)
-                                    )
-                            ) {
-                                Text(
-                                    text = "삭제",
-                                    style = subhead02Bold,
-                                    color = PureWhite,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    UiCommonDialog(
+        isVisible = isVisible,
+        title = "삭제할까요?",
+        message = "${selectedCount}개의 항목을 삭제하시겠습니까?\n삭제된 항목은 복구할 수 없습니다.",
+        leftButtonText = "취소",
+        rightButtonText = "삭제",
+        onDismiss = onDismiss,
+        onConfirm = onConfirm
+    )
 }
 
 @Preview

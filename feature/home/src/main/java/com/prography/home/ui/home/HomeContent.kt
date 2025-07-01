@@ -3,6 +3,7 @@ package com.prography.home.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -59,7 +60,10 @@ fun HomeContent(
                 )
                 Image(
                     painter = painterResource(id = R.drawable.ic_profile),
-                    contentDescription = "프로필 아이콘"
+                    contentDescription = "프로필 아이콘",
+                    modifier = Modifier.clickable {
+                        onAction(HomeAction.NavigateToSettings)
+                    }
                 )
             }
         }

@@ -23,4 +23,13 @@ sealed interface AppRoute : Route {
 
     @Serializable
     data object Start : AppRoute
+
+    @Serializable
+    sealed interface SettingRoute : AppRoute {
+        @Serializable
+        data object Setting : SettingRoute
+
+        @Serializable
+        data object Withdraw : SettingRoute
+    }
 }

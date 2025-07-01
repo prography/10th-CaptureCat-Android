@@ -7,6 +7,9 @@ import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeEffect
 import com.prography.home.ui.home.contract.HomeState
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getScreenshotsUseCase: GetAllScreenshotsUseCase
+    private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
+    private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
 
     init {
@@ -27,6 +31,11 @@ class HomeViewModel @Inject constructor(
         when (action) {
             is HomeAction.LoadScreenshots -> loadScreenshots()
             is HomeAction.SelectTag -> selectTag(action.tag)
+            HomeAction.NavigateToSettings -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.SettingRoute.Setting)
+                )
+            }
         }
     }
 
