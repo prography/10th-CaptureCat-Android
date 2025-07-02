@@ -27,6 +27,7 @@ import com.prography.ui.theme.Gray08
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.body01Regular
+import com.prography.ui.theme.caption02Regular
 import com.prography.ui.theme.headline01Bold
 
 @Composable
@@ -37,7 +38,7 @@ fun OnboardingContent(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(16.dp)
+            .padding(top = 33.dp, start = 16.dp, end = 16.dp, bottom = 26.dp)
     )
     {
         Column(
@@ -91,7 +92,8 @@ fun OnboardingContent(
             Text(
                 text = stringResource(id = com.prography.ui.R.string.onboarding_next),
                 color = Gray08,
-                modifier = Modifier.padding(14.dp, 20.dp).clickable {
+                style = caption02Regular,
+                modifier = Modifier.padding(10.dp, 8.dp).clickable {
                     onAction(OnboardingAction.SkipClicked)
                 }
             )

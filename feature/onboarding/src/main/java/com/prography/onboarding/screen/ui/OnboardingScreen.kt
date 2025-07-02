@@ -1,12 +1,7 @@
 package com.prography.onboarding.screen.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
@@ -25,8 +20,8 @@ fun OnboardingScreen(
     LaunchedEffect(Unit) {
         effectFlow.collectLatest { effect ->
             when (effect) {
-                OnboardingEffect.NavigateToHome -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                OnboardingEffect.NavigateToStart -> {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
 
                 OnboardingEffect.NavigateToLogin -> {

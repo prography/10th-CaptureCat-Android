@@ -8,7 +8,6 @@ import com.prography.onboarding.screen.contract.OnboardingState
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +22,7 @@ class OnboardingViewModel @Inject constructor(
 
             when (action) {
                 OnboardingAction.LoginClicked -> emitEffect(OnboardingEffect.NavigateToLogin)
-                OnboardingAction.SkipClicked -> emitEffect(OnboardingEffect.NavigateToHome)
+                OnboardingAction.SkipClicked -> emitEffect(OnboardingEffect.NavigateToStart)
             }
         }
     }
