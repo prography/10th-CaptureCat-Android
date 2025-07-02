@@ -11,6 +11,7 @@ import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.home.ui.DummyScreen
+import com.prography.home.ui.search.screen.SearchScreen
 
 @Composable
 fun MainNavigationHost(
@@ -43,7 +44,7 @@ fun MainNavigationHost(
             )
         }
         composable(BottomNavItem.Search.route) {
-            DummyScreen(onLogout = { /* ... */ })
+            SearchScreen()
         }
         composable("screenshot_gallery") {
             ScreenshotGalleryScreen(
