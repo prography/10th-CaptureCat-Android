@@ -1,12 +1,23 @@
 package com.prography.ui.common
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.prography.ui.theme.Error
+import com.prography.ui.theme.OverlayDim
+import com.prography.ui.theme.subhead02Bold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,38 +52,75 @@ object GlobalUiManager {
     }
 }
 
-// 글로벌 UI 상태 컴포넌트
 @Composable
 fun GlobalUiHandler() {
     var isLoading by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
+    var showToast by remember { mutableStateOf(false) }
 
-    // 글로벌 이벤트 구독
+    // 이벤트 수신
     LaunchedEffect(Unit) {
         GlobalUiManager.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowLoading -> isLoading = true
                 is UiEvent.HideLoading -> isLoading = false
-                is UiEvent.ShowToast -> toastMessage = event.message
+                is UiEvent.ShowToast -> {
+                    toastMessage = event.message
+                    showToast = true
+                }
             }
         }
     }
 
-    // 토스트 메시지 처리
-    toastMessage?.let { message ->
-        Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
-        toastMessage = null
+    // ✅ 2초 후 자동 숨김 처리
+    LaunchedEffect(toastMessage) {
+        if (toastMessage != null) {
+            showToast = true
+            kotlinx.coroutines.delay(2000)
+            showToast = false
+            kotlinx.coroutines.delay(300) // 애니메이션 끝나고 메시지 제거
+            toastMessage = null
+        }
     }
 
-    // 로딩 오버레이 (터치 이벤트 차단)
+    AnimatedVisibility(
+        visible = showToast,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        toastMessage?.let { message ->
+            Box(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 96.dp)
+                        .background(OverlayDim, shape = RoundedCornerShape(6.dp))
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = message,
+                        style = subhead02Bold,
+                        color = Error
+                    )
+                }
+            }
+        }
+    }
+
+
+    // ✅ 로딩 오버레이
     if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.3f))
-                .pointerInput(Unit) {
-                    // 모든 터치 이벤트를 소비하여 하위 컴포넌트로 전달되지 않도록 함
-                },
+                .pointerInput(Unit) {},
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
