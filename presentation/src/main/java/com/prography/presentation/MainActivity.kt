@@ -63,9 +63,9 @@ class MainActivity : ComponentActivity() {
                             navigationHelper = navigationHelper,
                             startDestination = it
                         )
-                        GlobalUiHandler()
                     }
                 }
+                GlobalUiHandler()
             }
         }
     }
