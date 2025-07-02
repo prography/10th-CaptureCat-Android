@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginState
 import com.prography.ui.R
+import com.prography.ui.theme.Text02
+import com.prography.ui.theme.body02Regular
 
 @Composable
 fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
@@ -44,7 +46,8 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
     ) {
         Text(
             text = "나중에 하기",
-            fontSize = 14.sp,
+            style = body02Regular,
+            color = Text02,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 16.dp, end = 16.dp)
