@@ -53,10 +53,13 @@ fun BottomNavigationBar(
         BottomNavItem.Search
     )
 
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        windowInsets = WindowInsets(0.dp)
+    // 감싸는 Box 또는 Column에 padding 추가
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -93,12 +96,13 @@ fun BottomNavigationBar(
                     text = stringResource(item.title),
                     style = caption01SemiBold,
                     color = if (selected) Gray09 else Gray06,
-                    modifier = Modifier.padding(top = 2.dp) // 아주 작은 간격만 유지
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
         }
     }
 }
+
 
 internal object NoRippleInteractionSource : MutableInteractionSource {
     override val interactions: Flow<Interaction> = emptyFlow()
