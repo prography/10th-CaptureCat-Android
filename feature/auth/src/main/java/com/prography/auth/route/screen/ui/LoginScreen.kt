@@ -63,7 +63,8 @@ fun LoginScreen(
                     )
                 }
                 LoginEffect.NavigateToHome -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
+                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
                 }
             }
         }
