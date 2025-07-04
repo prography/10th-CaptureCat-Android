@@ -7,7 +7,7 @@
     <string name="onboarding_login">로그인 하기</string>
 
     <string name="login_kakao">카카오로 로그인</string>
-    <string name="login_google">구글로 로그인</string>
+    <string name="login_google">Google로 로그인</string>
 
     <string name="tab_storage">임시보관함</string>
     <string name="tab_home">홈</string>

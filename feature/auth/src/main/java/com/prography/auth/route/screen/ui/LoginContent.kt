@@ -34,105 +34,132 @@ import androidx.compose.ui.unit.sp
 import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginState
 import com.prography.ui.R
+import com.prography.ui.component.UnderlinedClickableText
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.body02Regular
+import com.prography.ui.theme.subhead01Bold
 
 @Composable
 fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .statusBarsPadding()
     ) {
-        Text(
+        // 상단 오른쪽 "나중에 하기"
+        UnderlinedClickableText(
             text = "나중에 하기",
-            style = body02Regular,
-            color = Text02,
+            onClick = { onAction(LoginAction.ClickSkip) },
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 16.dp, end = 16.dp)
-                .clickable { onAction(LoginAction.ClickSkip) }
         )
 
+        // 전체 세로 레이아웃
         Column(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(
-                onClick = { onAction(LoginAction.ClickKakao) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFEE500)
-                ),
-                contentPadding = PaddingValues(horizontal = 20.dp)
+            Spacer(modifier = Modifier.height(80.dp)) // 상단 여백 (상태바 포함)
+
+            // 중앙 이미지 묶음 (위~버튼 시작의 정확한 중앙)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_kakao_login),
-                        contentDescription = "카카오 로그인 아이콘",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.login_kakao),
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.prography_pretendard_semibold))
-                    )
-                }
+                Image(
+                    painter = painterResource(R.drawable.ic_login_cat),
+                    contentDescription = null,
+                    modifier = Modifier.size(160.dp)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Image(
+                    painter = painterResource(R.drawable.ic_login_logo),
+                    contentDescription = null
+                )
             }
 
-            Button(
-                onClick = { onAction(LoginAction.ClickGoogle) },
+            // 하단 버튼 영역
+            Column(
                 modifier = Modifier
-                    .border(1.dp, Color(0xFF747775), shape = RoundedCornerShape(size = 4.dp))
                     .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
-                contentPadding = PaddingValues(horizontal = 20.dp) // 텍스트 안쪽 여백
+                    .padding(bottom = 26.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_google_login),
-                        contentDescription = "Google 로그인 아이콘",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(18.dp) // 아이콘 크기 조절
-                    )
-                    Text(
-                        text = stringResource(R.string.login_google),
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.prography_pretendard_semibold))
-                    )
-                }
+                KakaoLoginButton { onAction(LoginAction.ClickKakao) }
+                AppleLoginButton { onAction(LoginAction.ClickGoogle) }
+                AgreementText()
             }
-            AgreementText()
         }
     }
 }
 
 @Composable
-@Preview(showBackground = true)
-fun LoginContentPreview() {
-    LoginContent(
-        state = LoginState(), // 기본 상태 or 샘플 데이터
-        onAction = {} // 빈 람다 전달
-    )
+fun KakaoLoginButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEE500)),
+        contentPadding = PaddingValues(horizontal = 20.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_kakao_login),
+                contentDescription = "카카오 로그인 아이콘",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = stringResource(R.string.login_kakao),
+                color = Color.Black,
+                style = subhead01Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun AppleLoginButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .border(1.dp, Color(0xFF747775), shape = RoundedCornerShape(4.dp))
+            .fillMaxWidth()
+            .height(48.dp),
+        shape = RoundedCornerShape(4.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        contentPadding = PaddingValues(horizontal = 20.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_google_login),
+                contentDescription = "Google 로그인 아이콘",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = stringResource(R.string.login_google),
+                color = Color.Black,
+                style = subhead01Bold
+            )
+        }
+    }
 }
 
 @Composable
@@ -142,7 +169,6 @@ fun AgreementText() {
     val annotatedText = buildAnnotatedString {
         append("가입하면 캡처캣의\n")
 
-        // 이용약관
         pushStringAnnotation(tag = "URL", annotation = "https://example.com/terms")
         withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
             append("이용약관")
@@ -151,7 +177,6 @@ fun AgreementText() {
 
         append(" 및 ")
 
-        // 개인정보처리방침
         pushStringAnnotation(tag = "URL", annotation = "https://example.com/privacy")
         withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
             append("개인정보처리방침")
@@ -176,5 +201,14 @@ fun AgreementText() {
                     context.startActivity(intent)
                 }
         }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginContentPreview() {
+    LoginContent(
+        state = LoginState(),
+        onAction = {}
     )
 }
