@@ -8,6 +8,7 @@ import com.prography.domain.usecase.user.GetOnboardingShownUseCase
 import com.prography.domain.usecase.user.SetOnboardingShownUseCase
 import com.prography.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -33,7 +34,7 @@ class MainViewModel @Inject constructor(
 
             _startDestination.value  = when {
                 !isOnboardingShown -> AppRoute.Onboarding // 처음 앱에 진입하는 경우, 온보딩
-                !isLoggedIn -> AppRoute.Main // 토큰이 존재하지 않는 경우, 메인 화면
+                !isLoggedIn -> AppRoute.Login // 토큰이 존재하지 않는 경우, 메인 화면
                 else -> AppRoute.Main // 토큰이 존재하는 경우, 메인 화면 : 유효 검사 interceptor 추후 처리
             }
 
