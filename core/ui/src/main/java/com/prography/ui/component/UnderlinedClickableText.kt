@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
-import com.prography.ui.theme.Text02
+import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body02Regular
 
 @Composable
@@ -15,7 +15,7 @@ fun UnderlinedClickableText(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = Text02,
+    color: Color = Text03,
     style: TextStyle = body02Regular
 ) {
     Text(

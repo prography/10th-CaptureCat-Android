@@ -12,6 +12,7 @@ import com.prography.home.route.MainRoute
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
+import com.prography.onboarding.navigation.InitOnboardingRoute
 import com.prography.onboarding.navigation.OnboardingRoute
 import com.prography.organize.navigation.OrganizeRoute
 import com.prography.setting.route.SettingRoute
@@ -39,6 +40,10 @@ fun AppNavGraph(
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
+        composable<AppRoute.InitOnboarding> {
+            InitOnboardingRoute(navigationHelper = navigationHelper)
+        }
+
         composable<AppRoute.Onboarding> {
             OnboardingRoute(navigationHelper = navigationHelper)
         }

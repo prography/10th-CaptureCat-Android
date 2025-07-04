@@ -17,12 +17,34 @@ class OnboardingViewModel @Inject constructor(
     initialState = OnboardingState()
 ) {
     override fun handleAction(action: OnboardingAction) {
-        viewModelScope.launch {
-            setOnboardingShownUseCase(true)
+        when (action) {
+            OnboardingAction.LoginClicked -> {
+                viewModelScope.launch {
+                    setOnboardingShownUseCase(true)
+                    emitEffect(OnboardingEffect.NavigateToLogin)
+                }
+            }
+            OnboardingAction.SkipClicked -> {
+                viewModelScope.launch {
+                    setOnboardingShownUseCase(true)
+                    emitEffect(OnboardingEffect.NavigateToStart)
+                }
+            }
 
-            when (action) {
-                OnboardingAction.LoginClicked -> emitEffect(OnboardingEffect.NavigateToLogin)
-                OnboardingAction.SkipClicked -> emitEffect(OnboardingEffect.NavigateToStart)
+            is OnboardingAction.PageChanged -> {
+                updateState { copy(currentPage = action.page) }
+            }
+
+            OnboardingAction.NextClicked -> {
+                val nextPage = currentState.currentPage + 1
+                updateState { copy(currentPage = nextPage) }
+            }
+
+            OnboardingAction.StartClicked -> {
+                viewModelScope.launch {
+                    setOnboardingShownUseCase(true)
+                    emitEffect(OnboardingEffect.NavigateToLogin)
+                }
             }
         }
     }

@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -23,8 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -35,8 +32,6 @@ import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginState
 import com.prography.ui.R
 import com.prography.ui.component.UnderlinedClickableText
-import com.prography.ui.theme.Text02
-import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.subhead01Bold
 
 @Composable
@@ -54,7 +49,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
             onClick = { onAction(LoginAction.ClickSkip) },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 16.dp, end = 16.dp)
+                .padding(top = 33.dp, end = 16.dp)
         )
 
         // 전체 세로 레이아웃
@@ -94,7 +89,8 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 KakaoLoginButton { onAction(LoginAction.ClickKakao) }
-                AppleLoginButton { onAction(LoginAction.ClickGoogle) }
+                GoogleLoginButton { onAction(LoginAction.ClickGoogle) }
+                Spacer(modifier = Modifier.height(12.dp))
                 AgreementText()
             }
         }
@@ -132,7 +128,7 @@ fun KakaoLoginButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun AppleLoginButton(onClick: () -> Unit) {
+fun GoogleLoginButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier

@@ -11,7 +11,7 @@ import com.prography.onboarding.screen.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun OnboardingScreen(
+fun InitOnboardingScreen(
     navigationHelper: NavigationHelper,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
@@ -25,14 +25,13 @@ fun OnboardingScreen(
                 }
 
                 OnboardingEffect.NavigateToLogin -> {
-                    navigationHelper.navigate(NavigationEvent.Up)
-                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Login, popUpTo = true))
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Login, popUpTo = true))
                 }
             }
         }
     }
 
-    OnboardingContent(
-        onAction = { viewModel.sendAction(it) }
+    InitOnboardingContent(
+        viewModel = viewModel
     )
 }

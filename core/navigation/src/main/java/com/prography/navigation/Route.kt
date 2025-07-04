@@ -8,6 +8,9 @@ sealed interface Route
 sealed interface AppRoute : Route {
 
     @Serializable
+    data object InitOnboarding : AppRoute
+
+    @Serializable
     data object Onboarding : AppRoute
 
     @Serializable

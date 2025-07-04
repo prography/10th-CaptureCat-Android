@@ -22,7 +22,6 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
@@ -62,8 +61,10 @@ fun LoginScreen(
                         }
                     )
                 }
-                LoginEffect.NavigateToHome -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
+                LoginEffect.NavigateToOnboarding -> {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
+
+                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                     // navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
                 }
             }

@@ -16,7 +16,7 @@ class LoginViewModel @Inject constructor() : BaseComposeViewModel<LoginState, Lo
         when (action) {
             LoginAction.ClickKakao -> emitEffect(LoginEffect.StartKakaoLogin)
             LoginAction.ClickGoogle -> emitEffect(LoginEffect.StartGoogleLogin)
-            LoginAction.ClickSkip -> emitEffect(LoginEffect.NavigateToHome)
+            LoginAction.ClickSkip -> emitEffect(LoginEffect.NavigateToOnboarding)
         }
     }
 }

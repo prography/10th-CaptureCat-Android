@@ -1,34 +1,35 @@
 package com.prography.onboarding.screen.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.onboarding.screen.contract.OnboardingAction
+import com.prography.onboarding.screen.contract.OnboardingState
+import com.prography.onboarding.screen.viewmodel.OnboardingViewModel
 import com.prography.ui.component.UiPrimaryButton
-import com.prography.ui.theme.Gray08
-import com.prography.ui.theme.Text01
-import com.prography.ui.theme.Text02
-import com.prography.ui.theme.body01Regular
-import com.prography.ui.theme.caption02Regular
-import com.prography.ui.theme.headline01Bold
+import com.prography.ui.theme.*
+
+
 
 @Composable
 fun OnboardingContent(
@@ -39,8 +40,7 @@ fun OnboardingContent(
             .fillMaxSize()
             .statusBarsPadding()
             .padding(top = 33.dp, start = 16.dp, end = 16.dp, bottom = 26.dp)
-    )
-    {
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,7 +50,10 @@ fun OnboardingContent(
             Image(
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .clickable {
+                        onAction(OnboardingAction.SkipClicked)
+                    },
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_close_black),
                 contentDescription = "",
                 contentScale = ContentScale.Fit
@@ -67,22 +70,27 @@ fun OnboardingContent(
                 style = body01Regular.copy(textAlign = TextAlign.Center),
                 color = Text02
             )
-            Spacer(modifier = Modifier.height(79.dp))
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center) // 수직·수평 중앙 정렬
+                .padding(horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_onboarding_logo),
-                contentDescription = "",
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Fit
             )
         }
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
+        ) {
             UiPrimaryButton(
                 text = stringResource(id = com.prography.ui.R.string.onboarding_login),
                 onClick = { onAction(OnboardingAction.LoginClicked) },
@@ -93,18 +101,23 @@ fun OnboardingContent(
                 text = stringResource(id = com.prography.ui.R.string.onboarding_next),
                 color = Gray08,
                 style = caption02Regular,
-                modifier = Modifier.padding(10.dp, 8.dp).clickable {
-                    onAction(OnboardingAction.SkipClicked)
-                }
+                modifier = Modifier
+                    .padding(10.dp, 8.dp)
+                    .clickable {
+                        onAction(OnboardingAction.SkipClicked)
+                    }
             )
         }
     }
 }
 
+
 @Composable
 @Preview(showBackground = true)
-fun LoginContentPreview() {
-    OnboardingContent(
-        onAction = {} // 빈 람다 전달
-    )
+fun OnboardingContentPreview() {
+    PrographyTheme {
+        OnboardingContent(
+            onAction = {}
+        )
+    }
 }
