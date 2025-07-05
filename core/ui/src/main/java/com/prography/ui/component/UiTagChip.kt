@@ -71,7 +71,7 @@ fun UiTagChip(
             ) {
                 onClick()
             }
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
