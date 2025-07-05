@@ -67,7 +67,7 @@ fun StartChooseScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "나중에도 저장할 수 있지만, 먼저 필요한 이미지만 클릭하세요.",
+                        text = "나중에도 저장할 수 있으니 먼저 필요한 이미지만 골라보세요.",
                         style = body02Regular,
                         color = Text03
                     )
