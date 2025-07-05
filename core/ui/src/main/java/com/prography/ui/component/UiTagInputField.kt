@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +41,6 @@ fun TagInputField(
     onValueChange: (String) -> Unit,
     placeholder: String = "추가할 태그를 입력해주세요",
     errorMessage: String? = null,
-    counterText: String = "",
     onClear: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -65,41 +66,45 @@ fun TagInputField(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(38.dp) // Row에 고정 높이 적용
             ) {
-                val fixedHeight = 38.dp // 원하는 고정 높이
-
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
                     textStyle = body02Regular,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(), // height 대신 fillMaxHeight 사용
                     decorationBox = { innerTextField ->
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(fixedHeight),
+                                .fillMaxSize(), // fillMaxWidth, fillMaxHeight 대신 fillMaxSize
                             contentAlignment = Alignment.CenterStart
                         ) {
                             if (value.isEmpty()) {
+                                // placeholder를 먼저 그리고
                                 Text(
                                     text = placeholder,
                                     color = Text03,
                                     style = body02Regular,
                                     maxLines = 1
+                                    // modifier 제거 - Box의 contentAlignment로 중앙 정렬됨
                                 )
                             }
+                            // innerTextField를 나중에 그려서 위에 오버레이
                             innerTextField()
                         }
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically)
+                    }
                 )
 
-
                 if (value.isNotEmpty()) {
-                    IconButton(onClick = onClear) {
+                    IconButton(
+                        onClick = onClear,
+                        modifier = Modifier.height(38.dp) // IconButton도 같은 높이
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_text_field_delete),
                             contentDescription = "Clear",
@@ -133,7 +138,6 @@ fun TagInputPreview_Default() {
     TagInputField(
         value = "",
         onValueChange = {},
-        counterText = "0/10",
         onClear = {}
     )
 }
@@ -144,7 +148,6 @@ fun TagInputPreview_Typing() {
     TagInputField(
         value = "일상",
         onValueChange = {},
-        counterText = "1/10",
         onClear = {}
     )
 }
@@ -156,7 +159,6 @@ fun TagInputPreview_Error() {
         value = "여행",
         onValueChange = {},
         errorMessage = "동일한 태그가 이미 존재합니다.",
-        counterText = "3/10",
         onClear = {}
     )
 }
