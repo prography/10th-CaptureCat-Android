@@ -43,7 +43,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 getScreenshotsUseCase().collect { screenshots ->
-                    val tags = listOf("전체") + screenshots.map { it.appName }.distinct()
+                    val tags =
+                        listOf("전체") + screenshots
+                            .map { it.appName }
+                            .filter { it.isNotBlank() }
+                            .distinct()
                     updateState {
                         copy(screenshots = screenshots, tags = tags)
                     }
