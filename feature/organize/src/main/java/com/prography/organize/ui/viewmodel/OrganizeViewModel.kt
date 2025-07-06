@@ -12,6 +12,8 @@ import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -209,6 +211,8 @@ class OrganizeViewModel @Inject constructor(
         val screenshotsToSave = currentState.screenshots
         Timber.d("Starting to save ${screenshotsToSave.size} screenshots")
 
+
+
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
@@ -219,16 +223,25 @@ class OrganizeViewModel @Inject constructor(
                     val parsedAppName = parseAppNameFromFileName(screenshot.fileName)
                     Timber.d("Parsed app name: '$parsedAppName' from filename: ${screenshot.fileName}")
 
+
+                    // 날짜 파싱 못하면 현재 날짜로 파싱
+                    val now = Date()
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val dateStr = parseDateFromFileName(screenshot.fileName).ifBlank {
+                        dateFormat.format(now)
+                    }
+
                     val uiScreenshot = UiScreenshotModel(
                         id = screenshot.id,
                         uri = screenshot.uri.toString(),
                         appName = parsedAppName,
                         tags = screenshot.tags,
-                        isFavorite = screenshot.isFavorite
+                        isFavorite = screenshot.isFavorite,
+                        dateStr = dateStr
                     )
 
                     insertScreenshotUseCase(uiScreenshot)
-                    Timber.d("Successfully saved screenshot: ${screenshot.fileName} with appName: '$parsedAppName', tags: ${screenshot.tags}")
+                    Timber.d("Successfully saved screenshot: ${screenshot.fileName} with appName: '$parsedAppName', tags: ${screenshot.tags}, dateStr: ${dateStr}")
                 }
 
                 Timber.i("Successfully saved all ${screenshotsToSave.size} screenshots")
@@ -248,6 +261,37 @@ class OrganizeViewModel @Inject constructor(
             "쇼핑", "직무 관련", "레퍼런스"
         )
     }
+
+    // 파일 이름으로 부터 날짜 추출
+    private fun parseDateFromFileName(fileName: String?): String {
+        if (fileName.isNullOrBlank()) return ""
+
+        val nameWithoutExtension = fileName.substringBeforeLast(".")
+        val datePatterns = listOf(
+            Regex("""\d{8}_\d{6}"""),        // 20231215_143022
+            Regex("""\d{4}-\d{2}-\d{2}"""),  // 2023-12-15
+            Regex("""\d{4}\d{2}\d{2}"""),    // 20231215
+        )
+
+        val match = datePatterns.firstNotNullOfOrNull { regex ->
+            regex.find(nameWithoutExtension)?.value
+        }
+
+        return when {
+            match == null -> ""
+            match.contains("_") -> {
+                // 20231215_143022 → 2023-12-15
+                val datePart = match.split("_").first()
+                "${datePart.substring(0, 4)}-${datePart.substring(4, 6)}-${datePart.substring(6, 8)}"
+            }
+            match.contains("-") -> match // 이미 yyyy-MM-dd
+            match.length == 8 -> {
+                "${match.substring(0, 4)}-${match.substring(4, 6)}-${match.substring(6, 8)}"
+            }
+            else -> ""
+        }
+    }
+
 
     // 현재 스크린샷의 태그를 가져오는 헬퍼 함수
     fun getCurrentScreenshotTags(): List<String> {
