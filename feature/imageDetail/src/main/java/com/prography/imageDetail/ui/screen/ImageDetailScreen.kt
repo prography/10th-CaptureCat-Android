@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ImageDetailScreen(
-    screenshots: List<UiScreenshotModel>,
+    screenshotIds: List<String>,
     currentIndex: Int = 0,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -26,11 +26,10 @@ fun ImageDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
-    val context = LocalContext.current
 
     // 스크린샷 초기화
-    LaunchedEffect(screenshots, currentIndex) {
-        viewModel.initializeScreenshots(screenshots, currentIndex)
+    LaunchedEffect(screenshotIds, currentIndex) {
+        viewModel.initializeWithIds(screenshotIds, currentIndex)
     }
 
     // Handle effects
@@ -67,39 +66,50 @@ fun ImageDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun ImageDetailScreenPreview() {
-    val sampleScreenshots = listOf(
-        UiScreenshotModel(
-            id = "1",
-            uri = "https://via.placeholder.com/300x400",
-            appName = "Instagram",
-            tags = listOf("쇼핑", "패션"),
-            isFavorite = false,
-            dateStr = "2024-01-15"
-        ),
-        UiScreenshotModel(
-            id = "2",
-            uri = "https://via.placeholder.com/300x400",
-            appName = "YouTube",
-            tags = listOf("여행", "음식"),
-            isFavorite = true,
-            dateStr = "2024-01-14"
-        ),
-        UiScreenshotModel(
-            id = "3",
-            uri = "https://via.placeholder.com/300x400",
-            appName = "Coupang",
-            tags = listOf("쇼핑", "생활용품"),
-            isFavorite = false,
-            dateStr = "2024-01-13"
-        )
+    val sampleScreenshotIds = listOf(
+        "1",
+        "2",
+        "3"
     )
 
     PrographyTheme {
         ImageDetailContent(
             state = ImageDetailState(
-                screenshots = sampleScreenshots,
+                screenshots = listOf(
+                    UiScreenshotModel(
+                        id = "1",
+                        uri = "https://via.placeholder.com/300x400",
+                        appName = "Instagram",
+                        tags = listOf("쇼핑", "패션"),
+                        isFavorite = false,
+                        dateStr = "2024-01-15"
+                    ),
+                    UiScreenshotModel(
+                        id = "2",
+                        uri = "https://via.placeholder.com/300x400",
+                        appName = "YouTube",
+                        tags = listOf("여행", "음식"),
+                        isFavorite = true,
+                        dateStr = "2024-01-14"
+                    ),
+                    UiScreenshotModel(
+                        id = "3",
+                        uri = "https://via.placeholder.com/300x400",
+                        appName = "Coupang",
+                        tags = listOf("쇼핑", "생활용품"),
+                        isFavorite = false,
+                        dateStr = "2024-01-13"
+                    )
+                ),
                 currentIndex = 0,
-                currentScreenshot = sampleScreenshots.first(),
+                currentScreenshot = UiScreenshotModel(
+                    id = "1",
+                    uri = "https://via.placeholder.com/300x400",
+                    appName = "Instagram",
+                    tags = listOf("쇼핑", "패션"),
+                    isFavorite = false,
+                    dateStr = "2024-01-15"
+                ),
                 availableTags = listOf("쇼핑", "패션", "여행", "음식", "생활용품"),
                 isTagEditBottomSheetVisible = false,
                 isDeleteDialogVisible = false,

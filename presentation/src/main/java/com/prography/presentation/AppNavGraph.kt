@@ -9,7 +9,7 @@ import com.android.start.StartRoute
 import com.android.start.ScreenshotItem
 import com.prography.auth.route.navigation.LoginRoute
 import com.prography.home.route.MainRoute
-import com.prography.imageDetail.navigation.ImageDetailRoute
+import com.prography.imageDetail.ui.route.ImageDetailRoute
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper

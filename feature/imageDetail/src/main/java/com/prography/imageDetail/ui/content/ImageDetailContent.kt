@@ -42,21 +42,40 @@ fun ImageDetailContent(
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
-        initialPage = state.currentIndex,
-        pageCount = { state.screenshots.size }
+        initialPage = if (state.screenshots.isNotEmpty()) {
+            state.currentIndex.coerceIn(0, state.screenshots.size - 1)
+        } else 0,
+        pageCount = { maxOf(1, state.screenshots.size) }
     )
 
+    // Debug logging
+    LaunchedEffect(state.currentIndex, state.screenshots.size, state.isLoading) {
+        println("ImageDetailContent - currentIndex: ${state.currentIndex}, screenshots.size: ${state.screenshots.size}, pagerPage: ${pagerState.currentPage}, isLoading: ${state.isLoading}")
+    }
+
+    // Debug current screenshot
+    LaunchedEffect(state.currentScreenshot) {
+        println("DEBUG: currentScreenshot changed - id: ${state.currentScreenshot?.id}, tags: ${state.currentScreenshot?.tags}")
+    }
+
+    // 페이지 변경 감지 (로딩 중이 아닐 때만)
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collectLatest { page ->
-            if (page != state.currentIndex) {
+            if (page != state.currentIndex && state.screenshots.isNotEmpty() && !state.isLoading) {
+                println("Pager page changed to: $page, current state index: ${state.currentIndex}")
                 onAction(ImageDetailAction.OnPageChange(page))
             }
         }
     }
 
-    LaunchedEffect(state.currentIndex) {
-        if (pagerState.currentPage != state.currentIndex) {
-            pagerState.animateScrollToPage(state.currentIndex)
+    // 외부에서 인덱스 변경 시 pager 업데이트 (초기 로딩 완료 후에만)
+    LaunchedEffect(state.currentIndex, state.screenshots.size, state.isLoading) {
+        if (state.screenshots.isNotEmpty() && !state.isLoading) {
+            val targetPage = state.currentIndex.coerceIn(0, state.screenshots.size - 1)
+            if (pagerState.currentPage != targetPage) {
+                println("Animating to page: $targetPage, current pager page: ${pagerState.currentPage}")
+                pagerState.animateScrollToPage(targetPage)
+            }
         }
     }
 
@@ -86,9 +105,21 @@ fun ImageDetailContent(
                     pagerState = pagerState
                 )
 
+                // Get current screenshot directly from the list using current page
+                val currentPageScreenshot = if (pagerState.currentPage < state.screenshots.size) {
+                    state.screenshots.getOrNull(pagerState.currentPage)
+                } else {
+                    state.currentScreenshot
+                }
+
+                // Debug current page screenshot
+                LaunchedEffect(currentPageScreenshot, pagerState.currentPage) {
+                    println("DEBUG: currentPageScreenshot changed - page: ${pagerState.currentPage}, id: ${currentPageScreenshot?.id}, tags: ${currentPageScreenshot?.tags}")
+                }
+
                 ChipSection(
-                    tags = state.currentScreenshot?.tags.orEmpty(),
-                    isFavorite = state.currentScreenshot?.isFavorite == true,
+                    tags = currentPageScreenshot?.tags.orEmpty(),
+                    isFavorite = currentPageScreenshot?.isFavorite == true,
                     onFavoriteToggle = { onAction(ImageDetailAction.OnToggleFavorite) },
                     modifier = Modifier
                         .align(Alignment.BottomStart)
@@ -175,6 +206,11 @@ fun ChipSection(
     onFavoriteToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Debug logging
+    LaunchedEffect(tags) {
+        println("DEBUG: ChipSection - tags updated: $tags")
+    }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -350,7 +386,7 @@ private fun TagEditBottomSheetContent(
         if (state.currentScreenshot?.tags?.isNotEmpty() == true) {
             Text(
                 text = "추가된 태그",
-                style = subhead02Bold,
+                style = subhead01Bold,
                 color = Text01
             )
 
