@@ -9,5 +9,6 @@ data class ScreenshotEntity(
     val uri: String,
     val appName: String,
     val tags: String, // "tag1,tag2"
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val dateStr: String
 )

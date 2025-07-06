@@ -8,7 +8,8 @@ fun ScreenshotEntity.toDomain(): UiScreenshotModel = UiScreenshotModel(
     uri = uri,
     appName = appName,
     tags = tags.split(",").filter { it.isNotBlank() },
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    dateStr = dateStr
 )
 
 fun UiScreenshotModel.toEntity(): ScreenshotEntity = ScreenshotEntity(
@@ -16,5 +17,6 @@ fun UiScreenshotModel.toEntity(): ScreenshotEntity = ScreenshotEntity(
     uri = uri,
     appName = appName,
     tags = tags.joinToString(","),
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    dateStr = dateStr
 )

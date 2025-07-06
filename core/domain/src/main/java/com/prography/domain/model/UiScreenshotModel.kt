@@ -5,5 +5,6 @@ data class UiScreenshotModel(
     val uri: String,
     val appName: String,
     val tags: List<String>,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val dateStr: String
 )

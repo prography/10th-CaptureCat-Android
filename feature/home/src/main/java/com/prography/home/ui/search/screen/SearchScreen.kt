@@ -89,21 +89,24 @@ fun SearchScreenWithResultsPreview() {
             uri = "https://via.placeholder.com/300x400",
             appName = "Instagram",
             tags = listOf("쇼핑", "패션"),
-            isFavorite = false
+            isFavorite = false,
+            dateStr = "2024-01-15"
         ),
         com.prography.domain.model.UiScreenshotModel(
             id = "2",
             uri = "https://via.placeholder.com/300x400",
             appName = "YouTube",
             tags = listOf("쇼핑"),
-            isFavorite = true
+            isFavorite = true,
+            dateStr = "2024-01-14"
         ),
         com.prography.domain.model.UiScreenshotModel(
             id = "3",
             uri = "https://via.placeholder.com/300x400",
             appName = "Coupang",
             tags = listOf("쇼핑", "생활용품"),
-            isFavorite = false
+            isFavorite = false,
+            dateStr = "2024-01-13"
         )
     )
 
