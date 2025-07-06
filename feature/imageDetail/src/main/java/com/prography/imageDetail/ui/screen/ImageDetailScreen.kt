@@ -41,12 +41,6 @@ fun ImageDetailScreen(
                     onNavigateBack()
                 }
 
-                ImageDetailEffect.ShowDeleteConfirmation -> {
-                    // TODO: Show delete confirmation dialog
-                    // For now, just confirm delete
-                    viewModel.sendAction(com.prography.imageDetail.ui.contract.ImageDetailAction.OnConfirmDelete)
-                }
-
                 is ImageDetailEffect.ShowError -> {
                     // TODO: Show error message (could use SnackBar or Toast)
                     // For now, just log the error
@@ -108,6 +102,7 @@ fun ImageDetailScreenPreview() {
                 currentScreenshot = sampleScreenshots.first(),
                 availableTags = listOf("쇼핑", "패션", "여행", "음식", "생활용품"),
                 isTagEditBottomSheetVisible = false,
+                isDeleteDialogVisible = false,
                 newTagText = "",
                 isLoading = false
             ),

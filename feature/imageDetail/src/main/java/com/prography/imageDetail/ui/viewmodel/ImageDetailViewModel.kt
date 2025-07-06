@@ -84,10 +84,27 @@ class ImageDetailViewModel @Inject constructor(
             }
 
             ImageDetailAction.OnDeleteScreenshot -> {
-                emitEffect(ImageDetailEffect.ShowDeleteConfirmation)
+                updateState {
+                    copy(isDeleteDialogVisible = true)
+                }
+            }
+
+            ImageDetailAction.OnShowDeleteDialog -> {
+                updateState {
+                    copy(isDeleteDialogVisible = true)
+                }
+            }
+
+            ImageDetailAction.OnHideDeleteDialog -> {
+                updateState {
+                    copy(isDeleteDialogVisible = false)
+                }
             }
 
             ImageDetailAction.OnConfirmDelete -> {
+                updateState {
+                    copy(isDeleteDialogVisible = false)
+                }
                 deleteCurrentScreenshot()
             }
         }

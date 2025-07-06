@@ -11,7 +11,6 @@ android {
 
 dependencies {
 
-    implementation (libs.appauth)
     implementation(project(":core:navigation"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))

@@ -42,6 +42,16 @@ val Primary = Color(0xFFFF6600)
 val PrimaryPress = Color(0xFFFA6616)
 val PrimaryLow = Color(0xFFFFE2C8)
 
+// Orange Series
+val Orange01 = Color(0xFFFEF5F0)
+val Orange02 = Color(0xFFFFE2C8) // Same as PrimaryLow
+val Orange03 = Color(0xFFFFCDA6)
+
+// Blue Series
+val Blue01 = Color(0xFFE6F7FF)
+val Blue02 = Color(0xFFB3E5FC)
+val Blue03 = Color(0xFF81D4FA)
+
 // Secondary
 val Secondary = Color(0xFF212124)
 val SecondaryLow = Color(0x0D212124)

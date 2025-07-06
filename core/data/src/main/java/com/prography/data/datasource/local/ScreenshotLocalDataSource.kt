@@ -9,4 +9,5 @@ interface ScreenshotLocalDataSource {
     suspend fun insert(screenshot: UiScreenshotModel)
     suspend fun update(screenshot: UiScreenshotModel)
     suspend fun delete(screenshot: UiScreenshotModel)
+    suspend fun deleteById(screenshotId: String)
 }

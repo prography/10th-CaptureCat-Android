@@ -18,7 +18,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +30,7 @@ import com.prography.ui.R
 import com.prography.ui.component.UiTagInfoChip
 import com.prography.ui.component.UiTagSelectedChip
 import com.prography.ui.component.clickableWithoutRipple
+import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -115,6 +115,14 @@ fun ImageDetailContent(
                 )
             }
         }
+
+        // 삭제 확인 다이얼로그
+        DeleteConfirmDialog(
+            isVisible = state.isDeleteDialogVisible,
+            selectedCount = 1,
+            onDismiss = { onAction(ImageDetailAction.OnHideDeleteDialog) },
+            onConfirm = { onAction(ImageDetailAction.OnConfirmDelete) }
+        )
     }
 }
 
@@ -403,7 +411,8 @@ fun ImageDetailScreenPreview() {
                 availableTags = listOf("쇼핑", "패션", "여행", "음식", "생활용품"),
                 isTagEditBottomSheetVisible = false,
                 newTagText = "",
-                isLoading = false
+                isLoading = false,
+                isDeleteDialogVisible = false
             ),
             onAction = {}
         )

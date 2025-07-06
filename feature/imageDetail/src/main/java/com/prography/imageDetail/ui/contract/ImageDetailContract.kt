@@ -8,13 +8,13 @@ data class ImageDetailState(
     val currentScreenshot: UiScreenshotModel? = null,
     val availableTags: List<String> = emptyList(),
     val isTagEditBottomSheetVisible: Boolean = false,
+    val isDeleteDialogVisible: Boolean = false,
     val newTagText: String = "",
     val isLoading: Boolean = false
 )
 
 sealed class ImageDetailEffect {
     object NavigateBack : ImageDetailEffect()
-    object ShowDeleteConfirmation : ImageDetailEffect()
     data class ShowError(val message: String) : ImageDetailEffect()
     object ScreenshotDeleted : ImageDetailEffect()
 }
@@ -29,5 +29,7 @@ sealed class ImageDetailAction {
     data class OnNewTagTextChange(val text: String) : ImageDetailAction()
     object OnAddNewTag : ImageDetailAction()
     object OnDeleteScreenshot : ImageDetailAction()
+    object OnShowDeleteDialog : ImageDetailAction()
+    object OnHideDeleteDialog : ImageDetailAction()
     object OnConfirmDelete : ImageDetailAction()
 }

@@ -28,4 +28,8 @@ class ScreenshotRepositoryImpl @Inject constructor(
     override suspend fun delete(screenshot: UiScreenshotModel) {
         localDataSource.delete(screenshot)
     }
+
+    override suspend fun deleteScreenshot(screenshotId: String) {
+        localDataSource.deleteById(screenshotId)
+    }
 }
