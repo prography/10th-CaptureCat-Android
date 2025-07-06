@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
+    implementation(project(":feature:imageDetail"))
 
     implementation(libs.android.permissions)
     implementation(libs.coil.compose)

@@ -11,6 +11,7 @@ android {
 
 dependencies {
 
+    implementation (libs.appauth)
     implementation(project(":core:navigation"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
@@ -22,6 +23,7 @@ dependencies {
     implementation(project(":feature:organize"))
     implementation(project(":feature:start"))
     implementation(project(":feature:setting"))
+    implementation(project(":feature:imageDetail"))
 
     implementation(libs.splashscreen)
 }

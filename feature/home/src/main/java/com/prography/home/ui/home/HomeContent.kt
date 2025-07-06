@@ -99,13 +99,15 @@ fun HomeContent(
 
         items(filteredScreenshots.chunked(2)) { rowItems ->
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 rowItems.forEach { screenshot ->
                     ScreenshotItem(
                         screenshot = screenshot,
+                        onScreenshotClick = { onAction(HomeAction.OnScreenshotClick(screenshot)) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -120,6 +122,7 @@ fun HomeContent(
 @Composable
 fun ScreenshotItem(
     screenshot: UiScreenshotModel,
+    onScreenshotClick: (UiScreenshotModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -130,6 +133,7 @@ fun ScreenshotItem(
                 width = 0.75.dp, color = Color(0x0D001758),
                 shape = RoundedCornerShape(size = 4.dp)
             )
+            .clickable { onScreenshotClick(screenshot) }
     ) {
         Image(
             painter = rememberAsyncImagePainter(screenshot.uri),

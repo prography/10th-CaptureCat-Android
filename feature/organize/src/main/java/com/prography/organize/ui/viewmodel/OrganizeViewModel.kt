@@ -226,7 +226,7 @@ class OrganizeViewModel @Inject constructor(
 
                     // 날짜 파싱 못하면 현재 날짜로 파싱
                     val now = Date()
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
                     val dateStr = parseDateFromFileName(screenshot.fileName).ifBlank {
                         dateFormat.format(now)
                     }

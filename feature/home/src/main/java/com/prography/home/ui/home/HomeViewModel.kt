@@ -36,6 +36,9 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.SettingRoute.Setting)
                 )
             }
+            is HomeAction.OnScreenshotClick -> {
+                handleScreenshotClick(action.screenshot)
+            }
         }
     }
 
@@ -61,6 +64,20 @@ class HomeViewModel @Inject constructor(
     private fun selectTag(tag: String) {
         updateState {
             copy(selectedTag = tag)
+        }
+    }
+
+    private fun handleScreenshotClick(clickedScreenshot: UiScreenshotModel) {
+        val currentState = currentState
+        val filteredScreenshots = if (currentState.selectedTag == "전체") {
+            currentState.screenshots
+        } else {
+            currentState.screenshots.filter { it.appName == currentState.selectedTag }
+        }
+
+        val currentIndex = filteredScreenshots.indexOf(clickedScreenshot)
+        if (currentIndex != -1) {
+            navigationHelper.navigate(NavigationEvent.To(AppRoute.ImageDetail(screenshotIds = filteredScreenshots.map { it.id }, currentIndex = currentIndex)))
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,11 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
+import com.prography.home.ui.home.contract.HomeEffect
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 import com.prography.ui.R
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.PrographyTheme
-
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
@@ -43,6 +49,18 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
+    val effectFlow = viewModel.effect
+
+    // Handle effects
+    LaunchedEffect(effectFlow) {
+        effectFlow.collectLatest { effect ->
+            when (effect) {
+                is HomeEffect.ShowError -> {
+                    println("Home Error: ${effect.message}")
+                }
+            }
+        }
+    }
 
     HomeContent(
         state = state,
