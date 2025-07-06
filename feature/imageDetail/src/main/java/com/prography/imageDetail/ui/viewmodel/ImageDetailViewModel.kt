@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
     private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
-    private val deleteScreenshotUseCase: DeleteScreenshotUseCase
+    private val deleteScreenshotUseCase: DeleteScreenshotUseCase,
+    private val updateScreenshotUseCase: UpdateScreenshotUseCase
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
 ) {
@@ -127,6 +129,16 @@ class ImageDetailViewModel @Inject constructor(
                 currentScreenshot = updatedScreenshot
             )
         }
+
+        viewModelScope.launch {
+            runCatching {
+                updateScreenshotUseCase(updatedScreenshot)
+                Timber.d("Successfully updated favorite status for screenshot: ${updatedScreenshot.id}")
+            }.onFailure { exception ->
+                Timber.e(exception, "Failed to update favorite status")
+                emitEffect(ImageDetailEffect.ShowError("즐겨찾기 업데이트에 실패했습니다."))
+            }
+        }
     }
 
     private fun deleteTag(tag: String) {
@@ -146,6 +158,16 @@ class ImageDetailViewModel @Inject constructor(
                 screenshots = updatedScreenshots,
                 currentScreenshot = updatedScreenshot
             )
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                updateScreenshotUseCase(updatedScreenshot)
+                Timber.d("Successfully deleted tag '$tag' from screenshot: ${updatedScreenshot.id}")
+            }.onFailure { exception ->
+                Timber.e(exception, "Failed to delete tag")
+                emitEffect(ImageDetailEffect.ShowError("태그 삭제에 실패했습니다."))
+            }
         }
     }
 
@@ -175,6 +197,16 @@ class ImageDetailViewModel @Inject constructor(
                     availableTags
                 }
             )
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                updateScreenshotUseCase(updatedScreenshot)
+                Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
+            }.onFailure { exception ->
+                Timber.e(exception, "Failed to add tag")
+                emitEffect(ImageDetailEffect.ShowError("태그 추가에 실패했습니다."))
+            }
         }
     }
 
