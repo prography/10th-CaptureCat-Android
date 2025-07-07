@@ -12,11 +12,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -27,14 +27,21 @@ import com.prography.domain.model.UiScreenshotModel
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailState
 import com.prography.ui.R
+import com.prography.ui.component.TagInputField
+import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.UiTagInfoChip
 import com.prography.ui.component.UiTagSelectedChip
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.theme.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 fun ImageDetailContent(
     state: ImageDetailState,
@@ -137,12 +144,15 @@ fun ImageDetailContent(
             ModalBottomSheet(
                 onDismissRequest = { onAction(ImageDetailAction.OnHideTagEditBottomSheet) },
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                containerColor = PureWhite
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                containerColor = Color.White,
+                tonalElevation = 0.dp,
+                dragHandle = null,
+                modifier = Modifier.imePadding()
             ) {
                 TagEditBottomSheetContent(
                     state = state,
-                    onAction = onAction,
-                    modifier = Modifier.padding(16.dp)
+                    onAction = onAction
                 )
             }
         }
@@ -217,11 +227,12 @@ fun ChipSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (tags.isNotEmpty()) {
-            LazyRow(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(tags) { tag ->
+                tags.forEach { tag ->
                     UiTagInfoChip(text = tag)
                 }
             }
@@ -305,105 +316,115 @@ fun BottomActionBar(
 @Composable
 private fun TagEditBottomSheetContent(
     state: ImageDetailState,
-    onAction: (ImageDetailAction) -> Unit,
-    modifier: Modifier = Modifier
+    onAction: (ImageDetailAction) -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val currentTags = state.currentScreenshot?.tags ?: emptyList()
+    val isMaxTagsReached = currentTags.size >= 4
+
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         // 헤더
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp , end = 16.dp, top = 28.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "태그 추가",
-                style = subhead01Bold,
+                style = headline03Bold,
                 color = Text01
             )
-
-            IconButton(
-                onClick = { onAction(ImageDetailAction.OnHideTagEditBottomSheet) }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = "닫기",
-                    tint = Gray06
-                )
-            }
+            Icon(
+                painter = painterResource(id = R.drawable.ic_close),
+                contentDescription = "닫기",
+                tint = Text01,
+                modifier = Modifier.size(24.dp).clickableWithoutRipple(enabled = true, onClick = {onAction(ImageDetailAction.OnHideTagEditBottomSheet)})
+            )
         }
 
         // 태그 입력 필드
-        BasicTextField(
+        TagInputField(
             value = state.newTagText,
-            onValueChange = { onAction(ImageDetailAction.OnNewTagTextChange(it)) },
+            onValueChange = {
+                if (!isMaxTagsReached) {
+                    onAction(ImageDetailAction.OnNewTagTextChange(it))
+                }
+            },
+            placeholder = "추가할 태그를 입력해주세요",
+            errorMessage = null, // 에러 메시지 제거
+            onClear = { onAction(ImageDetailAction.OnNewTagTextChange("")) },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = Gray04,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(12.dp),
-            textStyle = body02Regular.copy(color = Text01),
-            decorationBox = { innerTextField ->
-                Box {
-                    if (state.newTagText.isEmpty()) {
-                        Text(
-                            text = "태그를 입력하세요",
-                            style = body02Regular,
-                            color = Gray06
-                        )
-                    }
-                    innerTextField()
-                }
-            }
+                .padding(horizontal = 16.dp)
+                .focusRequester(focusRequester)
         )
 
-        // 추가 버튼
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = if (state.newTagText.isNotEmpty()) Primary else Gray04,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clickable(enabled = state.newTagText.isNotEmpty()) {
-                    onAction(ImageDetailAction.OnAddNewTag)
-                }
-                .padding(12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "추가",
-                style = subhead02Bold,
-                color = if (state.newTagText.isNotEmpty()) PureWhite else Gray06
-            )
-        }
+
 
         // 추가된 태그들
-        if (state.currentScreenshot?.tags?.isNotEmpty() == true) {
-            Text(
-                text = "추가된 태그",
-                style = subhead01Bold,
-                color = Text01
-            )
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+        if (currentTags.isNotEmpty()) {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                items(state.currentScreenshot.tags) { tag ->
-                    UiTagSelectedChip(
-                        text = tag,
-                        onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "추가한 태그",
+                        style = subhead01Bold,
+                        color = Text01
                     )
+
+                    Text(
+                        text = "태그는 최대 4개까지 지정할 수 있어요",
+                        style = caption02Regular,
+                        color = Text03
+                    )
+                }
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    currentTags.forEach { tag ->
+                        UiTagSelectedChip(
+                            text = tag,
+                            onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
+                        )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(18.dp))
+    }
+
+    // 완료 버튼 (항상 표시)
+    UiBottomInputButton(
+        text = "완료",
+        enabled = state.newTagText.isNotBlank(),
+        onClick = {
+            if (state.newTagText.isNotBlank()) {
+                onAction(ImageDetailAction.OnAddNewTag)
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    // 포커스 자동 설정
+    LaunchedEffect(Unit) {
+        delay(300) // 애니메이션 완료 후 포커스
+        focusRequester.requestFocus()
     }
 }
 
