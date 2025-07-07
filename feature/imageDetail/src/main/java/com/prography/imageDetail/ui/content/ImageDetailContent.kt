@@ -34,8 +34,9 @@ import com.prography.ui.component.UiTagSelectedChip
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.theme.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 
 @OptIn(
     ExperimentalFoundationApi::class,
@@ -313,23 +314,33 @@ fun BottomActionBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun TagEditBottomSheetContent(
     state: ImageDetailState,
     onAction: (ImageDetailAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    val currentTags = state.currentScreenshot?.tags ?: emptyList()
-    val isMaxTagsReached = currentTags.size >= 4
+    val isMaxTagsReached = (state.currentScreenshot?.tags?.size ?: 0) >= 4
+    
+    // 키보드 상태 확인
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    val imeVisible by remember {
+        derivedStateOf { ime.getBottom(density) > 0 }
+    }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 0.dp) // 완료 버튼 여백
     ) {
         // 헤더
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp , end = 16.dp, top = 28.dp, bottom = 28.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 28.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -342,11 +353,13 @@ private fun TagEditBottomSheetContent(
                 painter = painterResource(id = R.drawable.ic_close),
                 contentDescription = "닫기",
                 tint = Text01,
-                modifier = Modifier.size(24.dp).clickableWithoutRipple(enabled = true, onClick = {onAction(ImageDetailAction.OnHideTagEditBottomSheet)})
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickableWithoutRipple { onAction(ImageDetailAction.OnHideTagEditBottomSheet) }
             )
         }
 
-        // 태그 입력 필드
+        // 입력창
         TagInputField(
             value = state.newTagText,
             onValueChange = {
@@ -355,22 +368,24 @@ private fun TagEditBottomSheetContent(
                 }
             },
             placeholder = "추가할 태그를 입력해주세요",
-            errorMessage = null, // 에러 메시지 제거
+            errorMessage = null,
             onClear = { onAction(ImageDetailAction.OnNewTagTextChange("")) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .focusRequester(focusRequester)
+                .focusRequester(focusRequester),
+            enabled = !isMaxTagsReached,
+            onDone = {
+                onAction(ImageDetailAction.OnAddNewTag)
+                focusManager.clearFocus()
+            }
         )
 
-
-
-        // 추가된 태그들
-        if (currentTags.isNotEmpty()) {
+        // 태그 목록 (입력창에 포커스 없고 키보드도 내려갔을 때만)
+        if (!imeVisible && state.currentScreenshot?.tags?.isNotEmpty() == true) {
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -383,7 +398,6 @@ private fun TagEditBottomSheetContent(
                         style = subhead01Bold,
                         color = Text01
                     )
-
                     Text(
                         text = "태그는 최대 4개까지 지정할 수 있어요",
                         style = caption02Regular,
@@ -396,7 +410,7 @@ private fun TagEditBottomSheetContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    currentTags.forEach { tag ->
+                    state.currentScreenshot.tags.forEach { tag ->
                         UiTagSelectedChip(
                             text = tag,
                             onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
@@ -406,27 +420,30 @@ private fun TagEditBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (imeVisible) {
+            UiBottomInputButton(
+                text = "완료",
+                enabled = state.newTagText.isNotBlank(),
+                onClick = {
+                    if (state.newTagText.isNotBlank()) {
+                        onAction(ImageDetailAction.OnAddNewTag)
+                        focusManager.clearFocus()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .imePadding()
+            )
+        }
     }
 
-    // 완료 버튼 (항상 표시)
-    UiBottomInputButton(
-        text = "완료",
-        enabled = state.newTagText.isNotBlank(),
-        onClick = {
-            if (state.newTagText.isNotBlank()) {
-                onAction(ImageDetailAction.OnAddNewTag)
-            }
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
-
-    // 포커스 자동 설정
-    LaunchedEffect(Unit) {
-        delay(300) // 애니메이션 완료 후 포커스
-        focusRequester.requestFocus()
-    }
+    // 강제 포커스 제거 (→ 사용자가 눌러야 키보드 뜸)
+    // 필요 시 직접 클릭으로 포커스 유도
 }
+
 
 
 @Preview(showBackground = true)

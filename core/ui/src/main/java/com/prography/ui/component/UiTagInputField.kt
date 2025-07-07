@@ -14,21 +14,29 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.prography.ui.R
 import com.prography.ui.theme.Error
 import com.prography.ui.theme.Gray01
+import com.prography.ui.theme.Gray02
 import com.prography.ui.theme.Gray03
+import com.prography.ui.theme.Gray09
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body02Regular
@@ -42,7 +50,9 @@ fun TagInputField(
     placeholder: String = "추가할 태그를 입력해주세요",
     errorMessage: String? = null,
     onClear: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onDone: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    enabled: Boolean = false
 ) {
     val isError = errorMessage != null
 
@@ -68,33 +78,40 @@ fun TagInputField(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(38.dp) // Row에 고정 높이 적용
+                    .height(38.dp)
             ) {
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
-                    textStyle = body02Regular,
+                    enabled = enabled,
+                    textStyle = body02Regular.copy(
+                        color = Text02
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (enabled && value.isNotBlank()) {
+                                onDone()
+                            }
+                        }
+                    ),
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(), // height 대신 fillMaxHeight 사용
+                        .fillMaxHeight(),
                     decorationBox = { innerTextField ->
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize(), // fillMaxWidth, fillMaxHeight 대신 fillMaxSize
+                            modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             if (value.isEmpty()) {
-                                // placeholder를 먼저 그리고
                                 Text(
                                     text = placeholder,
-                                    color = Text03,
+                                    color = if (enabled) Gray03 else Text03,
                                     style = body02Regular,
                                     maxLines = 1
-                                    // modifier 제거 - Box의 contentAlignment로 중앙 정렬됨
                                 )
                             }
-                            // innerTextField를 나중에 그려서 위에 오버레이
                             innerTextField()
                         }
                     }
@@ -103,7 +120,7 @@ fun TagInputField(
                 if (value.isNotEmpty()) {
                     IconButton(
                         onClick = onClear,
-                        modifier = Modifier.height(38.dp) // IconButton도 같은 높이
+                        modifier = Modifier.height(38.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_text_field_delete),
@@ -131,6 +148,7 @@ fun TagInputField(
         }
     }
 }
+
 
 @Preview(name = "기본 상태", showBackground = false)
 @Composable
