@@ -1,6 +1,7 @@
 package com.prography.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -27,36 +29,47 @@ fun UiSearchBar(
     placeholder: String = "태그 이름으로 검색해 보세요",
     modifier: Modifier = Modifier
 ) {
+    val focusState = remember { mutableStateOf(false) }
+
+    val showBorder = value.isEmpty() && !focusState.value
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
+            .let {
+                if (!showBorder) {
+                    it.border(1.dp, Gray03, shape = RoundedCornerShape(8.dp))
+                } else {
+                    it
+                }
+            }
             .background(
-                color = Gray02,
+                color = Gray01,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(horizontal = 16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = "검색",
-            tint = Gray05,
-            modifier = Modifier.size(20.dp)
-        )
+        if (showBorder) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "검색",
+                tint = Gray05,
+                modifier = Modifier.size(20.dp)
+            )
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
         Box(modifier = Modifier.weight(1f)) {
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = TextStyle(
-                    fontSize = 16.sp,
-                    color = Text01,
-                    fontFamily = FontFamily(Font(R.font.prography_pretendard_medium))
-                ),
-                modifier = Modifier.fillMaxWidth(),
+                textStyle = body02Regular.copy(color = Text02),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState.value = it.isFocused },
                 singleLine = true
             )
 
@@ -64,12 +77,13 @@ fun UiSearchBar(
                 Text(
                     text = placeholder,
                     style = body02Regular,
-                    color = Gray05
+                    color = Text03
                 )
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

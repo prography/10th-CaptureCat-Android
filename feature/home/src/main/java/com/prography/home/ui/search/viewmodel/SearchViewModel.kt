@@ -131,26 +131,36 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        // 선택된 태그를 포함하는 스크린샷들의 다른 태그들을 수집
-        val relatedTagsSet = mutableSetOf<String>()
-
-        currentState.screenshots.forEach { screenshot ->
-            // 선택된 태그 중 하나라도 포함하는 스크린샷의 모든 태그를 수집
-            if (selectedTags.any { selectedTag ->
-                    screenshot.tags.any { tag ->
-                        tag.contains(selectedTag, ignoreCase = true)
-                    }
-                }) {
-                screenshot.tags.forEach { tag ->
-                    // 이미 선택된 태그는 제외
-                    if (!selectedTags.contains(tag)) {
-                        relatedTagsSet.add(tag)
-                    }
+        // 선택된 모든 태그를 포함하는 스크린샷들만 찾기 (AND 로직)
+        val matchingScreenshots = currentState.screenshots.filter { screenshot ->
+            selectedTags.all { selectedTag ->
+                screenshot.tags.any { tag ->
+                    tag.contains(selectedTag, ignoreCase = true)
                 }
             }
         }
 
-        updateState { copy(relatedTags = relatedTagsSet.toList()) }
+        // 매칭된 스크린샷들의 다른 태그들을 수집 (이미 선택된 태그는 제외)
+        val relatedTagsSet = mutableSetOf<String>()
+        matchingScreenshots.forEach { screenshot ->
+            screenshot.tags.forEach { tag ->
+                // 이미 선택된 태그는 제외
+                if (!selectedTags.any { selectedTag ->
+                        tag.equals(selectedTag, ignoreCase = true)
+                    }) {
+                    relatedTagsSet.add(tag)
+                }
+            }
+        }
+
+        // 빈도순으로 정렬 (옵션)
+        val sortedRelatedTags = relatedTagsSet.toList().sortedByDescending { tag ->
+            matchingScreenshots.count { screenshot ->
+                screenshot.tags.any { it.equals(tag, ignoreCase = true) }
+            }
+        }
+
+        updateState { copy(relatedTags = sortedRelatedTags) }
     }
 
     private fun clearSearch() {

@@ -42,25 +42,15 @@ fun SearchContent(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header
-        item {
-            Text(
-                text = "검색",
-                style = headline02Bold,
-                color = Text01,
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-            )
-        }
 
         // Search Bar
         item {
             UiSearchBar(
                 value = state.searchQuery,
                 onValueChange = { onAction(SearchAction.UpdateSearchQuery(it)) },
-                placeholder = "태그 이름으로 검색해 보세요"
+                placeholder = "태그 이름으로 검색해 보세요",
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
             )
         }
 
@@ -183,27 +173,38 @@ fun SelectedTagsSection(
 fun RelatedTagsSection(
     relatedTags: List<String>,
     selectedTags: List<String>,
-    onTagClick: (String) -> Unit
+    onTagClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 0.dp)
-    ) {
-        items(relatedTags) { tag ->
-            val isSelected = selectedTags.contains(tag)
+    Column(modifier = modifier) {
+        Text(
+            text = "연관 태그",
+            style = caption02Regular,
+            color = Text03,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
-            Text(
-                text = tag,
-                style = caption01SemiBold,
-                color = if (isSelected) Color.White else Text01,
-                modifier = Modifier
-                    .background(
-                        color = if (isSelected) Color(0xFFFF6B35) else Color(0xFFF5F5F5),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .clickable { if (!isSelected) onTagClick(tag) }
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 0.dp)
+        ) {
+            // 이미 선택된 태그들은 제외하고 표시
+            // relatedTags는 현재 선택된 모든 태그를 가진 스크린샷들의 다른 태그들이어야 함
+            // 예: 선택된 태그 ["여행", "서울"] → 이 두 태그를 모두 가진 스크린샷들의 다른 태그들 ["카페", "한강", "맛집"]
+            items(relatedTags.filter { !selectedTags.contains(it) }) { tag ->
+                Text(
+                    text = tag,
+                    style = caption01SemiBold,
+                    color = Text01,
+                    modifier = Modifier
+                        .background(
+                            color = Gray01,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clickable { onTagClick(tag) }
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+            }
         }
     }
 }
@@ -215,36 +216,28 @@ fun PopularTagsSection(
 ) {
     Column {
         Text(
-            text = "자주 사용한 태그",
+            text = "태그 바로가기",
             style = subhead01Bold,
-            color = Text01,
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = Text02,
+            modifier = Modifier.padding(bottom = 8.dp, start =16.dp)
         )
 
-        tags.forEach { tagWithCount ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onTagClick(tagWithCount.tag) }
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
+        LazyRow(
+            modifier = Modifier
+                .padding(vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(tags) { tagWithCount ->
+                UiTagShortcutChip(
                     text = tagWithCount.tag,
-                    style = body01Regular,
-                    color = Text01
-                )
-
-                Text(
-                    text = "${tagWithCount.count}",
-                    style = caption01SemiBold,
-                    color = Text03
+                    onClick = { onTagClick(tagWithCount.tag) }
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun EmptyTagsState() {
@@ -256,26 +249,24 @@ fun EmptyTagsState() {
     ) {
         Text(
             text = "아직 태그가 없어요.",
-            style = subhead01Bold,
-            color = Text01,
+            style = headline02Bold,
+            color = Text02,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "스크린샷을 태그로 정리해봐요!",
-            style = body02Regular,
+            text = "스크린샷을 태그해 정리해보세요!",
+            style = body01Regular,
             color = Text03,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        UiPrimaryButton(
-            text = "정리하러 가기",
-            onClick = { /* Navigate to organize */ },
-            modifier = Modifier.width(160.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+        UiLabelAddButton(
+            text = "임시보관함 가기",
+            onClick = { /* TODO */ }
         )
     }
 }
@@ -370,7 +361,7 @@ fun SearchContentPreview() {
             TagWithCount("쇼핑", 15),
             TagWithCount("여행", 8),
             TagWithCount("음식", 6),
-            TagWithCount("강아지", 4)
+            TagWithCount("가나다라마바사마바사아자타카하", 4)
         ),
         hasData = true
     )
