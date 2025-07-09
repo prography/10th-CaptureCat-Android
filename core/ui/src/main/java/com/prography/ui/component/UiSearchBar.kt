@@ -36,7 +36,7 @@ fun UiSearchBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .wrapContentHeight()
             .let {
                 if (!showBorder) {
                     it.border(1.dp, Gray03, shape = RoundedCornerShape(8.dp))
@@ -48,18 +48,18 @@ fun UiSearchBar(
                 color = Gray01,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp),
+            .padding(vertical = 10.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (showBorder) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_search),
+                painter = painterResource(id = R.drawable.ic_search_bar_icon),
                 contentDescription = "검색",
                 tint = Gray05,
                 modifier = Modifier.size(20.dp)
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
         }
 
         Box(modifier = Modifier.weight(1f)) {
