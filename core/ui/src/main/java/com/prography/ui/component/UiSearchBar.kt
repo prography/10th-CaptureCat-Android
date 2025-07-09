@@ -39,14 +39,14 @@ fun UiSearchBar(
             .wrapContentHeight()
             .let {
                 if (!showBorder) {
-                    it.border(1.dp, Gray03, shape = RoundedCornerShape(8.dp))
+                    it.border(1.dp, Gray03, shape = RoundedCornerShape(6.dp))
                 } else {
                     it
                 }
             }
             .background(
                 color = Gray01,
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(6.dp)
             )
             .padding(vertical = 10.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically

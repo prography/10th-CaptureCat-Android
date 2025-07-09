@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.search.contract.*
@@ -38,14 +39,19 @@ fun SearchContent(
     onAction: (SearchAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-
-        // Search Bar
-        item {
+        if (state.selectedTags.isNotEmpty()) {
+            // 기존 SearchBar 숨기고 이걸로 대체
+            SelectedTagsSearchHeader(
+                selectedTags = state.selectedTags,
+                onRemoveTag = { tag -> onAction(SearchAction.RemoveTag(tag)) },
+                onClearAll = { onAction(SearchAction.ClearSearch) }
+            )
+        } else {
             UiSearchBar(
                 value = state.searchQuery,
                 onValueChange = { onAction(SearchAction.UpdateSearchQuery(it)) },
@@ -54,73 +60,79 @@ fun SearchContent(
             )
         }
 
-        // Selected Tags
-        if (state.selectedTags.isNotEmpty()) {
-            item {
-                SelectedTagsSection(
-                    selectedTags = state.selectedTags,
-                    onRemoveTag = { tag -> onAction(SearchAction.RemoveTag(tag)) }
+        val isSearchMode = state.selectedTags.isNotEmpty() || state.searchQuery.isNotEmpty()
+
+        when {
+            !state.hasData || state.popularTags.isEmpty() -> {
+                // 초기 Empty 상태
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyTagsState()
+                }
+            }
+
+            isSearchMode && state.searchResults.isEmpty() -> {
+                // 검색했는데 결과 없을 때
+                EmptySearchResult(
+                    onClearSearch = { onAction(SearchAction.ClearSearch) }
                 )
             }
-        }
 
-        // Content based on state
-        if (state.selectedTags.isNotEmpty() || state.searchQuery.isNotEmpty()) {
-            // Related Tags (horizontal scroll)
-            if (state.relatedTags.isNotEmpty()) {
-                item {
-                    RelatedTagsSection(
-                        relatedTags = state.relatedTags,
-                        selectedTags = state.selectedTags,
-                        onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
-                    )
-                }
-            }
+            else -> {
+                // 정상 결과 또는 인기 태그
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    if (isSearchMode) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(Gray02)
+                            )
+                        }
 
-            // Search Results
-            if (state.searchResults.isNotEmpty()) {
-                item {
-                    Text(
-                        text = "검색 결과 ${state.searchResults.size}개",
-                        style = subhead01Bold,
-                        color = Text01,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
+                        if (state.relatedTags.isNotEmpty()) {
+                            item {
+                                RelatedTagsSection(
+                                    relatedTags = state.relatedTags,
+                                    selectedTags = state.selectedTags,
+                                    onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
+                                )
+                            }
+                        }
 
-                item {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.heightIn(max = 2000.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        userScrollEnabled = false
-                    ) {
-                        items(state.searchResults) { screenshot ->
-                            SearchResultItem(screenshot = screenshot)
+                        if (state.searchResults.isNotEmpty()) {
+                            item {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(2),
+                                    modifier = Modifier
+                                        .heightIn(max = 2000.dp)
+                                        .padding(start = 16.dp, end = 16.dp, top = 4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    userScrollEnabled = false
+                                ) {
+                                    items(state.searchResults) { screenshot ->
+                                        SearchResultItem(screenshot = screenshot)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (state.popularTags.isNotEmpty()) {
+                            item {
+                                PopularTagsSection(
+                                    tags = state.popularTags,
+                                    onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
+                                )
+                            }
                         }
                     }
-                }
-            } else {
-                // No Search Results
-                item {
-                    EmptySearchResult(
-                        onClearSearch = { onAction(SearchAction.ClearSearch) }
-                    )
-                }
-            }
-        } else {
-            // Popular Tags or Empty State
-            if (state.hasData && state.popularTags.isNotEmpty()) {
-                item {
-                    PopularTagsSection(
-                        tags = state.popularTags,
-                        onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
-                    )
-                }
-            } else {
-                item {
-                    EmptyTagsState()
                 }
             }
         }
@@ -128,46 +140,68 @@ fun SearchContent(
 }
 
 @Composable
-fun SelectedTagsSection(
+fun SelectedTagsSearchHeader(
     selectedTags: List<String>,
-    onRemoveTag: (String) -> Unit
+    onRemoveTag: (String) -> Unit,
+    onClearAll: () -> Unit
 ) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        selectedTags.forEach { tag ->
-            Row(
-                modifier = Modifier
-                    .background(
-                        color = Color(0xFFFF6B35),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .border(1.dp, Gray03, RoundedCornerShape(6.dp))
+                .background(Gray01, RoundedCornerShape(6.dp))
+                .padding(vertical = 3.dp)
+        ) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp)
             ) {
-                Text(
-                    text = tag,
-                    style = caption01SemiBold,
-                    color = Color.White
-                )
-
-                IconButton(
-                    onClick = { onRemoveTag(tag) },
-                    modifier = Modifier.size(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "태그 제거",
-                        tint = Color.White,
-                        modifier = Modifier.size(12.dp)
-                    )
+                items(selectedTags) { tag ->
+                    Row(
+                        modifier = Modifier
+                            .background(Background, RoundedCornerShape(30.dp))
+                            .border(1.dp, Primary, RoundedCornerShape(30.dp))
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = tag,
+                            style = body02Regular,
+                            color = Primary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "태그 제거",
+                            tint = Primary,
+                            modifier = Modifier
+                                .size(14.sp.value.dp)
+                                .clickable { onRemoveTag(tag) }
+                        )
+                    }
                 }
             }
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = "취소",
+            style = body02Regular,
+            color = Text02,
+            modifier = Modifier
+                .clickable { onClearAll() }
+        )
     }
 }
+
 
 @Composable
 fun RelatedTagsSection(
@@ -176,33 +210,18 @@ fun RelatedTagsSection(
     onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = "연관 태그",
-            style = caption02Regular,
-            color = Text03,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
+    Column(modifier = modifier.padding(vertical = 8.dp)) {
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 0.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             // 이미 선택된 태그들은 제외하고 표시
             // relatedTags는 현재 선택된 모든 태그를 가진 스크린샷들의 다른 태그들이어야 함
             // 예: 선택된 태그 ["여행", "서울"] → 이 두 태그를 모두 가진 스크린샷들의 다른 태그들 ["카페", "한강", "맛집"]
             items(relatedTags.filter { !selectedTags.contains(it) }) { tag ->
-                Text(
+                UiTagShortcutChip(
                     text = tag,
-                    style = caption01SemiBold,
-                    color = Text01,
-                    modifier = Modifier
-                        .background(
-                            color = Gray01,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .clickable { onTagClick(tag) }
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                    onClick = { onTagClick(tag) }
                 )
             }
         }
@@ -219,7 +238,7 @@ fun PopularTagsSection(
             text = "태그 바로가기",
             style = subhead01Bold,
             color = Text02,
-            modifier = Modifier.padding(bottom = 8.dp, start =16.dp)
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp, start =16.dp)
         )
 
         LazyRow(
@@ -241,69 +260,80 @@ fun PopularTagsSection(
 
 @Composable
 fun EmptyTagsState() {
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 60.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "아직 태그가 없어요.",
-            style = headline02Bold,
-            color = Text02,
-            textAlign = TextAlign.Center
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "아직 태그가 없어요.",
+                style = headline02Bold,
+                color = Text02,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-            text = "스크린샷을 태그해 정리해보세요!",
-            style = body01Regular,
-            color = Text03,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "스크린샷을 태그해 정리해보세요!",
+                style = body01Regular,
+                color = Text03,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
-        UiLabelAddButton(
-            text = "임시보관함 가기",
-            onClick = { /* TODO */ }
-        )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            UiLabelAddButton(
+                text = "임시보관함 가기",
+                onClick = { /* TODO */ }
+            )
+        }
     }
 }
+
 
 @Composable
 fun EmptySearchResult(
     onClearSearch: () -> Unit
 ) {
-    Column(
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 60.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "검색 결과가 없어요.",
-            style = subhead01Bold,
-            color = Text01,
-            textAlign = TextAlign.Center
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "검색 결과가 없어요.",
+                style = subhead01Bold,
+                color = Text01,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = "다른 키워드로 검색해보세요.",
-            style = body02Regular,
-            color = Text03,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "다른 키워드로 검색해보세요.",
+                style = body02Regular,
+                color = Text03,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        UiPrimaryButton(
-            text = "검색 초기화",
-            onClick = onClearSearch,
-            modifier = Modifier.width(160.dp)
-        )
+            UiPrimaryButton(
+                text = "검색 초기화",
+                onClick = onClearSearch,
+                modifier = Modifier.width(160.dp)
+            )
+        }
     }
 }
 
