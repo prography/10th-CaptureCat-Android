@@ -79,8 +79,9 @@ fun HomeContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(state.tags) { tag ->
                     UiTagChip(
