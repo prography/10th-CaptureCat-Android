@@ -135,6 +135,13 @@ fun SearchResultsContent(
                         rowItems.forEach { screenshot ->
                             SearchResultItem(
                                 screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(
+                                        SearchAction.OnScreenshotClick(
+                                            screenshot
+                                        )
+                                    )
+                                },
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -359,6 +366,7 @@ fun EmptySearchResult(
 @Composable
 fun SearchResultItem(
     screenshot: UiScreenshotModel,
+    onScreenshotClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -370,6 +378,7 @@ fun SearchResultItem(
                 color = Gray02,
                 shape = RoundedCornerShape(4.dp)
             )
+            .clickable { onScreenshotClick() }
     ) {
         Image(
             painter = rememberAsyncImagePainter(screenshot.uri),

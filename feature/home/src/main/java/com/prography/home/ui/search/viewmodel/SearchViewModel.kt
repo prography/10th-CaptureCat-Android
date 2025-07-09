@@ -4,13 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.home.ui.search.contract.*
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase
+    private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
+    private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SearchState, SearchEffect, SearchAction>(SearchState()) {
 
     init {
@@ -25,6 +29,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.AddTag -> addTag(action.tag)
             is SearchAction.RemoveTag -> removeTag(action.tag)
             is SearchAction.ClearSearch -> clearSearch()
+            is SearchAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
         }
     }
 
@@ -199,6 +204,24 @@ class SearchViewModel @Inject constructor(
             )
         }
     }
+
+
+    private fun handleScreenshotClick(clickedScreenshot: com.prography.domain.model.UiScreenshotModel) {
+        val currentResults = currentState.searchResults
+        val currentIndex = currentResults.indexOf(clickedScreenshot)
+
+        if (currentIndex != -1) {
+            navigationHelper.navigate(
+                NavigationEvent.To(
+                    AppRoute.ImageDetail(
+                        screenshotIds = currentResults.map { it.id },
+                        currentIndex = currentIndex
+                    )
+                )
+            )
+        }
+    }
+
 
     private fun getPopularTags(screenshots: List<com.prography.domain.model.UiScreenshotModel>): List<TagWithCount> {
         val tagCounts = mutableMapOf<String, Int>()

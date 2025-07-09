@@ -22,6 +22,7 @@ sealed class SearchAction {
     data class AddTag(val tag: String) : SearchAction()
     data class RemoveTag(val tag: String) : SearchAction()
     object ClearSearch : SearchAction()
+    data class OnScreenshotClick(val screenshot: UiScreenshotModel) : SearchAction()
 }
 
 // Define Effects
