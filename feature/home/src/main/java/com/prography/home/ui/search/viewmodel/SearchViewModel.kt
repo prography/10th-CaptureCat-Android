@@ -88,7 +88,7 @@ class SearchViewModel @Inject constructor(
     private fun addTag(tag: String) {
         val currentTags = currentState.selectedTags
         if (!currentTags.contains(tag)) {
-            val newTags = currentTags + tag
+            val newTags = listOf(tag) + currentTags
             updateState { copy(selectedTags = newTags) }
 
             // 미분류 태그인 경우 특별 처리
