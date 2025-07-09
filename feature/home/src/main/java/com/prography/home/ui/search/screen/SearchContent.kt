@@ -396,7 +396,7 @@ fun SearchResultItem(
                     .align(Alignment.BottomStart)
                     .padding(start = 8.dp, bottom = 8.dp)
             ) {
-                screenshot.tags.take(2).forEach { tag ->
+                screenshot.tags.forEach { tag ->
                     UiTagInfoChip(text = tag)
                 }
             }
