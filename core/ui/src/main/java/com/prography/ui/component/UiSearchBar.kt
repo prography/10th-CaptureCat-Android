@@ -56,7 +56,7 @@ fun UiSearchBar(
                 painter = painterResource(id = R.drawable.ic_search_bar_icon),
                 contentDescription = "검색",
                 tint = Gray05,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(16.dp)
             )
 
             Spacer(modifier = Modifier.width(6.dp))
