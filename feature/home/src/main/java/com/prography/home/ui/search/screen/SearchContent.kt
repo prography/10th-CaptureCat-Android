@@ -7,9 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,6 +40,7 @@ fun SearchContent(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
+            .navigationBarsPadding() // Add navigationBarsPadding here
     ) {
         if (state.selectedTags.isNotEmpty()) {
             // 기존 SearchBar 숨기고 이걸로 대체
@@ -83,56 +81,77 @@ fun SearchContent(
 
             else -> {
                 // 정상 결과 또는 인기 태그
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (isSearchMode) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(Gray02)
+                SearchResultsContent(
+                    state = state,
+                    isSearchMode = isSearchMode,
+                    onAction = onAction
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchResultsContent(
+    state: SearchState,
+    isSearchMode: Boolean,
+    onAction: (SearchAction) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        if (isSearchMode) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Gray02)
+                )
+            }
+
+            if (state.relatedTags.isNotEmpty()) {
+                item {
+                    RelatedTagsSection(
+                        relatedTags = state.relatedTags,
+                        selectedTags = state.selectedTags,
+                        onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
+                    )
+                }
+            }
+
+            if (state.searchResults.isNotEmpty()) {
+                // 검색 결과를 2개씩 묶어서 표시
+                val chunkedResults = state.searchResults.chunked(2)
+                items(chunkedResults) { rowItems ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        rowItems.forEach { screenshot ->
+                            SearchResultItem(
+                                screenshot = screenshot,
+                                modifier = Modifier.weight(1f)
                             )
                         }
-
-                        if (state.relatedTags.isNotEmpty()) {
-                            item {
-                                RelatedTagsSection(
-                                    relatedTags = state.relatedTags,
-                                    selectedTags = state.selectedTags,
-                                    onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
-                                )
-                            }
-                        }
-
-                        if (state.searchResults.isNotEmpty()) {
-                            item {
-                                LazyVerticalGrid(
-                                    columns = GridCells.Fixed(2),
-                                    modifier = Modifier
-                                        .heightIn(max = 2000.dp)
-                                        .padding(start = 16.dp, end = 16.dp, top = 4.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    userScrollEnabled = false
-                                ) {
-                                    items(state.searchResults) { screenshot ->
-                                        SearchResultItem(screenshot = screenshot)
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        if (state.popularTags.isNotEmpty()) {
-                            item {
-                                PopularTagsSection(
-                                    tags = state.popularTags,
-                                    onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
-                                )
-                            }
+                        // 한 개만 있는 경우 빈 공간 추가
+                        if (rowItems.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
+                }
+            }
+        } else {
+            if (state.popularTags.isNotEmpty()) {
+                item {
+                    PopularTagsSection(
+                        tags = state.popularTags,
+                        onTagClick = { tag -> onAction(SearchAction.AddTag(tag)) }
+                    )
                 }
             }
         }
@@ -348,7 +367,7 @@ fun SearchResultItem(
             .clip(RoundedCornerShape(4.dp))
             .border(
                 width = 0.75.dp,
-                color = Color(0x0D001758),
+                color = Gray02,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
@@ -369,14 +388,7 @@ fun SearchResultItem(
                     .padding(start = 8.dp, bottom = 8.dp)
             ) {
                 screenshot.tags.take(2).forEach { tag ->
-                    Text(
-                        text = tag,
-                        style = caption01SemiBold,
-                        color = Color.White,
-                        modifier = Modifier
-                            .background(Color(0x66000000), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
+                    UiTagInfoChip(text = tag)
                 }
             }
         }
