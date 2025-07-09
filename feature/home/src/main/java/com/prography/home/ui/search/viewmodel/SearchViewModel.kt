@@ -85,8 +85,14 @@ class SearchViewModel @Inject constructor(
         if (!currentTags.contains(tag)) {
             val newTags = currentTags + tag
             updateState { copy(selectedTags = newTags) }
-            searchBySelectedTags(newTags)
-            updateRelatedTags(newTags)
+
+            // 미분류 태그인 경우 특별 처리
+            if (tag == "미분류") {
+                searchUncategorizedScreenshots()
+            } else {
+                searchBySelectedTags(newTags)
+                updateRelatedTags(newTags)
+            }
         }
     }
 
@@ -102,8 +108,14 @@ class SearchViewModel @Inject constructor(
                 )
             }
         } else {
-            searchBySelectedTags(newTags)
-            updateRelatedTags(newTags)
+            // 미분류가 아닌 태그들만 있는 경우 일반 검색
+            if (!newTags.contains("미분류")) {
+                searchBySelectedTags(newTags)
+                updateRelatedTags(newTags)
+            } else {
+                // 미분류가 포함된 경우 미분류 검색
+                searchUncategorizedScreenshots()
+            }
         }
     }
 
@@ -123,6 +135,20 @@ class SearchViewModel @Inject constructor(
         }
 
         updateState { copy(searchResults = results) }
+    }
+
+    private fun searchUncategorizedScreenshots() {
+        // 태그가 없는 스크린샷들만 필터링
+        val results = currentState.screenshots.filter { screenshot ->
+            screenshot.tags.isEmpty()
+        }
+
+        updateState {
+            copy(
+                searchResults = results,
+                relatedTags = emptyList() // 미분류는 연관 태그 없음
+            )
+        }
     }
 
     private fun updateRelatedTags(selectedTags: List<String>) {
@@ -183,9 +209,11 @@ class SearchViewModel @Inject constructor(
             }
         }
 
-        return tagCounts.entries
+        val popularTags = tagCounts.entries
             .map { TagWithCount(it.key, it.value) }
             .sortedByDescending { it.count }
-            .take(10) // 상위 10개 태그만
+            .take(5) // 상위 5개 태그만
+            .plus(TagWithCount("미분류", screenshots.count { it.tags.isEmpty() })) // 미분류 태그 추가
+        return popularTags
     }
 }
