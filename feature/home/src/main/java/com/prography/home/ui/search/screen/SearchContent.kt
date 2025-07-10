@@ -339,26 +339,25 @@ fun EmptySearchResult(
         ) {
             Text(
                 text = "검색 결과가 없어요.",
-                style = subhead01Bold,
-                color = Text01,
+                style = headline02Bold,
+                color = Text02,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "다른 키워드로 검색해보세요.",
-                style = body02Regular,
+                text = "스크린샷을 태그해 정리해보세요",
+                style = body01Regular,
                 color = Text03,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            UiPrimaryButton(
+            UiLabelAddButton(
                 text = "검색 초기화",
-                onClick = onClearSearch,
-                modifier = Modifier.width(160.dp)
+                onClick = onClearSearch
             )
         }
     }
