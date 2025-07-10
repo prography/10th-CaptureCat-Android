@@ -18,6 +18,7 @@ import com.prography.onboarding.navigation.OnboardingRoute
 import com.prography.organize.navigation.OrganizeRoute
 import com.prography.setting.route.SettingRoute
 import com.prography.setting.route.WithdrawRoute
+import com.prography.favorite.ui.route.FavoriteRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -71,6 +72,9 @@ fun AppNavGraph(
                 screenshotIds = imageDetail.screenshotIds,
                 currentIndex = imageDetail.currentIndex
             )
+        }
+        composable<AppRoute.Favorite> {
+            FavoriteRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.SettingRoute.Setting> {
             SettingRoute(navigationHelper = navigationHelper)

@@ -69,7 +69,8 @@ fun HomeContent(
 
         item {
             FavoriteCardDeck(
-                screenshots = state.screenshots
+                screenshots = state.screenshots,
+                onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
             )
         }
 

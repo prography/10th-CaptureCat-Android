@@ -6,10 +6,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,11 +32,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.ui.component.UiTagChip
+import com.prography.ui.component.UiTagInfoChip
 import com.prography.ui.theme.caption01SemiBold
+import com.prography.ui.R
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun FavoriteCardDeck(
     screenshots: List<UiScreenshotModel>,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val favoriteScreenshots = remember(screenshots) {
@@ -98,23 +105,32 @@ fun FavoriteCardDeck(
                     contentScale = ContentScale.Crop
                 )
 
-                FlowRow(
+
+                Row(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(start = 16.dp, bottom = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 9.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    screenshot.tags.forEach { tag ->
-                        Text(
-                            text = tag,
-                            style = caption01SemiBold,
-                            color = Color.White,
-                            modifier = Modifier
-                                .background(Color(0x66000000), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 10.dp, vertical = 6.dp)
-                        )
+
+                    FlowRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        screenshot.tags.forEach { tag ->
+                            UiTagInfoChip(tag)
+                        }
                     }
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_favorite_all_see),
+                        contentDescription = "즐겨찾기 이동",
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable { onFavoriteClick() }
+                    )
                 }
             }
         }

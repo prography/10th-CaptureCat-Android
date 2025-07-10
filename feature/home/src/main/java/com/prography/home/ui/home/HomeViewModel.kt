@@ -36,6 +36,11 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.SettingRoute.Setting)
                 )
             }
+            HomeAction.NavigateToFavorite -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Favorite)
+                )
+            }
             is HomeAction.OnScreenshotClick -> {
                 handleScreenshotClick(action.screenshot)
             }

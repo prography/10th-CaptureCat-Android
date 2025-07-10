@@ -34,6 +34,9 @@ sealed interface AppRoute : Route {
     ) : AppRoute
 
     @Serializable
+    data object Favorite : AppRoute
+
+    @Serializable
     sealed interface SettingRoute : AppRoute {
         @Serializable
         data object Setting : SettingRoute

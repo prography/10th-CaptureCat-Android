@@ -7,6 +7,7 @@ sealed class HomeAction {
     object LoadScreenshots : HomeAction()
     data class SelectTag(val tag: String) : HomeAction()
     object NavigateToSettings : HomeAction()
+    object NavigateToFavorite : HomeAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : HomeAction()
 }
 
