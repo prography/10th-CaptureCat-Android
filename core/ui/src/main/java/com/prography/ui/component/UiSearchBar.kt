@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -16,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +30,7 @@ fun UiSearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = "태그 이름으로 검색해 보세요",
+    onSearchComplete: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val focusState = remember { mutableStateOf(false) }
@@ -67,6 +71,14 @@ fun UiSearchBar(
                 value = value,
                 onValueChange = onValueChange,
                 textStyle = body02Regular.copy(color = Text02),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearchComplete?.invoke()
+                    }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .onFocusChanged { focusState.value = it.isFocused },

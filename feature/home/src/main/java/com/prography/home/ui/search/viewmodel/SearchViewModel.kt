@@ -30,6 +30,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.RemoveTag -> removeTag(action.tag)
             is SearchAction.ClearSearch -> clearSearch()
             is SearchAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
+            is SearchAction.OnSearchComplete -> handleSearchComplete()
         }
     }
 
@@ -60,13 +61,10 @@ class SearchViewModel @Inject constructor(
 
     private fun updateSearchQuery(query: String) {
         updateState {
-            copy(searchQuery = query)
-        }
-
-        if (query.isNotEmpty()) {
-            searchScreenshots(query)
-        } else {
-            updateState { copy(searchResults = emptyList()) }
+            copy(
+                searchQuery = query,
+                hasSearched = if (query.isEmpty()) false else hasSearched
+            )
         }
     }
 
@@ -89,7 +87,12 @@ class SearchViewModel @Inject constructor(
         val currentTags = currentState.selectedTags
         if (!currentTags.contains(tag)) {
             val newTags = listOf(tag) + currentTags
-            updateState { copy(selectedTags = newTags) }
+            updateState {
+                copy(
+                    selectedTags = newTags,
+                    searchQuery = ""
+                )
+            }
 
             // 미분류 태그인 경우 특별 처리
             if (tag == "미분류") {
@@ -200,11 +203,36 @@ class SearchViewModel @Inject constructor(
                 searchQuery = "",
                 selectedTags = emptyList(),
                 searchResults = emptyList(),
-                relatedTags = emptyList()
+                relatedTags = emptyList(),
+                hasSearched = false
             )
         }
     }
 
+    private fun handleSearchComplete() {
+        val query = currentState.searchQuery.trim()
+        if (query.isEmpty()) return
+
+        // 해당 태그가 존재하는지 확인
+        val tagExists = currentState.screenshots.any { screenshot ->
+            screenshot.tags.any { tag ->
+                tag.contains(query, ignoreCase = true)
+            }
+        }
+
+        if (tagExists) {
+            // 태그가 존재하면 selectedTags에 추가
+            addTag(query)
+        } else {
+            // 태그가 존재하지 않으면 빈 결과로 설정
+            updateState {
+                copy(
+                    searchResults = emptyList(),
+                    hasSearched = true
+                )
+            }
+        }
+    }
 
     private fun handleScreenshotClick(clickedScreenshot: com.prography.domain.model.UiScreenshotModel) {
         val currentResults = currentState.searchResults
@@ -221,7 +249,6 @@ class SearchViewModel @Inject constructor(
             )
         }
     }
-
 
     private fun getPopularTags(screenshots: List<com.prography.domain.model.UiScreenshotModel>): List<TagWithCount> {
         val tagCounts = mutableMapOf<String, Int>()

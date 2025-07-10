@@ -11,7 +11,8 @@ data class SearchState(
     val relatedTags: List<String> = emptyList(),
     val searchResults: List<UiScreenshotModel> = emptyList(),
     val isLoading: Boolean = false,
-    val hasData: Boolean = false
+    val hasData: Boolean = false,
+    val hasSearched: Boolean = false
 )
 
 // Define Actions
@@ -23,6 +24,7 @@ sealed class SearchAction {
     data class RemoveTag(val tag: String) : SearchAction()
     object ClearSearch : SearchAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : SearchAction()
+    object OnSearchComplete : SearchAction()
 }
 
 // Define Effects

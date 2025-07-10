@@ -53,12 +53,13 @@ fun SearchContent(
             UiSearchBar(
                 value = state.searchQuery,
                 onValueChange = { onAction(SearchAction.UpdateSearchQuery(it)) },
+                onSearchComplete = { onAction(SearchAction.OnSearchComplete) },
                 placeholder = "태그 이름으로 검색해 보세요",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
             )
         }
 
-        val isSearchMode = state.selectedTags.isNotEmpty() || state.searchQuery.isNotEmpty()
+        val isSearchMode = state.selectedTags.isNotEmpty() || state.searchResults.isNotEmpty()
 
         when {
             !state.hasData || state.popularTags.isEmpty() -> {
@@ -72,7 +73,7 @@ fun SearchContent(
                 }
             }
 
-            isSearchMode && state.searchResults.isEmpty() -> {
+            state.hasSearched && state.searchResults.isEmpty() -> {
                 // 검색했는데 결과 없을 때
                 EmptySearchResult(
                     onClearSearch = { onAction(SearchAction.ClearSearch) }
