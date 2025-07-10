@@ -244,10 +244,10 @@ fun ChipSection(
         IconButton(onClick = onFavoriteToggle) {
             Icon(
                 painter = painterResource(
-                    id = if (isFavorite) R.drawable.ic_detail_favorite_checked else R.drawable.ic_detail_favorite_unchecked
+                    id = if (isFavorite) R.drawable.ic_favorite_check else R.drawable.ic_favorite_uncheck
                 ),
                 contentDescription = "즐겨찾기",
-                tint = OverlayDim
+                tint = Color.Unspecified
             )
         }
     }
