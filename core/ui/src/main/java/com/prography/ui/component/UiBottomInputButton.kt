@@ -28,7 +28,6 @@ fun UiBottomInputButton(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
             .background(
                 color = if (enabled) Primary else Gray04,
                 shape = RoundedCornerShape(4.dp)
