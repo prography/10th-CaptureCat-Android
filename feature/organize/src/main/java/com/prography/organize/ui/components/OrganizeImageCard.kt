@@ -108,26 +108,37 @@ fun OrganizeImageCard(
                     scaleY = pageScale * deleteScale
                 }
                 .pointerInput(Unit) {
-                    awaitEachGesture {
-                        val down = awaitFirstDown()
+                    while (true) {
+                        awaitPointerEventScope {
+                            val down = awaitFirstDown()
 
-                        // 가로보다 세로가 더 큰 경우만 우리가 처리
-                        val drag = awaitDragOrCancellation(down.id)
-                        if (drag != null && abs(drag.positionChange().y) > abs(drag.positionChange().x)) {
-                            isDragging = true
-                            var currentY = offsetY
-                            while (true) {
-                                val event = awaitDragOrCancellation(down.id) ?: break
-                                val delta = event.positionChange().y
-                                currentY += delta
-                                if (currentY > 0f) currentY = 0f
-                                offsetY = currentY
+                            // 슬롭 넘었는지 판단
+                            val drag = awaitTouchSlopOrCancellation(down.id) { change, over ->
+                                if (abs(over.y) > abs(over.x)) {
+                                    change.consume()
+                                }
                             }
-                            isDragging = false
-                            if (offsetY < deleteThreshold && !isDeleting) {
-                                isDeleting = true
-                            } else {
-                                offsetY = 0f
+
+                            if (drag != null) {
+                                isDragging = true
+                                var currentY = offsetY
+
+                                while (true) {
+                                    val event = awaitDragOrCancellation(drag.id) ?: break
+                                    val delta = event.positionChange().y
+                                    currentY += delta
+                                    if (currentY > 0f) currentY = 0f
+                                    offsetY = currentY
+                                    event.consume()
+                                }
+
+                                isDragging = false
+
+                                if (offsetY < deleteThreshold && !isDeleting) {
+                                    isDeleting = true
+                                } else {
+                                    offsetY = 0f
+                                }
                             }
                         }
                     }

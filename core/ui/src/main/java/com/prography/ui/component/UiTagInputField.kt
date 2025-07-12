@@ -52,7 +52,7 @@ fun TagInputField(
     onClear: () -> Unit = {},
     onDone: () -> Unit = {},
     modifier: Modifier = Modifier,
-    enabled: Boolean = false
+    enabled: Boolean = true
 ) {
     val isError = errorMessage != null
 
@@ -107,7 +107,7 @@ fun TagInputField(
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholder,
-                                    color = if (enabled) Gray03 else Text03,
+                                    color = if (enabled) Text03 else Gray03,
                                     style = body02Regular,
                                     maxLines = 1
                                 )
