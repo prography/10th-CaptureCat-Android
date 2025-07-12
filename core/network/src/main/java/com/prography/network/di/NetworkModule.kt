@@ -2,6 +2,7 @@ package com.prography.network.di
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.prography.network.BuildConfig
 import com.prography.network.util.CustomCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -42,7 +43,7 @@ object NetworkModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://api.unsplash.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .addCallAdapterFactory(CustomCallAdapterFactory())
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType())) // ✅ 재사용
             .build()
