@@ -1,6 +1,5 @@
 package com.prography.network.util
 
-import com.prography.domain.util.NetworkState
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit

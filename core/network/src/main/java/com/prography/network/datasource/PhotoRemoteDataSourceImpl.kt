@@ -1,8 +1,9 @@
 package com.prography.network.datasource
 
-import com.android.prography.data.api.PhotoService
+
 import com.prography.network.entity.PhotoResponse
-import com.prography.domain.util.NetworkState
+import com.prography.network.api.PhotoService
+import com.prography.network.util.NetworkState
 import javax.inject.Inject
 
 class PhotoRemoteDataSourceImpl @Inject constructor(

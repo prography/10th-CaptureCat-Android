@@ -1,6 +1,7 @@
 package com.prography.network.di
 
-import com.android.prography.data.api.PhotoService
+import com.prography.network.api.AuthService
+import com.prography.network.api.PhotoService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,5 +15,11 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun providePhotoService(retrofit: Retrofit): PhotoService = retrofit.create(PhotoService::class.java)
+    fun providePhotoService(retrofit: Retrofit): PhotoService =
+        retrofit.create(PhotoService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAuthService(retrofit: Retrofit): AuthService =
+        retrofit.create(AuthService::class.java)
 }

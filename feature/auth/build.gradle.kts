@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":core:navigation"))
+    implementation(project(":core:domain"))
 
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

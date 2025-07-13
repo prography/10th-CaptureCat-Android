@@ -1,40 +1,28 @@
 package com.prography.data.di
 
-import com.prography.data.datasource.local.ScreenshotLocalDataSource
-import com.prography.data.datasource.local.ScreenshotLocalDataSourceImpl
-import com.prography.data.local.repository.AuthRepositoryImpl
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
-import com.prography.database.dao.ScreenshotDao
-import com.prography.datastore.user.UserPreferenceDataStore
+import com.prography.data.repository.AuthRepositoryImpl
 import com.prography.domain.repository.AuthRepository
 import com.prography.domain.repository.UserPreferenceRepository
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideUserPreferenceRepository(
-        userPreferenceDataStore: UserPreferenceDataStore
-    ): UserPreferenceRepository = UserPreferenceRepositoryImpl(userPreferenceDataStore)
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 
-
-    @Provides
+    @Binds
     @Singleton
-    fun provideAuthRepository(
-        userPreferenceDataStore: UserPreferenceDataStore
-    ): AuthRepository = AuthRepositoryImpl(userPreferenceDataStore)
-
-    @Provides
-    fun provideLocalDataSource(
-        dao: ScreenshotDao
-    ): ScreenshotLocalDataSource {
-        return ScreenshotLocalDataSourceImpl(dao)
-    }
+    abstract fun bindUserPreferenceRepository(
+        userPreferenceRepositoryImpl: UserPreferenceRepositoryImpl
+    ): UserPreferenceRepository
 }

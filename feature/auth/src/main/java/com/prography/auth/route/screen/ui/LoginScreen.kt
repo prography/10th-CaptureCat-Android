@@ -42,7 +42,7 @@ fun LoginScreen(
                         context = context,
                         onSuccess = { token ->
                             Timber.d("Kakao login success. Token: $token")
-                            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                            viewModel.handleKakaoLoginSuccess(token)
                         },
                         onFailure = { error ->
                             Timber.e("Kakao login failed: $error")
@@ -54,7 +54,13 @@ fun LoginScreen(
                         context = context,
                         onSuccess = { user ->
                             Timber.d("Login success: ${user.email}")
-                            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                            // Firebase에서 ID 토큰을 가져와서 API에 전달
+                            user.getIdToken(true).addOnSuccessListener { result ->
+                                val idToken = result.token
+                                if (idToken != null) {
+                                    viewModel.handleGoogleLoginSuccess(idToken)
+                                }
+                            }
                         },
                         onFailure = { error ->
                             Timber.e("Login failed: $error")
@@ -66,6 +72,10 @@ fun LoginScreen(
 
                     // navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                     // navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                }
+                is LoginEffect.ShowError -> {
+                    // TODO: 에러 토스트 또는 스낵바 표시
+                    Timber.e("Login error: ${effect.message}")
                 }
             }
         }

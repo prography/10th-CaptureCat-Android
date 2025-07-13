@@ -38,7 +38,7 @@ class MainViewModel @Inject constructor(
             _startDestination.value  = when {
                 !isOnboardingShown -> AppRoute.InitOnboarding // 처음 앱에 진입하는 경우, 초기 온보딩
                 !isGetScreenshot -> AppRoute.Start // 스크린샷이 없는 경우, 시작하기 화면
-                !isLoggedIn -> AppRoute.Main // 토큰이 존재하지 않는 경우, 메인 화면
+                !isLoggedIn -> AppRoute.Login // 토큰이 존재하지 않는 경우, 로그인 화면
                 else -> AppRoute.Main // 토큰이 존재하는 경우, 메인 화면 : 유효 검사 interceptor 추후 처리
             }
 

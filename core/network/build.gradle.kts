@@ -10,8 +10,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)

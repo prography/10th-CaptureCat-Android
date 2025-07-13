@@ -3,10 +3,10 @@ package com.prography.domain.usecase.auth
 import com.prography.domain.repository.AuthRepository
 import javax.inject.Inject
 
-class GetAuthTokenUseCase @Inject constructor(
+class CheckLoginStatusUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend fun isLoggedIn(): Boolean {
+    operator fun invoke(): Boolean {
         return authRepository.isLoggedIn()
     }
 }

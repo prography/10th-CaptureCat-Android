@@ -4,4 +4,5 @@ sealed interface LoginEffect {
     object NavigateToOnboarding : LoginEffect
     object StartKakaoLogin : LoginEffect
     object StartGoogleLogin : LoginEffect
+    data class ShowError(val message: String) : LoginEffect
 }
