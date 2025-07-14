@@ -68,14 +68,10 @@ fun LoginScreen(
                     )
                 }
                 LoginEffect.NavigateToOnboarding -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
-
-                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
-                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
                 is LoginEffect.ShowError -> {
-                    // TODO: 에러 토스트 또는 스낵바 표시
-                    Timber.e("Login error: ${effect.message}")
+
                 }
             }
         }
@@ -101,8 +97,8 @@ suspend fun handleKakaoLogin(
                 error != null -> {
                     onFailure(error)
                 }
-                token != null -> {
-                    onSuccess(token.accessToken)
+                token?.idToken != null  -> {
+                    onSuccess(token.idToken!!)
                 }
                 else -> {
                     onFailure(IllegalStateException("Kakao login failed: Token is null"))
@@ -118,8 +114,8 @@ suspend fun handleKakaoLogin(
                     } else {
                         UserApiClient.instance.loginWithKakaoAccount(context = context, callback =callback)
                     }
-                } else if (token != null) {
-                    onSuccess(token.accessToken)
+                } else if (token?.idToken != null) {
+                    onSuccess(token.idToken!!)
                 } else {
                     onFailure(IllegalStateException("Kakao login failed without error or token"))
                 }

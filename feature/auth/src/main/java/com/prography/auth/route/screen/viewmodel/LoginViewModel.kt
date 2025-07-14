@@ -46,19 +46,10 @@ class LoginViewModel @Inject constructor(
 
     fun handleKakaoLoginSuccess(accessToken: String) {
         viewModelScope.launch {
-            try {
-                updateState { copy(isLoading = true) }
-                val result = socialLoginUseCase("kakao", accessToken)
-                updateState { copy(isLoading = false) }
-
-                if (result.isSuccess) {
-                    emitEffect(LoginEffect.NavigateToOnboarding)
-                } else {
-                    emitEffect(LoginEffect.ShowError("카카오 로그인에 실패했습니다"))
-                }
-            } catch (e: Exception) {
-                updateState { copy(isLoading = false) }
-                emitEffect(LoginEffect.ShowError("카카오 로그인 중 오류가 발생했습니다"))
+            socialLoginUseCase("kakao", accessToken).onSuccess {
+                emitEffect(LoginEffect.NavigateToOnboarding)
+            }.onFailure {
+                showToast("카카오 로그인 중 오류가 발생했습니다")
             }
         }
     }
