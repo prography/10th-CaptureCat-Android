@@ -4,6 +4,7 @@ import com.prography.domain.repository.AuthRepository
 import com.prography.network.api.AuthService
 import com.prography.network.entity.SocialLoginRequest
 import com.prography.network.interceptor.TokenManager
+import timber.log.Timber
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -17,8 +18,11 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authService.socialLogin(provider, request)
 
             if (response.isSuccessful) {
-                val authHeader = response.headers()["Authorization"]
-                val refreshHeader = response.headers()["Refresh-Token"]
+                val authHeader = response.headers()["authorization"]
+                val refreshHeader = response.headers()["refresh-token"]
+
+                Timber.d("DEBUG: Auth header: $authHeader")
+                Timber.d("DEBUG: Refresh header: $refreshHeader")
 
                 if (!authHeader.isNullOrBlank() && !refreshHeader.isNullOrBlank()) {
                     val accessToken = authHeader.removePrefix("Bearer ")
@@ -27,12 +31,15 @@ class AuthRepositoryImpl @Inject constructor(
                     tokenManager.saveTokens(accessToken, refreshToken)
                     Result.success(Unit)
                 } else {
+                    Timber.d("DEBUG: 토큰 헤더가 비어있음 - auth: $authHeader, refresh: $refreshHeader")
                     Result.failure(Exception("토큰을 받지 못했습니다"))
                 }
             } else {
+                Timber.d("DEBUG: 응답 실패 - code: ${response.code()}, message: ${response.message()}")
                 Result.failure(Exception("로그인에 실패했습니다"))
             }
         } catch (e: Exception) {
+            Timber.d("DEBUG: 예외 발생 - ${e.message}")
             Result.failure(e)
         }
     }
@@ -73,8 +80,8 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authService.refreshToken("Bearer $refreshToken")
 
             if (response.isSuccessful) {
-                val authHeader = response.headers()["Authorization"]
-                val refreshHeader = response.headers()["Refresh-Token"]
+                val authHeader = response.headers()["authorization"]
+                val refreshHeader = response.headers()["refresh-token"]
 
                 if (!authHeader.isNullOrBlank() && !refreshHeader.isNullOrBlank()) {
                     val accessToken = authHeader.removePrefix("Bearer ")
