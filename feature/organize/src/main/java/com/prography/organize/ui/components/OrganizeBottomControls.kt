@@ -1,24 +1,28 @@
 package com.prography.organize.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.prography.ui.component.UiTagChip
+import com.prography.ui.component.clickableWithoutRipple
+import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.caption02Regular
 import com.prography.ui.theme.subhead01Bold
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OrganizeBottomControls(
     availableTags: List<String> = emptyList(),
@@ -38,13 +42,13 @@ fun OrganizeBottomControls(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(top = 20.dp, bottom = 26.dp, start = 16.dp, end = 16.dp)
+            .padding(bottom = 24.dp)
     ) {
         // 제목과 개수 제한 표시
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -61,21 +65,13 @@ fun OrganizeBottomControls(
             )
         }
 
-        // FlowRow로 완전히 wrap 크기의 태그들 표시 (최대 2줄)
-        FlowRow(
+        LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            maxLines = 2 // 최대 2줄로 제한
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            // 태그가 많으면 일부만 표시
-            val displayTags = if (actualAvailableTags.size > 11) {
-                actualAvailableTags.take(11)
-            } else {
-                actualAvailableTags
-            }
-
-            displayTags.forEach { tagText ->
+            items(actualAvailableTags) { tagText ->
                 UiTagChip(
                     text = tagText,
                     isSelected = selectedTags.contains(tagText),
@@ -90,12 +86,27 @@ fun OrganizeBottomControls(
                 )
             }
 
-            // 태그 추가 버튼
-            UiTagChip(
-                text = "태그 추가 +",
-                isSelected = false, // 추가 버튼은 항상 비선택 상태
-                onClick = { onAddTag() }
-            )
+            item {
+                // 태그 추가 버튼
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = 1.5.dp,
+                            color = Gray04,
+                            shape = RoundedCornerShape(99.dp)
+                        )
+                        .background(Color.White, shape = RoundedCornerShape(99.dp))
+                        .clickableWithoutRipple { onAddTag() }
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = com.prography.ui.R.drawable.ic_tag_plus),
+                        contentDescription = "태그 추가",
+                        tint = Text01
+                    )
+                }
+            }
         }
     }
 }
@@ -111,7 +122,7 @@ fun OrganizeBottomControlsPreview() {
 @Composable
 fun OrganizeBottomControlsWidePreview() {
     val customAvailableTags = listOf(
-        "소원", "여행", "레퍼런스", "다이소", "쇼핑", "음식"
+        "다이소", "쇼핑", "음식"
     )
     val customSelectedTags = listOf(
         "소원", "여행", "레퍼런스", "다이소"

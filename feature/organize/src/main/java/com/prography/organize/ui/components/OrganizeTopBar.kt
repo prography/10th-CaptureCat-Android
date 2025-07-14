@@ -21,6 +21,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.tooling.preview.Preview
 
 import com.prography.ui.R
+import com.prography.ui.component.ButtonSize
+import com.prography.ui.component.UiButtonText
+import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.headline03Bold
@@ -38,7 +41,7 @@ fun OrganizeTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 20.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
     ) {
 
 
@@ -62,14 +65,11 @@ fun OrganizeTopBar(
         }
 
         // 완료 버튼
-        Text(
+        UiButtonText(
             text = "저장",
-            style = subhead01Bold,
-            color = Primary,
+            onClick = { onComplete()},
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .clickable { onComplete() }
-                .padding(vertical = 8.dp, horizontal = 14.dp)
         )
     }
 }

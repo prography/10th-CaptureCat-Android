@@ -50,8 +50,11 @@ fun OrganizeContent(
                 state.currentIndex + 1 else 0,
             totalCount = state.screenshots.size,
             onNavigateUp = { onAction(OrganizeAction.OnNavigateUp) },
-            onComplete = { onAction(OrganizeAction.OnSaveScreenshots) }
+            onComplete = { onAction(OrganizeAction.OnComplete) }
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -77,10 +80,7 @@ fun OrganizeContent(
                         OrganizeStackedCards(
                             screenshots = state.screenshots
                         )
-                    } else {
-                        CompletionMessage(
-                            onComplete = { onAction(OrganizeAction.OnComplete) }
-                        )
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
 
@@ -111,21 +111,15 @@ fun OrganizeContent(
                                 )
                             }
                         }
-                    } else {
-                        CompletionMessage(
-                            onComplete = { onAction(OrganizeAction.OnComplete) }
-                        )
+                        Spacer(modifier = Modifier.height(66.dp))
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(26.dp))
-
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = 122.dp),
+                .fillMaxWidth(),
             contentAlignment = Alignment.BottomCenter
         ) {
             OrganizeBottomControls(
@@ -203,21 +197,6 @@ fun OrganizeStackedCards(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun CompletionMessage(onComplete: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("모든 스크린샷 정리가 완료되었습니다!")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onComplete) {
-            Text("완료")
         }
     }
 }

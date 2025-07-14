@@ -195,7 +195,7 @@ class OrganizeViewModel @Inject constructor(
         // 사용 가능한 태그 목록에 추가
         updateState {
             val newAvailableTags = if (!availableTags.contains(tagText)) {
-                availableTags + tagText
+                listOf(tagText) + availableTags
             } else {
                 availableTags
             }
