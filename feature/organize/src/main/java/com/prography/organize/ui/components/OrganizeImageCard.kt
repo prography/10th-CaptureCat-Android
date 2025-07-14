@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.organize.R
 import com.prography.organize.model.OrganizeScreenshotItem
+import com.prography.ui.component.clickableWithoutRipple
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 
@@ -177,8 +178,7 @@ fun OrganizeImageCard(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
-                        .size(24.dp)
-                        .clickable {
+                        .clickableWithoutRipple {
                             onFavoriteToggle(!screenshot.isFavorite)
                         }
                 )

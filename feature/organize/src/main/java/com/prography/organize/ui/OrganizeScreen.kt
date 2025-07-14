@@ -75,13 +75,21 @@ fun OrganizeScreen(
         }
     }
 
-    OrganizeContent(
-        state = state,
-        pagerState = pagerState,
-        onAction = viewModel::sendAction,
-        getCurrentScreenshotTags = viewModel::getCurrentScreenshotTags,
-        getCurrentScreenshotId = viewModel::getCurrentScreenshotId
-    )
+    // 완료 화면 표시 조건
+    if (state.showCompletionMessage) {
+        CompletionMessage(
+            screenshotCount = state.screenshots.size,
+            onNext = { viewModel.sendAction(OrganizeAction.OnCompletionNext) }
+        )
+    } else {
+        OrganizeContent(
+            state = state,
+            pagerState = pagerState,
+            onAction = viewModel::sendAction,
+            getCurrentScreenshotTags = viewModel::getCurrentScreenshotTags,
+            getCurrentScreenshotId = viewModel::getCurrentScreenshotId
+        )
+    }
 
     if (showAddTagBottomSheet) {
         TagAddBottomSheet(

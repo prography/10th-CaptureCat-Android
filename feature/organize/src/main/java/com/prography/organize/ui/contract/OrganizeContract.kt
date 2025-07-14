@@ -7,7 +7,8 @@ data class OrganizeState(
     val currentIndex: Int = 0,
     val organizeMode: OrganizeMode = OrganizeMode.BATCH,
     val availableTags: List<String> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val showCompletionMessage: Boolean = false
 )
 
 enum class OrganizeMode {
@@ -23,7 +24,8 @@ sealed class OrganizeEffect {
 
 sealed class OrganizeAction {
     object OnNavigateUp : OrganizeAction()
-    object OnComplete : OrganizeAction()
+    object OnCompletionNext : OrganizeAction()
+
     data class OnModeChange(val mode: OrganizeMode) : OrganizeAction()
     data class OnScreenshotDelete(val screenshotId: String) : OrganizeAction()
     data class OnFavoriteToggle(val screenshotId: String, val isFavorite: Boolean) :

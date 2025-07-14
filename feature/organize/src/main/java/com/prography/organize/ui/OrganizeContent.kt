@@ -50,7 +50,7 @@ fun OrganizeContent(
                 state.currentIndex + 1 else 0,
             totalCount = state.screenshots.size,
             onNavigateUp = { onAction(OrganizeAction.OnNavigateUp) },
-            onComplete = { onAction(OrganizeAction.OnComplete) }
+            onComplete = { onAction(OrganizeAction.OnSaveScreenshots) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))

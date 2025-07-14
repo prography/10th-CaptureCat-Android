@@ -41,10 +41,6 @@ class OrganizeViewModel @Inject constructor(
                 emitEffect(OrganizeEffect.NavigateUp)
             }
 
-            OrganizeAction.OnComplete -> {
-                emitEffect(OrganizeEffect.NavigateToComplete)
-            }
-
             is OrganizeAction.OnModeChange -> {
                 updateState {
                     copy(organizeMode = action.mode)
@@ -79,6 +75,11 @@ class OrganizeViewModel @Inject constructor(
 
             OrganizeAction.OnSaveScreenshots -> {
                 saveScreenshots()
+            }
+
+            OrganizeAction.OnCompletionNext -> {
+                // 완료 화면에서 다음 버튼 클릭 시 실제 완료 처리
+                emitEffect(OrganizeEffect.NavigateToComplete)
             }
         }
     }
@@ -246,7 +247,7 @@ class OrganizeViewModel @Inject constructor(
 
                 Timber.i("Successfully saved all ${screenshotsToSave.size} screenshots")
             }.onSuccess {
-                emitEffect(OrganizeEffect.NavigateToComplete)
+                updateState { copy(showCompletionMessage = true) }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to save screenshots")
                 // TODO: Show error message to user
