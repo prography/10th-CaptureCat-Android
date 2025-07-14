@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
+import com.prography.ui.component.UiCheckBox
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -81,16 +81,16 @@ fun ScreenshotTopBar(
                         color = Text01
                     )
                 }
-                Text(
-                    modifier = Modifier
-                        .clickable {
-                            onAction(ScreenshotAction.OrganizeSelected)
-                        }
-                        .padding(14.dp, 8.dp),
-                    text = "다음",
-                    color = Text01,
-                    style = body01Regular
-                )
+                TextButton(
+                    onClick = { onAction(ScreenshotAction.OrganizeSelected) },
+                    enabled = selectedCount > 0
+                ) {
+                    Text(
+                        text = "다음",
+                        color = if (selectedCount > 0) Text01 else Text03,
+                        style = body01Regular
+                    )
+                }
             }
         }
 
@@ -111,21 +111,14 @@ fun ScreenshotTopBar(
                     onAction(action)
                 }
             ) {
-                Image(
-                    painter = painterResource(
-                        id = if (isAllSelected)
-                            R.drawable.ic_check_box_able
-                        else
-                            R.drawable.ic_check_box_disable
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.padding(start = 6.dp))
-                Text(
+                UiCheckBox(
                     text = "전체 선택",
-                    style = body02Regular,
-                    color = Text02
+                    isChecked = isAllSelected,
+                    onCheckedChange = {
+                        val action =
+                            if (isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll
+                        onAction(action)
+                    }
                 )
             }
             Text(

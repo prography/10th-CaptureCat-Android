@@ -8,7 +8,8 @@ data class ScreenshotState(
     val selectedCount: Int = 0,
     val totalCount: Int = 0,
     val isAllSelected: Boolean = false,
-    val showDeleteDialog: Boolean = false
+    val showDeleteDialog: Boolean = false,
+    val isLoggedIn: Boolean = false
 )
 
 data class ScreenshotItem(

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentUris
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
+import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.home.ui.storage.contract.*
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
@@ -25,7 +26,7 @@ class ScreenshotViewModel @Inject constructor(
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
 ) {
-    private val dateFormat = SimpleDateFormat("yyyy년 M월 d일 (E)", Locale.KOREA)
+    private val dateFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.KOREA)
 
     init {
         loadScreenshots()
@@ -213,6 +214,10 @@ class ScreenshotViewModel @Inject constructor(
 
             ScreenshotAction.RefreshScreenshots -> {
                 loadScreenshots()
+            }
+
+            ScreenshotAction.NavigateToLogin -> {
+                navigationHelper.navigate(NavigationEvent.To(AppRoute.Login))
             }
         }
     }

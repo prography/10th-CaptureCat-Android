@@ -11,4 +11,5 @@ sealed interface ScreenshotAction {
     object OrganizeCompleted : ScreenshotAction
     object RefreshScreenshots : ScreenshotAction
     object ShowDeleteDialog : ScreenshotAction
+    object NavigateToLogin : ScreenshotAction
 }
