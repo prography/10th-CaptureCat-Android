@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ApiResponse<T>(
-    val resultType: String,
+    val result: String,
     val data: T? = null,
     val error: ApiError? = null
 )
@@ -17,7 +17,7 @@ data class ApiResponse<T>(
  */
 @Serializable
 data class ApiListResponse<T>(
-    val resultType: String,
+    val result: String,
     val data: ApiListData<T>? = null,
     val error: ApiError? = null
 )
@@ -28,7 +28,7 @@ data class ApiListResponse<T>(
 @Serializable
 data class ApiListData<T>(
     val hasNext: Boolean,
-    val lastCursor: Int,
+    val lastCursor: Int?,
     val items: List<T>
 )
 

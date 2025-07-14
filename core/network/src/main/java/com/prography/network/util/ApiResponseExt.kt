@@ -6,12 +6,12 @@ import com.prography.network.entity.ApiResponse
 /**
  * API 응답이 성공인지 확인
  */
-fun <T> ApiResponse<T>.isSuccess(): Boolean = resultType == "SUCCESS"
+fun <T> ApiResponse<T>.isSuccess(): Boolean = result == "SUCCESS"
 
 /**
  * API 응답이 에러인지 확인
  */
-fun <T> ApiResponse<T>.isError(): Boolean = resultType == "ERROR"
+fun <T> ApiResponse<T>.isError(): Boolean = result == "ERROR"
 
 /**
  * 성공 데이터 가져오기 (null 안전)
@@ -31,12 +31,12 @@ fun <T> ApiResponse<T>.getErrorCode(): String? = error?.code
 /**
  * 리스트 API 응답이 성공인지 확인
  */
-fun <T> ApiListResponse<T>.isSuccess(): Boolean = resultType == "SUCCESS"
+fun <T> ApiListResponse<T>.isSuccess(): Boolean = result == "SUCCESS"
 
 /**
  * 리스트 API 응답이 에러인지 확인
  */
-fun <T> ApiListResponse<T>.isError(): Boolean = resultType == "ERROR"
+fun <T> ApiListResponse<T>.isError(): Boolean = result == "ERROR"
 
 /**
  * 리스트 성공 데이터 가져오기 (null 안전)
