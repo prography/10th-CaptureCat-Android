@@ -42,6 +42,39 @@ class ScreenshotRepositoryImpl @Inject constructor(
         localDataSource.insert(screenshot)
     }
 
+    override suspend fun bulkInsert(screenshots: List<UiScreenshotModel>) {
+        val token = userPrefs.accessToken
+        Timber.d("BulkInsert - userPrefs.accessToken: ${token.first()}")
+
+        if (token.first().isNullOrBlank()) {
+            // 로컬 저장
+            Timber.d("BulkInsert - Local mode: inserting ${screenshots.size} screenshots")
+            screenshots.forEach { screenshot ->
+                localDataSource.insert(screenshot)
+            }
+        } else {
+            // 서버 업로드
+            Timber.d("BulkInsert - Remote mode: uploading ${screenshots.size} screenshots")
+            remoteDataSource.uploadScreenshots(screenshots)
+                .fold(
+                    onSuccess = {
+                        Timber.d("BulkInsert - Remote upload success")
+                        // 서버 업로드 성공 시 로컬에도 저장 (캐시 목적)
+/*                        screenshots.forEach { screenshot ->
+                            localDataSource.insert(screenshot)
+                        }*/
+                    },
+                    onFailure = { exception ->
+                        Timber.e(exception, "BulkInsert - Remote upload failure, fallback to local")
+                        // 서버 업로드 실패 시 로컬에 저장
+                        screenshots.forEach { screenshot ->
+                            localDataSource.insert(screenshot)
+                        }
+                    }
+                )
+        }
+    }
+
     override suspend fun update(screenshot: UiScreenshotModel) {
         localDataSource.update(screenshot)
     }

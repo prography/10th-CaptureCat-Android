@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -21,5 +22,13 @@ object ServiceModule {
     @Provides
     @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService =
+        retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    @Named("TokenRefreshAuthService")
+    fun provideTokenRefreshAuthService(
+        @Named("TokenRefreshRetrofit") retrofit: Retrofit
+    ): AuthService =
         retrofit.create(AuthService::class.java)
 }

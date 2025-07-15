@@ -1,5 +1,6 @@
 package com.prography.data.di
 
+import android.content.Context
 import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.local.ScreenshotLocalDataSourceImpl
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
@@ -12,6 +13,7 @@ import com.prography.data.datasource.remote.PhotoRemoteDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -37,6 +39,8 @@ object DataSourceModule {
 
     @Singleton
     @Provides
-    fun providePhotoRemoteDataSourceImpl(photoService: PhotoService
-    ): PhotoRemoteDataSource = PhotoRemoteDataSourceImpl(photoService)
+    fun providePhotoRemoteDataSourceImpl(
+        photoService: PhotoService,
+        @ApplicationContext context: Context
+    ): PhotoRemoteDataSource = PhotoRemoteDataSourceImpl(photoService, context)
 }

@@ -1,7 +1,7 @@
 package com.prography.organize.ui.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.prography.domain.usecase.screenshot.InsertScreenshotUseCase
+import com.prography.domain.usecase.screenshot.BulkInsertScreenshotUseCase
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.contract.OrganizeAction
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
-    private val insertScreenshotUseCase: InsertScreenshotUseCase
+    private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
 ) {
@@ -212,18 +212,13 @@ class OrganizeViewModel @Inject constructor(
         val screenshotsToSave = currentState.screenshots
         Timber.d("Starting to save ${screenshotsToSave.size} screenshots")
 
-
-
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
             runCatching {
-                screenshotsToSave.forEachIndexed { index, screenshot ->
-                    Timber.d("Saving screenshot ${index + 1}/${screenshotsToSave.size}: ${screenshot.fileName}")
-
+                val uiScreenshots = screenshotsToSave.map { screenshot ->
                     val parsedAppName = parseAppNameFromFileName(screenshot.fileName)
                     Timber.d("Parsed app name: '$parsedAppName' from filename: ${screenshot.fileName}")
-
 
                     // 날짜 파싱 못하면 현재 날짜로 파싱
                     val now = Date()
@@ -232,7 +227,7 @@ class OrganizeViewModel @Inject constructor(
                         dateFormat.format(now)
                     }
 
-                    val uiScreenshot = UiScreenshotModel(
+                    UiScreenshotModel(
                         id = screenshot.id,
                         uri = screenshot.uri.toString(),
                         appName = parsedAppName,
@@ -240,11 +235,8 @@ class OrganizeViewModel @Inject constructor(
                         isFavorite = screenshot.isFavorite,
                         dateStr = dateStr
                     )
-
-                    insertScreenshotUseCase(uiScreenshot)
-                    Timber.d("Successfully saved screenshot: ${screenshot.fileName} with appName: '$parsedAppName', tags: ${screenshot.tags}, dateStr: ${dateStr}")
                 }
-
+                bulkInsertScreenshotUseCase(uiScreenshots)
                 Timber.i("Successfully saved all ${screenshotsToSave.size} screenshots")
             }.onSuccess {
                 updateState { copy(showCompletionMessage = true) }
@@ -276,20 +268,20 @@ class OrganizeViewModel @Inject constructor(
 
         val match = datePatterns.firstNotNullOfOrNull { regex ->
             regex.find(nameWithoutExtension)?.value
+        } ?: return ""
+
+        val rawDateStr = when {
+            match.contains("_") -> match.split("_").first() // 20231215
+            match.contains("-") -> match.replace("-", "")   // 2023-12-15 → 20231215
+            else -> match
         }
 
-        return when {
-            match == null -> ""
-            match.contains("_") -> {
-                // 20231215_143022 → 2023-12-15
-                val datePart = match.split("_").first()
-                "${datePart.substring(0, 4)}-${datePart.substring(4, 6)}-${datePart.substring(6, 8)}"
-            }
-            match.contains("-") -> match // 이미 yyyy-MM-dd
-            match.length == 8 -> {
-                "${match.substring(0, 4)}-${match.substring(4, 6)}-${match.substring(6, 8)}"
-            }
-            else -> ""
+        return try {
+            val parsed = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).parse(rawDateStr)
+            val outputFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.getDefault())
+            outputFormat.format(parsed!!)
+        } catch (e: Exception) {
+            ""
         }
     }
 
