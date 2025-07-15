@@ -1,13 +1,15 @@
-package com.android.prography.data.api
+package com.prography.network.api
+
+import com.prography.network.entity.ApiListResponse
 import com.prography.network.entity.PhotoResponse
-import com.prography.domain.util.NetworkState
+import com.prography.network.util.NetworkState
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface PhotoService {
-    @GET("photos/random/")
-    suspend fun getRandomPhotos(
-        @Query("client_id") clientId: String,
-        @Query("count") countIdx : Int
-    ): NetworkState<List<PhotoResponse>>
+    @GET("v1/images")
+    suspend fun getScreenshots(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): ApiListResponse<PhotoResponse>
 }

@@ -31,6 +31,9 @@ class UserPreferenceDataStore(private val context: Context) {
     val accessToken: Flow<String?> =
         dataStore.data.map { it[UserPreferenceKeys.ACCESS_TOKEN] }
 
+    val refreshToken: Flow<String?> =
+        dataStore.data.map { it[UserPreferenceKeys.REFRESH_TOKEN] }
+
     suspend fun saveTokens(access: String, refresh: String) {
         dataStore.edit {
             it[UserPreferenceKeys.ACCESS_TOKEN] = access

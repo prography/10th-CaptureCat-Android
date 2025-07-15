@@ -1,4 +1,4 @@
-package com.prography.domain.util
+package com.prography.network.util
 
 import java.io.IOException
 

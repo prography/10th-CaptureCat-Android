@@ -20,6 +20,8 @@ class UserPreferenceRepositoryImpl @Inject constructor(
 
     override val accessToken: Flow<String?> get() = userPrefs.accessToken
 
+    override val refreshToken: Flow<String?> get() = userPrefs.refreshToken
+
     override suspend fun clearTokens() {
         userPrefs.clearTokens()
     }

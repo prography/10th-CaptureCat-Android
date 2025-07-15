@@ -2,7 +2,10 @@ package com.prography.network.di
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.prography.network.BuildConfig
+import com.prography.network.interceptor.AuthInterceptor
 import com.prography.network.util.CustomCallAdapterFactory
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,18 +25,19 @@ private val json: Json = Json {
     explicitNulls = false
 }
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-
     @Singleton
     @Provides
-    fun provideOkHttpClient() = run {
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor) = run {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
@@ -42,8 +46,8 @@ object NetworkModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://api.unsplash.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .addCallAdapterFactory(CustomCallAdapterFactory())
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType())) // ✅ 재사용
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 }

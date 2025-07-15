@@ -1,11 +1,18 @@
 package com.prography.network.entity
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
 
 @Serializable
 data class PhotoResponse(
-    val id: String,
-    val imageUrls: String
+    val id: Int,
+    val name: String,
+    val url: String,
+    val captureDate: String,
+    val tags: List<TagResponse>
+)
+
+@Serializable
+data class TagResponse(
+    val id: Int,
+    val name: String
 )

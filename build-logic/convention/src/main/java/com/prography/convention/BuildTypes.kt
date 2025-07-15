@@ -57,14 +57,14 @@ internal fun Project.configureBuildTypes(
 
 private fun BuildType.configureDebugBuildType(properties: Properties) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
-    buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\"")
+    buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_DEV_URL")}\"")
     buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
     buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
 }
 
 private fun BuildType.configureStagingBuildType(properties: Properties) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
-    buildConfigField("String", "BASE_URL", "\"STAGING_API_URL\"")
+    buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_DEV_URL")}\"")
 }
 
 private fun BuildType.configureReleaseBuildType(
@@ -72,7 +72,7 @@ private fun BuildType.configureReleaseBuildType(
     properties: Properties
 ) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
-    buildConfigField("String", "BASE_URL", "\"RELEASE_API_URL\"")
+    buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_RELEASE_URL")}\"")
 
     isMinifyEnabled = true
     proguardFiles(

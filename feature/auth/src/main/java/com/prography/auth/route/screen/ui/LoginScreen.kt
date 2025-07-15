@@ -42,7 +42,7 @@ fun LoginScreen(
                         context = context,
                         onSuccess = { token ->
                             Timber.d("Kakao login success. Token: $token")
-                            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                            viewModel.handleKakaoLoginSuccess(token)
                         },
                         onFailure = { error ->
                             Timber.e("Kakao login failed: $error")
@@ -54,7 +54,13 @@ fun LoginScreen(
                         context = context,
                         onSuccess = { user ->
                             Timber.d("Login success: ${user.email}")
-                            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                            // Firebase에서 ID 토큰을 가져와서 API에 전달
+                            user.getIdToken(true).addOnSuccessListener { result ->
+                                val idToken = result.token
+                                if (idToken != null) {
+                                    viewModel.handleGoogleLoginSuccess(idToken)
+                                }
+                            }
                         },
                         onFailure = { error ->
                             Timber.e("Login failed: $error")
@@ -63,9 +69,9 @@ fun LoginScreen(
                 }
                 LoginEffect.NavigateToOnboarding -> {
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
-
-                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
-                    // navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                }
+                LoginEffect.NavigateToStart -> {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
             }
         }
@@ -91,8 +97,8 @@ suspend fun handleKakaoLogin(
                 error != null -> {
                     onFailure(error)
                 }
-                token != null -> {
-                    onSuccess(token.accessToken)
+                token?.idToken != null  -> {
+                    onSuccess(token.idToken!!)
                 }
                 else -> {
                     onFailure(IllegalStateException("Kakao login failed: Token is null"))
@@ -108,8 +114,8 @@ suspend fun handleKakaoLogin(
                     } else {
                         UserApiClient.instance.loginWithKakaoAccount(context = context, callback =callback)
                     }
-                } else if (token != null) {
-                    onSuccess(token.accessToken)
+                } else if (token?.idToken != null) {
+                    onSuccess(token.idToken!!)
                 } else {
                     onFailure(IllegalStateException("Kakao login failed without error or token"))
                 }

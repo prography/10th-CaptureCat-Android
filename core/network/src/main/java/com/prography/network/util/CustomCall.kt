@@ -1,6 +1,5 @@
 package com.prography.network.util
 
-import com.prography.domain.util.NetworkState
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
