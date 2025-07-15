@@ -68,10 +68,10 @@ fun LoginScreen(
                     )
                 }
                 LoginEffect.NavigateToOnboarding -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
                 }
-                is LoginEffect.ShowError -> {
-
+                LoginEffect.NavigateToStart -> {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
             }
         }

@@ -35,11 +35,11 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     emitEffect(LoginEffect.NavigateToOnboarding)
                 } else {
-                    emitEffect(LoginEffect.ShowError("구글 로그인에 실패했습니다"))
+                    showToast("구글 로그인에 실패했습니다")
                 }
             } catch (e: Exception) {
                 updateState { copy(isLoading = false) }
-                emitEffect(LoginEffect.ShowError("구글 로그인 중 오류가 발생했습니다"))
+                showToast("구글 로그인 중 오류가 발생했습니다")
             }
         }
     }
@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
     fun handleKakaoLoginSuccess(accessToken: String) {
         viewModelScope.launch {
             socialLoginUseCase("kakao", accessToken).onSuccess {
-                emitEffect(LoginEffect.NavigateToOnboarding)
+                emitEffect(LoginEffect.NavigateToStart)
             }.onFailure {
                 showToast("카카오 로그인 중 오류가 발생했습니다")
             }
