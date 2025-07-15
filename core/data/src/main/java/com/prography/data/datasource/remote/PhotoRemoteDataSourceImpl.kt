@@ -7,8 +7,8 @@ import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.network.api.PhotoService
 import com.prography.network.entity.UploadItem
+import com.prography.network.util.NetworkState
 import com.prography.network.util.getDataOrNull
-import com.prography.network.util.isSuccess
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,62 +28,100 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         page: Int,
         size: Int
     ): Result<List<UiScreenshotModel>> {
-        return runCatching {
-            val response = photoService.getScreenshots(page, size)
-            response.getDataOrNull()?.toUiScreenshotModels() ?: emptyList()
+        Timber.d("Calling photoService.getScreenshots(page=$page, size=$size)")
+
+        return when (val networkState = photoService.getScreenshots(page, size)) {
+            is NetworkState.Success -> {
+                Timber.d("API Response: ${networkState.body}")
+                val screenshots =
+                    networkState.body.getDataOrNull()?.toUiScreenshotModels() ?: emptyList()
+                Timber.d("Converted screenshots: ${screenshots.size} items")
+                Result.success(screenshots)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("API Failure: ${networkState.error}")
+                Result.failure(Exception("API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
         }
     }
 
     override suspend fun uploadScreenshots(screenshots: List<UiScreenshotModel>): Result<Unit> {
         return runCatching {
-            Timber.d("Starting to upload ${screenshots.size} screenshots")
+            // 1. uniqueFileName 리스트 먼저 생성
+            val fileNames = screenshots.mapIndexed { index, screenshot ->
+                val originalFileName = getFileNameFromUri(screenshot.uri)
+                val safeFileName = sanitizeFileName(originalFileName) // 🔥 추가
+                "${System.currentTimeMillis()}_${index}_$safeFileName"
+            }
 
-            // uploadItems JSON 생성
-            val uploadItems = screenshots.map { screenshot ->
-                val fileName = getFileNameFromUri(screenshot.uri)
+// 2. uploadItems 생성
+            val uploadItems = screenshots.mapIndexed { index, screenshot ->
                 val captureDate = formatDateForUpload(screenshot.dateStr)
-                Timber.d("Processing screenshot: uri=${screenshot.uri}, fileName=$fileName, captureDate=$captureDate, tags=${screenshot.tags}")
+                Timber.d("Processing screenshot: uri=${screenshot.uri}, fileName=${fileNames[index]}, captureDate=$captureDate, tags=${screenshot.tags}")
                 UploadItem(
-                    fileName = fileName,
+                    fileName = fileNames[index],
                     captureDate = captureDate,
                     tagNames = screenshot.tags
                 )
             }
 
+// 3. JSON 파트 생성
             val uploadItemsJson = Json.encodeToString(
                 kotlinx.serialization.builtins.ListSerializer(UploadItem.serializer()),
                 uploadItems
             )
-            Timber.d("UploadItems JSON: $uploadItemsJson")
+            val uploadItemsPart = MultipartBody.Part.createFormData(
+                "uploadItems", "file", uploadItemsJson.toRequestBody("application/json".toMediaType())
+            )
 
-            val uploadItemsRequestBody =
-                uploadItemsJson.toRequestBody("application/json".toMediaType())
 
-            // 파일 파트 생성
+// 4. 파일 파트 생성
             val fileParts = mutableListOf<MultipartBody.Part>()
 
-            screenshots.forEach { screenshot ->
+            screenshots.forEachIndexed { index, screenshot ->
                 val uri = Uri.parse(screenshot.uri)
-                val fileName = getFileNameFromUri(screenshot.uri)
+                val originalFileName = getFileNameFromUri(screenshot.uri)
+                val finalFileName = fileNames[index] // 🔥 여기서 미리 만든 이름 사용
 
-                Timber.d("Creating file part for: $fileName from URI: ${screenshot.uri}")
+                Timber.d("Creating file part for: $finalFileName from URI: ${screenshot.uri}")
 
                 try {
-                    // URI에서 바이트 배열 읽기
                     val inputStream = context.contentResolver.openInputStream(uri)
                     val bytes = inputStream?.readBytes()
                         ?: throw Exception("Failed to read bytes from URI: $uri")
-                    inputStream?.close()
+                    inputStream.close()
 
-                    Timber.d("Read ${bytes.size} bytes for file: $fileName")
+                    if (bytes.isEmpty()) throw Exception("File is empty: $uri")
+                    if (bytes.size > 10 * 1024 * 1024) throw Exception("File too large: ${bytes.size} bytes")
 
-                    val requestFile = bytes.toRequestBody("image/jpeg".toMediaType())
-                    val filePart = MultipartBody.Part.createFormData("files", fileName, requestFile)
+                    Timber.d("Read ${bytes.size} bytes for file: $finalFileName")
+
+                    val contentType = when {
+                        originalFileName.lowercase().endsWith(".png") -> "image/png"
+                        originalFileName.lowercase().endsWith(".jpg") -> "image/jpeg"
+                        originalFileName.lowercase().endsWith(".jpeg") -> "image/jpeg"
+                        originalFileName.lowercase().endsWith(".webp") -> "image/webp"
+                        else -> "image/jpeg"
+                    }
+
+                    val requestFile = bytes.toRequestBody(contentType.toMediaType())
+                    val filePart = MultipartBody.Part.createFormData("files", finalFileName, requestFile)
                     fileParts.add(filePart)
 
-                    Timber.d("Added file part for: $fileName")
+                    Timber.d("Added file part for: $finalFileName")
                 } catch (e: Exception) {
-                    Timber.e(e, "Failed to create file part for: $fileName")
+                    Timber.e(e, "Failed to create file part for: $finalFileName")
                     throw e
                 }
             }
@@ -91,17 +129,31 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             Timber.d("Created ${fileParts.size} file parts, calling API...")
 
             // API 호출
-            val response = photoService.uploadScreenshots(
-                uploadItems = uploadItemsRequestBody,
+            val networkState = photoService.uploadScreenshots(
+                uploadItems = uploadItemsPart,
                 files = fileParts
             )
 
-            if (response.isSuccess()) {
-                Timber.d("Upload successful: ${response.result}")
-            } else {
-                val errorMessage = response.error?.message ?: "Unknown error"
-                Timber.e("Upload failed: $errorMessage")
-                throw Exception("Upload failed: $errorMessage")
+            when (networkState) {
+                is NetworkState.Success -> {
+                    Timber.d("Upload successful: ${networkState.body}")
+                }
+
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("Upload failed: $errorMessage")
+                    throw Exception("Upload failed: $errorMessage")
+                }
+
+                is NetworkState.NetworkError -> {
+                    Timber.e("Upload network error: ${networkState.error}")
+                    throw networkState.error
+                }
+
+                is NetworkState.UnknownError -> {
+                    Timber.e("Upload unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
             }
         }
     }
@@ -160,17 +212,17 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
     private fun formatDateForUpload(dateStr: String): String {
         return try {
-            // dateStr이 "2023년 12월 15일" 형태라면 "2023-12-15"로 변환
+            // dateStr이 "2023년 12월 15일" 또는 "2023년 2월 5일" 형태라면 "2023-12-15"로 변환
             if (dateStr.contains("년") && dateStr.contains("월") && dateStr.contains("일")) {
-                val parts = dateStr.replace("년", "-").replace("월", "-").replace("일", "").split("-")
-                if (parts.size >= 3) {
-                    val year = parts[0].trim()
-                    val month = parts[1].trim().padStart(2, '0')
-                    val day = parts[2].trim().padStart(2, '0')
-                    "$year-$month-$day"
-                } else {
-                    getCurrentDate()
-                }
+                val yearPart = dateStr.substringBefore("년").trim()
+                val monthPart = dateStr.substringAfter("년").substringBefore("월").trim()
+                val dayPart = dateStr.substringAfter("월").substringBefore("일").trim()
+
+                val year = yearPart
+                val month = monthPart.padStart(2, '0')
+                val day = dayPart.padStart(2, '0')
+
+                "$year-$month-$day"
             } else if (dateStr.matches(Regex("\\d{4}-\\d{2}-\\d{2}"))) {
                 // 이미 올바른 형태
                 dateStr
@@ -182,7 +234,11 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             getCurrentDate()
         }
     }
-
+    private fun sanitizeFileName(fileName: String): String {
+        return fileName
+            .replace(" ", "_") // 공백 제거
+            .replace(Regex("[^A-Za-z0-9_.-]"), "") // 영문, 숫자, _, ., - 제외 전부 제거
+    }
     private fun getCurrentDate(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return formatter.format(Date())

@@ -17,12 +17,12 @@ interface PhotoService {
     suspend fun getScreenshots(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
-    ): ApiListResponse<PhotoResponse>
+    ): NetworkState<ApiListResponse<PhotoResponse>>
 
     @Multipart
     @POST("v1/images/upload")
     suspend fun uploadScreenshots(
-        @Part("uploadItems") uploadItems: RequestBody,
+        @Part uploadItems: MultipartBody.Part,
         @Part files: List<MultipartBody.Part>
-    ): ApiResponse<String>
+    ): NetworkState<ApiResponse<String>>
 }
