@@ -2,6 +2,12 @@ package com.prography.network.entity
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class AuthResponse(
+    val result: String,
+    val error: ApiError? = null
+)
+
 /**
  * 단일 응답 객체 형식
  */
