@@ -6,11 +6,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 @Singleton
 class TokenManagerImpl @Inject constructor(
     private val userPreferenceRepository: UserPreferenceRepository
 ) : TokenManager {
+
+    private val _authEvents = MutableSharedFlow<TokenManager.AuthEvent>()
 
     override fun getAccessToken(): String? {
         return runBlocking {
@@ -34,5 +39,13 @@ class TokenManagerImpl @Inject constructor(
         runBlocking {
             userPreferenceRepository.clearTokens()
         }
+    }
+
+    override suspend fun emitAuthEvent(event: TokenManager.AuthEvent) {
+        _authEvents.emit(event)
+    }
+
+    override fun observeAuthEvents(): Flow<TokenManager.AuthEvent> {
+        return _authEvents.asSharedFlow()
     }
 }

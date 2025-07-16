@@ -21,13 +21,31 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getOnboardingShownUseCase: GetOnboardingShownUseCase,
     private val screenshotsUseCase: GetAllScreenshotsUseCase,
-    private val getAuthTokenUseCase: GetAuthTokenUseCase
+    private val getAuthTokenUseCase: GetAuthTokenUseCase,
+    private val authRepository: com.prography.domain.repository.AuthRepository
 ) : ViewModel() {
 
     private val _startDestination = MutableStateFlow<AppRoute?>(null)
     val startDestination = _startDestination.asStateFlow()
 
     val isReady = MutableStateFlow(false)
+
+    private val _shouldNavigateToLogin = MutableStateFlow(false)
+    val shouldNavigateToLogin = _shouldNavigateToLogin.asStateFlow()
+
+    init {
+        // AuthRepository의 이벤트 구독
+        viewModelScope.launch {
+            authRepository.observeAuthEvents().collect { event ->
+                when (event) {
+                    is com.prography.domain.repository.AuthRepository.AuthEvent.RefreshTokenExpired -> {
+                        Timber.d("Refresh token expired, should navigate to login")
+                        _shouldNavigateToLogin.value = true
+                    }
+                }
+            }
+        }
+    }
 
     fun initChecking() {
         viewModelScope.launch {
@@ -44,5 +62,9 @@ class MainViewModel @Inject constructor(
 
             isReady.value = true
         }
+    }
+
+    fun onNavigatedToLogin() {
+        _shouldNavigateToLogin.value = false
     }
 }

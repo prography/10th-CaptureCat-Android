@@ -1,6 +1,7 @@
 package com.prography.network.interceptor
 
 import com.prography.network.api.AuthService
+import com.prography.network.util.NetworkState
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -49,7 +50,7 @@ class AuthInterceptor @Inject constructor(
             if (!refreshToken.isNullOrBlank()) {
                 try {
                     val refreshResult = runBlocking {
-                        tokenRefreshAuthService.refreshToken(refreshToken)
+                        tokenRefreshAuthService.refreshToken("Bearer $refreshToken")
                     }
 
                     if (refreshResult.isSuccessful) {
@@ -77,6 +78,13 @@ class AuthInterceptor @Inject constructor(
                     } else {
                         Timber.e("Token refresh failed: ${refreshResult.code()}")
                         tokenManager.clearTokens()
+
+                        // 리프레시 토큰이 만료된 경우 (400 에러)
+                        if (refreshResult.code() == 400) {
+                            runBlocking {
+                                tokenManager.emitAuthEvent(TokenManager.AuthEvent.RefreshTokenExpired)
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     Timber.e(e, "Token refresh exception")

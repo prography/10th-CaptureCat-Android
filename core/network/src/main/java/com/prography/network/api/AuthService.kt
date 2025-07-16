@@ -17,11 +17,11 @@ interface AuthService {
 
     @POST("/token/reissue")
     suspend fun refreshToken(
-        @Header("Refresh-Token") refreshToken: String
+        @Header("Refresh-Token") refreshTokenWithBearer: String // Should include "Bearer " prefix
     ): Response<AuthResponse>
 
     @POST("/logout")
     suspend fun logout(
-        @Header("Refresh-Token") refreshToken: String
+        @Header("Refresh-Token") refreshTokenWithBearer: String // Should include "Bearer " prefix
     ): Response<AuthResponse>
 }

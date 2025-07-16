@@ -24,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.derivedStateOf
 import com.prography.navigation.NavigationHelper
 import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import timber.log.Timber
 import javax.inject.Inject
+import androidx.compose.runtime.LaunchedEffect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -47,6 +49,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             PrographyTheme {
                 val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
+                val shouldNavigateToLogin by viewModel.shouldNavigateToLogin.collectAsStateWithLifecycle()
+
+                LaunchedEffect(shouldNavigateToLogin) {
+                    if (shouldNavigateToLogin) {
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Login))
+                        viewModel.onNavigatedToLogin()
+                    }
+                }
 
                 Column(
                     modifier = Modifier
