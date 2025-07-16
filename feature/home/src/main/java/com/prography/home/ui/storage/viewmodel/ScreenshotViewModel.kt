@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentUris
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
+import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.home.ui.storage.contract.*
 import com.prography.navigation.AppRoute
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
     private val app: Application,
+    private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
@@ -85,7 +87,8 @@ class ScreenshotViewModel @Inject constructor(
                     totalCount = items.size,
                     selectedCount = 0,
                     isSelectionMode = false,
-                    isAllSelected = false
+                    isAllSelected = false,
+                    isLoggedIn = checkLoginStatusUseCase()
                 )
             }
         }
