@@ -2,6 +2,7 @@ package com.prography.setting.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
+import com.prography.domain.usecase.auth.LogoutUseCase
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingEffect
 import com.prography.setting.contract.SettingState
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val getAuthTokenUseCase: GetAuthTokenUseCase
+    private val getAuthTokenUseCase: GetAuthTokenUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
     initialState = SettingState()
 ) {
@@ -76,10 +78,10 @@ class SettingViewModel @Inject constructor(
             updateState { copy(isLoading = true) }
 
             runCatching {
-                // TODO: 로그아웃 UseCase 구현 후 호출
-                Timber.d("User logout requested")
+                logoutUseCase.invoke()
+            }.onSuccess {
+                Timber.d("User logout successful")
                 emitEffect(SettingEffect.ShowLogoutSuccess)
-                emitEffect(SettingEffect.NavigateToLogin)
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to logout")
             }.also {

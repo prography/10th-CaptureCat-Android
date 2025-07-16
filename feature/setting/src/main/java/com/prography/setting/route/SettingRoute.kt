@@ -21,6 +21,11 @@ fun SettingRoute(navigationHelper: NavigationHelper) {
             navigationHelper.navigate(
                 NavigationEvent.To(AppRoute.SettingRoute.Withdraw, popUpTo = true)
             )
+        },
+        onNavigateToStorage = {
+            navigationHelper.navigate(
+                NavigationEvent.To(AppRoute.Main, popUpTo = true)
+            )
         }
     )
 }

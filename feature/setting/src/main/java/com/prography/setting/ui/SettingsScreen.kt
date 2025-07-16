@@ -10,6 +10,7 @@ fun SettingsScreen(
     onNavigateUp: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToWithdraw: () -> Unit,
+    onNavigateToStorage: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -22,9 +23,7 @@ fun SettingsScreen(
                 SettingEffect.NavigateUp -> onNavigateUp()
                 SettingEffect.NavigateToLogin -> onNavigateToLogin()
                 SettingEffect.NavigateToWithdraw -> onNavigateToWithdraw()
-                SettingEffect.ShowLogoutSuccess -> {
-                    // 로그인 성공 시 effect
-                }
+                SettingEffect.ShowLogoutSuccess -> onNavigateToStorage()
                 SettingEffect.ShowWithdrawSuccess -> {
                     // 회원 탈퇴 완료 시 effect
                 }
