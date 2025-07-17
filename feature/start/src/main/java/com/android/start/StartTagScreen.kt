@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.component.ButtonState
 import com.prography.ui.component.UiPrimaryButton
@@ -42,7 +43,8 @@ fun StartTagScreen(
         "맛집", "노래", "레시피", "운동"
     ),
     maxSelectableTags: Int = 5, // 최대 선택 가능한 태그 개수
-    onFinishSelection: (List<String>) -> Unit
+    onFinishSelection: (List<String>) -> Unit,
+    viewModel: StartTagViewModel = hiltViewModel()
 ) {
     var selectedTags by remember { mutableStateOf(listOf<String>()) }
 
@@ -112,11 +114,13 @@ fun StartTagScreen(
                 else ButtonState.Enabled
             }
 
-            // 수정된 부분: UiPrimaryButton 사용
             UiPrimaryButton(
-                text = "선택 완료 (${selectedTags.size}/$maxSelectableTags)", // 선택된 개수 렌더링
-                onClick = { onFinishSelection(selectedTags) },
-                state = buttonState, // 선택 여부에 따라 버튼 활성화 상태 변경
+                text = "선택 완료 (${selectedTags.size}/$maxSelectableTags)",
+                onClick = {
+                    viewModel.saveSelectedTags(selectedTags)
+                    onFinishSelection(selectedTags)
+                },
+                state = buttonState,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -132,8 +136,7 @@ fun StartTagScreenPreview() {
             "공부", "글귀", "여행", "자기계발",
             "맛집", "노래", "레시피", "운동"
         ),
-        maxSelectableTags = 5
-    ){
-
-    }
+        maxSelectableTags = 5,
+        onFinishSelection = { }
+    )
 }

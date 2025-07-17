@@ -2,6 +2,8 @@ package com.prography.organize.ui.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.screenshot.BulkInsertScreenshotUseCase
+import com.prography.domain.usecase.tag.AddRecentTagUseCase
+import com.prography.domain.usecase.tag.GetRecentTagsUseCase
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.contract.OrganizeAction
@@ -10,6 +12,7 @@ import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -18,10 +21,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
-    private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase
+    private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase,
+    private val getRecentTagsUseCase: GetRecentTagsUseCase,
+    private val addRecentTagUseCase: AddRecentTagUseCase // AddRecentTagUseCase should be injected
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
 ) {
+
+    init {
+        loadRecentTags()
+    }
 
     fun initializeScreenshots(screenshots: List<OrganizeScreenshotItem>, currentIndex: Int = 0) {
         Timber.d("Initializing ${screenshots.size} screenshots with currentIndex: $currentIndex")
@@ -205,6 +214,16 @@ class OrganizeViewModel @Inject constructor(
 
         // 해당 스크린샷에 태그 추가
         toggleScreenshotTag(screenshotId, tagText)
+
+        // 새 태그를 최근 태그에 추가
+        viewModelScope.launch {
+            try {
+                addRecentTagUseCase(tagText)
+                Timber.d("Added new tag to recent tags: $tagText")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to add tag to recent tags")
+            }
+        }
         Timber.d("New tag '$tagText' added successfully")
     }
 
@@ -253,6 +272,25 @@ class OrganizeViewModel @Inject constructor(
         return listOf(
             "쇼핑", "직무 관련", "레퍼런스"
         )
+    }
+
+    private fun loadRecentTags() {
+        viewModelScope.launch {
+            try {
+                val recentTags = getRecentTagsUseCase().first()
+                if (recentTags.isNotEmpty()) {
+                    updateState { copy(availableTags = recentTags) }
+                    Timber.d("Loaded recent tags: $recentTags")
+                } else {
+                    // 기본 태그 사용
+                    updateState { copy(availableTags = getAvailableTags()) }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load recent tags")
+                // 기본 태그 사용
+                updateState { copy(availableTags = getAvailableTags()) }
+            }
+        }
     }
 
     // 파일 이름으로 부터 날짜 추출
