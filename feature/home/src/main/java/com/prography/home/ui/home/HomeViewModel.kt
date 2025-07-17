@@ -41,6 +41,12 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.Favorite)
                 )
             }
+            HomeAction.NavigateToStorage -> {
+                // 임시보관함으로 이동하는 로직
+                // Storage 탭으로 이동하려면 HomeScreen에서 콜백을 받아서 처리해야 함
+                // 여기서는 effect로 전달
+                emitEffect(HomeEffect.NavigateToStorage)
+            }
             is HomeAction.OnScreenshotClick -> {
                 handleScreenshotClick(action.screenshot)
             }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
 import com.prography.ui.theme.caption01SemiBold
 import com.prography.ui.component.UiTagChip
+import com.prography.ui.component.UiEmptyState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -38,14 +39,20 @@ fun HomeContent(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            // Header
+    // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
+    val hasAnyScreenshots = state.screenshots.isNotEmpty()
+    val filteredScreenshots = state.screenshots.filter {
+        state.selectedTag == "전체" || it.appName == state.selectedTag
+    }
+
+    if (!hasAnyScreenshots) {
+        // 스크린샷이 아예 없을 때는 헤더와 빈 상태만 표시
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
+            // Header만 표시
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,56 +72,121 @@ fun HomeContent(
                     }
                 )
             }
-        }
 
-        item {
-            FavoriteCardDeck(
-                screenshots = state.screenshots,
-                onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
-            )
-        }
-
-        // Sticky Filter Chips
-        stickyHeader {
-            LazyRow(
+            // 중앙 정렬된 빈 상태
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                items(state.tags) { tag ->
-                    UiTagChip(
-                        text = tag,
-                        isSelected = tag == state.selectedTag,
-                        onClick = { onAction(HomeAction.SelectTag(tag)) }
+                UiEmptyState(
+                    title = "아직 스크린샷이 없어요.",
+                    info = "임시보관함에서 스크린샷을 저장할 수 있어요!",
+                    buttonText = "임시보관함 가기",
+                    onClick = { onAction(HomeAction.NavigateToStorage) }
+                )
+            }
+        }
+    } else {
+        // 기존 레이아웃 (스크린샷이 있을 때)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                // Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_header_logo),
+                        contentDescription = "로고"
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_profile),
+                        contentDescription = "프로필 아이콘",
+                        modifier = Modifier.clickable {
+                            onAction(HomeAction.NavigateToSettings)
+                        }
                     )
                 }
             }
-        }
 
-        // Grid → 2개씩 보여주기 (row 단위로 직접 배치)
-        val filteredScreenshots = state.screenshots.filter {
-            state.selectedTag == "전체" || it.appName == state.selectedTag
-        }
+            item {
+                FavoriteCardDeck(
+                    screenshots = state.screenshots,
+                    onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
+                )
+            }
 
-        items(filteredScreenshots.chunked(2)) { rowItems ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                rowItems.forEach { screenshot ->
-                    ScreenshotItem(
-                        screenshot = screenshot,
-                        onScreenshotClick = { onAction(HomeAction.OnScreenshotClick(screenshot)) },
-                        modifier = Modifier.weight(1f)
-                    )
+            // Sticky Filter Chips
+            stickyHeader {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    items(state.tags) { tag ->
+                        UiTagChip(
+                            text = tag,
+                            isSelected = tag == state.selectedTag,
+                            onClick = { onAction(HomeAction.SelectTag(tag)) }
+                        )
+                    }
                 }
-                if (rowItems.size < 2) {
-                    Spacer(modifier = Modifier.weight(1f))
+            }
+
+            // 필터링 후 결과가 없을 때
+            if (filteredScreenshots.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp), // 적당한 높이 지정
+                        contentAlignment = Alignment.Center
+                    ) {
+                        UiEmptyState(
+                            title = "선택한 태그의 스크린샷이 없어요.",
+                            info = "다른 태그를 선택해보세요!",
+                            buttonText = "전체 보기",
+                            onClick = { onAction(HomeAction.SelectTag("전체")) }
+                        )
+                    }
+                }
+            } else {
+                items(filteredScreenshots.chunked(2)) { rowItems ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        rowItems.forEach { screenshot ->
+                            ScreenshotItem(
+                                screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(
+                                        HomeAction.OnScreenshotClick(
+                                            screenshot
+                                        )
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (rowItems.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
                 }
             }
         }

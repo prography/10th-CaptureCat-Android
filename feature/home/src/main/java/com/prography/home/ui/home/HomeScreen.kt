@@ -58,6 +58,9 @@ fun HomeScreen(
                 is HomeEffect.ShowError -> {
                     println("Home Error: ${effect.message}")
                 }
+                is HomeEffect.NavigateToStorage -> {
+                    onNavigateToStorage()
+                }
             }
         }
     }
@@ -68,64 +71,4 @@ fun HomeScreen(
             viewModel.sendAction(action)
         }
     )
-}
-
-@Composable
-fun HomeEmptyScreen(
-    onSaveScreenshotClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_account_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(bottom = 21.dp)
-                )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.home_empty_screenshot_info),
-                style = typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            UiPrimaryButton(
-                text = stringResource(R.string.home_screenshot_save),
-                fontSize = 16.sp,
-                onClick = onSaveScreenshotClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun HomeEmptyScreenPreview() {
-    PrographyTheme {
-        HomeEmptyScreen(
-            onSaveScreenshotClick = {} // 미리보기용 빈 콜백
-        )
-    }
 }

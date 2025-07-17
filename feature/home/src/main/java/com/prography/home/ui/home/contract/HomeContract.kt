@@ -8,12 +8,14 @@ sealed class HomeAction {
     data class SelectTag(val tag: String) : HomeAction()
     object NavigateToSettings : HomeAction()
     object NavigateToFavorite : HomeAction()
+    object NavigateToStorage : HomeAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : HomeAction()
 }
 
 // Define Effects
 sealed class HomeEffect {
     data class ShowError(val message: String) : HomeEffect()
+    object NavigateToStorage : HomeEffect()
 }
 
 // Define UI State
