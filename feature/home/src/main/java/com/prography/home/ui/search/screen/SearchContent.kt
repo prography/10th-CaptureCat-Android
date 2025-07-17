@@ -69,14 +69,20 @@ fun SearchContent(
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    EmptyTagsState()
+                    UiEmptyState(
+                        title = "아직 태그가 없어요.",
+                        info = "스크린샷을 태그해 정리해보세요!",
+                        onClick = { onAction(SearchAction.NavigateToStorage) }
+                    )
                 }
             }
 
             state.hasSearched && state.searchResults.isEmpty() -> {
                 // 검색했는데 결과 없을 때
-                EmptySearchResult(
-                    onClearSearch = { onAction(SearchAction.ClearSearch) }
+                UiEmptyState(
+                    title = "검색 결과가 없어요.",
+                    info = "스크린샷을 태그해 정리해보세요",
+                    onClick = { onAction(SearchAction.NavigateToStorage) }
                 )
             }
 
@@ -284,84 +290,6 @@ fun PopularTagsSection(
     }
 }
 
-
-@Composable
-fun EmptyTagsState() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "아직 태그가 없어요.",
-                style = headline02Bold,
-                color = Text02,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "스크린샷을 태그해 정리해보세요!",
-                style = body01Regular,
-                color = Text03,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            UiLabelAddButton(
-                text = "임시보관함 가기",
-                onClick = { /* TODO */ }
-            )
-        }
-    }
-}
-
-
-@Composable
-fun EmptySearchResult(
-    onClearSearch: () -> Unit
-) {
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "검색 결과가 없어요.",
-                style = headline02Bold,
-                color = Text02,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "스크린샷을 태그해 정리해보세요",
-                style = body01Regular,
-                color = Text03,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            UiLabelAddButton(
-                text = "검색 초기화",
-                onClick = onClearSearch
-            )
-        }
-    }
-}
 
 @Composable
 fun SearchResultItem(

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
+    onNavigateToStorage: () -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -27,6 +28,9 @@ fun SearchScreen(
                     // TODO: Show error message (could use SnackBar or Toast)
                     // For now, just log the error
                     println("Search Error: ${effect.message}")
+                }
+                is SearchEffect.NavigateToStorage -> {
+                    onNavigateToStorage()
                 }
             }
         }

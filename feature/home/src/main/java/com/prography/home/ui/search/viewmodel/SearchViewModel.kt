@@ -31,6 +31,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.ClearSearch -> clearSearch()
             is SearchAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
             is SearchAction.OnSearchComplete -> handleSearchComplete()
+            is SearchAction.NavigateToStorage -> navigateToStorage()
         }
     }
 
@@ -265,5 +266,9 @@ class SearchViewModel @Inject constructor(
             .take(5) // 상위 5개 태그만
             .plus(TagWithCount("미분류", screenshots.count { it.tags.isEmpty() })) // 미분류 태그 추가
         return popularTags
+    }
+
+    private fun navigateToStorage() {
+        emitEffect(SearchEffect.NavigateToStorage)
     }
 }

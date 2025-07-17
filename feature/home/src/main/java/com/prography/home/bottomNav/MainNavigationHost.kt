@@ -44,7 +44,17 @@ fun MainNavigationHost(
             )
         }
         composable(BottomNavItem.Search.route) {
-            SearchScreen()
+            SearchScreen(
+                onNavigateToStorage = {
+                    navController.navigate(BottomNavItem.Storage.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
         composable("screenshot_gallery") {
             ScreenshotGalleryScreen(

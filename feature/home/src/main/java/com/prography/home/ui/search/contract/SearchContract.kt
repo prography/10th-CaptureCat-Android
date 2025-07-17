@@ -25,11 +25,13 @@ sealed class SearchAction {
     object ClearSearch : SearchAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : SearchAction()
     object OnSearchComplete : SearchAction()
+    object NavigateToStorage : SearchAction()
 }
 
 // Define Effects
 sealed class SearchEffect {
     data class ShowError(val message: String) : SearchEffect()
+    object NavigateToStorage : SearchEffect()
 }
 
 // Helper data class for tags with count
