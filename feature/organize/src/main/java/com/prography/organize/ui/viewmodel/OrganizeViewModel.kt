@@ -18,6 +18,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import com.prography.ui.common.ToastType
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
@@ -133,71 +134,122 @@ class OrganizeViewModel @Inject constructor(
     }
 
     private fun toggleScreenshotTag(screenshotId: String, tagText: String) {
-        Timber.d("Toggling tag '$tagText' for screenshot $screenshotId in ${currentState.organizeMode} mode")
-        updateState {
-            val updatedScreenshots = when (organizeMode) {
-                OrganizeMode.BATCH -> {
-                    Timber.d("BATCH MODE: Applying tag '$tagText' to ALL ${screenshots.size} screenshots")
+        val currentTags = getCurrentScreenshotTags()
+        if (currentTags.contains(tagText)) {
+            Timber.d("Toggling tag '$tagText' for screenshot $screenshotId in ${currentState.organizeMode} mode")
+            updateState {
+                val updatedScreenshots = when (organizeMode) {
+                    OrganizeMode.BATCH -> {
+                        Timber.d("BATCH MODE: Applying tag '$tagText' to ALL ${screenshots.size} screenshots")
 
-                    // 한번에 모드: 모든 스크린샷에 동일한 태그 적용
-                    val result = screenshots.mapIndexed { index, screenshot ->
-                        val currentTags = screenshot.tags.toMutableList()
-                        val hadTag = currentTags.contains(tagText)
-
-                        if (hadTag) {
-                            currentTags.remove(tagText)
-                            Timber.d("  Screenshot ${index + 1}: Removed tag '$tagText' - remaining tags: $currentTags")
-                        } else {
-                            if (currentTags.size < 4) { // 최대 4개 제한
-                                currentTags.add(tagText)
-                                Timber.d("  Screenshot ${index + 1}: Added tag '$tagText' - new tags: $currentTags")
-                            } else {
-                                Timber.w("  Screenshot ${index + 1}: Cannot add tag '$tagText' - already has 4 tags: $currentTags")
-                            }
-                        }
-                        screenshot.copy(tags = currentTags)
-                    }
-
-                    // 모든 스크린샷이 동일한 태그를 가지는지 검증
-                    val allTagsAreSame = result.map { it.tags.sorted() }.distinct().size == 1
-                    Timber.d("BATCH MODE RESULT: All screenshots have same tags? $allTagsAreSame")
-                    if (allTagsAreSame && result.isNotEmpty()) {
-                        Timber.d("All screenshots now have tags: ${result.first().tags}")
-                    }
-
-                    result
-                }
-                OrganizeMode.SINGLE -> {
-                    Timber.d("SINGLE MODE: Applying tag '$tagText' to screenshot $screenshotId only")
-
-                    // 한장씩 모드: 현재 스크린샷에만 태그 적용
-                    screenshots.mapIndexed { index, screenshot ->
-                        if (screenshot.id == screenshotId) {
+                        // 한번에 모드: 모든 스크린샷에 동일한 태그 적용
+                        val result = screenshots.mapIndexed { index, screenshot ->
                             val currentTags = screenshot.tags.toMutableList()
                             val hadTag = currentTags.contains(tagText)
 
                             if (hadTag) {
                                 currentTags.remove(tagText)
-                                Timber.d("  Current screenshot: Removed tag '$tagText' - remaining tags: $currentTags")
-                            } else {
-                                if (currentTags.size < 4) { // 최대 4개 제한
-                                    currentTags.add(tagText)
-                                    Timber.d("  Current screenshot: Added tag '$tagText' - new tags: $currentTags")
-                                } else {
-                                    Timber.w("  Current screenshot: Cannot add tag '$tagText' - already has 4 tags: $currentTags")
-                                }
+                                Timber.d("  Screenshot ${index + 1}: Removed tag '$tagText' - remaining tags: $currentTags")
                             }
                             screenshot.copy(tags = currentTags)
-                        } else {
-                            // 다른 스크린샷은 변경하지 않음
-                            screenshot
+                        }
+
+                        // 모든 스크린샷이 동일한 태그를 가지는지 검증
+                        val allTagsAreSame = result.map { it.tags.sorted() }.distinct().size == 1
+                        Timber.d("BATCH MODE RESULT: All screenshots have same tags? $allTagsAreSame")
+                        if (allTagsAreSame && result.isNotEmpty()) {
+                            Timber.d("All screenshots now have tags: ${result.first().tags}")
+                        }
+
+                        result
+                    }
+                    OrganizeMode.SINGLE -> {
+                        Timber.d("SINGLE MODE: Applying tag '$tagText' to screenshot $screenshotId only")
+
+                        // 한장씩 모드: 현재 스크린샷에만 태그 적용
+                        screenshots.mapIndexed { index, screenshot ->
+                            if (screenshot.id == screenshotId) {
+                                val currentTags = screenshot.tags.toMutableList()
+                                val hadTag = currentTags.contains(tagText)
+
+                                if (hadTag) {
+                                    currentTags.remove(tagText)
+                                    Timber.d("  Current screenshot: Removed tag '$tagText' - remaining tags: $currentTags")
+                                }
+                                screenshot.copy(tags = currentTags)
+                            } else {
+                                // 다른 스크린샷은 변경하지 않음
+                                screenshot
+                            }
                         }
                     }
                 }
+                copy(screenshots = updatedScreenshots)
             }
-            copy(screenshots = updatedScreenshots)
+            Timber.d("Tag toggle completed successfully")
+        } else if (currentTags.size >= 4) {
+            Timber.d("Cannot add tag '$tagText' - already has 4 tags: $currentTags")
+            showToast("태그는 최대 4개까지 지정할 수 있어요.", ToastType.Default)
+        } else {
+            Timber.d("Toggling tag '$tagText' for screenshot $screenshotId in ${currentState.organizeMode} mode")
+            updateState {
+                val updatedScreenshots = when (organizeMode) {
+                    OrganizeMode.BATCH -> {
+                        Timber.d("BATCH MODE: Applying tag '$tagText' to ALL ${screenshots.size} screenshots")
+
+                        // 한번에 모드: 모든 스크린샷에 동일한 태그 적용
+                        val result = screenshots.mapIndexed { index, screenshot ->
+                            val currentTags = screenshot.tags.toMutableList()
+                            val hadTag = currentTags.contains(tagText)
+
+                            if (hadTag) {
+                                currentTags.remove(tagText)
+                                Timber.d("  Screenshot ${index + 1}: Removed tag '$tagText' - remaining tags: $currentTags")
+                            } else {
+                                currentTags.add(tagText)
+                                Timber.d("  Screenshot ${index + 1}: Added tag '$tagText' - new tags: $currentTags")
+                            }
+                            screenshot.copy(tags = currentTags)
+                        }
+
+                        // 모든 스크린샷이 동일한 태그를 가지는지 검증
+                        val allTagsAreSame = result.map { it.tags.sorted() }.distinct().size == 1
+                        Timber.d("BATCH MODE RESULT: All screenshots have same tags? $allTagsAreSame")
+                        if (allTagsAreSame && result.isNotEmpty()) {
+                            Timber.d("All screenshots now have tags: ${result.first().tags}")
+                        }
+
+                        result
+                    }
+
+                    OrganizeMode.SINGLE -> {
+                        Timber.d("SINGLE MODE: Applying tag '$tagText' to screenshot $screenshotId only")
+
+                        // 한장씩 모드: 현재 스크린샷에만 태그 적용
+                        screenshots.mapIndexed { index, screenshot ->
+                            if (screenshot.id == screenshotId) {
+                                val currentTags = screenshot.tags.toMutableList()
+                                val hadTag = currentTags.contains(tagText)
+
+                                if (hadTag) {
+                                    currentTags.remove(tagText)
+                                    Timber.d("  Current screenshot: Removed tag '$tagText' - remaining tags: $currentTags")
+                                } else {
+                                    currentTags.add(tagText)
+                                    Timber.d("  Current screenshot: Added tag '$tagText' - new tags: $currentTags")
+                                }
+                                screenshot.copy(tags = currentTags)
+                            } else {
+                                // 다른 스크린샷은 변경하지 않음
+                                screenshot
+                            }
+                        }
+                    }
+                }
+                copy(screenshots = updatedScreenshots)
+            }
+            Timber.d("Tag toggle completed successfully")
         }
-        Timber.d("Tag toggle completed successfully")
     }
 
     private fun addNewTagToScreenshot(screenshotId: String, tagText: String) {

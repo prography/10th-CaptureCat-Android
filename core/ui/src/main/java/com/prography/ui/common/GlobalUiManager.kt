@@ -56,6 +56,7 @@ object GlobalUiManager {
 fun GlobalUiHandler() {
     var isLoading by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
+    var toastType by remember { mutableStateOf(ToastType.Error) }
     var showToast by remember { mutableStateOf(false) }
 
     // 이벤트 수신
@@ -66,6 +67,7 @@ fun GlobalUiHandler() {
                 is UiEvent.HideLoading -> isLoading = false
                 is UiEvent.ShowToast -> {
                     toastMessage = event.message
+                    toastType = event.type
                     showToast = true
                 }
             }
@@ -98,7 +100,7 @@ fun GlobalUiHandler() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 96.dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 26.dp)
                         .background(OverlayDim, shape = RoundedCornerShape(6.dp))
                         .padding(horizontal = 20.dp, vertical = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -106,7 +108,10 @@ fun GlobalUiHandler() {
                     Text(
                         text = message,
                         style = subhead02Bold,
-                        color = Error
+                        color = when (toastType) {
+                            ToastType.Default -> Color.White
+                            ToastType.Error -> Error
+                        }
                     )
                 }
             }

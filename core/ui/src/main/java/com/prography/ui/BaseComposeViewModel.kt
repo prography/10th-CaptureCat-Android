@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prography.ui.common.GlobalUiManager
 import com.prography.ui.common.UiEvent
+import com.prography.ui.common.ToastType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,6 +36,10 @@ abstract class BaseComposeViewModel<UIState, UIEffect, UIAction>(
 
     protected fun showToast(message: String) {
         GlobalUiManager.sendEvent(UiEvent.ShowToast(message))
+    }
+
+    protected fun showToast(message: String, type: ToastType) {
+        GlobalUiManager.sendEvent(UiEvent.ShowToast(message, type))
     }
 
     protected fun showLoading() {

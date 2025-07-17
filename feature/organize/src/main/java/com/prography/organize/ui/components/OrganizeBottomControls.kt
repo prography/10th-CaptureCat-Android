@@ -59,9 +59,10 @@ fun OrganizeBottomControls(
             )
 
             Text(
-                text = "태그는 최대 4개까지 지정할 수 있어요",
+                text = "추가",
                 style = caption02Regular,
-                color = Text03
+                color = Text03,
+                modifier = Modifier.clickableWithoutRipple { onAddTag() }
             )
         }
 
@@ -71,41 +72,18 @@ fun OrganizeBottomControls(
             verticalAlignment = Alignment.CenterVertically,
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(actualAvailableTags) { tagText ->
+            val sortedTags = actualAvailableTags.sortedBy { tagText ->
+                if (selectedTags.contains(tagText)) 0 else 1
+            }
+
+            items(sortedTags) { tagText ->
                 UiTagChip(
                     text = tagText,
                     isSelected = selectedTags.contains(tagText),
                     onClick = {
-                        // 최대 4개 제한 체크
-                        if (!selectedTags.contains(tagText) && selectedCount >= 4) {
-                            // 이미 4개가 선택되어 있으면 선택 불가
-                            return@UiTagChip
-                        }
                         onTagToggle(tagText)
                     }
                 )
-            }
-
-            item {
-                // 태그 추가 버튼
-                Box(
-                    modifier = Modifier
-                        .border(
-                            width = 1.5.dp,
-                            color = Gray04,
-                            shape = RoundedCornerShape(99.dp)
-                        )
-                        .background(Color.White, shape = RoundedCornerShape(99.dp))
-                        .clickableWithoutRipple { onAddTag() }
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = com.prography.ui.R.drawable.ic_tag_plus),
-                        contentDescription = "태그 추가",
-                        tint = Text01
-                    )
-                }
             }
         }
     }
