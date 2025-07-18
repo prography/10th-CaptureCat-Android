@@ -13,5 +13,4 @@ dependencies {
     implementation(project(":feature:imageDetail"))
 
     implementation(libs.android.permissions)
-    implementation(libs.coil.compose)
 }

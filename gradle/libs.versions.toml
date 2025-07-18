@@ -161,6 +161,7 @@ debug-compose-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref
 compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-viewmodel" }
 compose-glide = { module = "com.github.bumptech.glide:compose", version.ref= "compose-glide"}
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation"}
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }

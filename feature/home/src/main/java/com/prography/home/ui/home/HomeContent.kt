@@ -25,17 +25,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
 import com.prography.ui.theme.caption01SemiBold
-import com.prography.ui.component.UiTagChip
 import com.prography.ui.component.UiEmptyState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
 import timber.log.Timber
+import androidx.compose.foundation.layout.FlowRow
 
 @Composable
 fun HomeContent(
@@ -45,7 +44,7 @@ fun HomeContent(
     // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
     val hasAnyScreenshots = state.screenshots.isNotEmpty()
     val filteredScreenshots = state.screenshots.filter {
-        state.selectedTag == "전체"
+        state.selectedTag == "전체" || it.tags.contains(state.selectedTag)
     }
 
     if (!hasAnyScreenshots) {

@@ -7,7 +7,6 @@ fun PhotoResponse.toUiScreenshotModel(): UiScreenshotModel {
     return UiScreenshotModel(
         id = id.toString(),
         uri = url,
-        appName = name,
         tags = tags.map { it.name },
         isFavorite = false,
         dateStr = captureDate
