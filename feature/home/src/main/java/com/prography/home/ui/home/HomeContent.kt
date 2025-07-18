@@ -31,8 +31,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
+import timber.log.Timber
 
 @Composable
 fun HomeContent(
@@ -42,7 +45,7 @@ fun HomeContent(
     // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
     val hasAnyScreenshots = state.screenshots.isNotEmpty()
     val filteredScreenshots = state.screenshots.filter {
-        state.selectedTag == "전체" || it.appName == state.selectedTag
+        state.selectedTag == "전체"
     }
 
     if (!hasAnyScreenshots) {
@@ -125,26 +128,6 @@ fun HomeContent(
                 )
             }
 
-            // Sticky Filter Chips
-            stickyHeader {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    items(state.tags) { tag ->
-                        UiTagChip(
-                            text = tag,
-                            isSelected = tag == state.selectedTag,
-                            onClick = { onAction(HomeAction.SelectTag(tag)) }
-                        )
-                    }
-                }
-            }
-
             // 필터링 후 결과가 없을 때
             if (filteredScreenshots.isEmpty()) {
                 item {
@@ -209,13 +192,13 @@ fun ScreenshotItem(
             )
             .clickable { onScreenshotClick(screenshot) }
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(screenshot.uri),
-            contentDescription = screenshot.appName,
+        Timber.d("ScreenshotItem: $screenshot.uri")
+        AsyncImage(
+            model = screenshot.uri,
+            contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),

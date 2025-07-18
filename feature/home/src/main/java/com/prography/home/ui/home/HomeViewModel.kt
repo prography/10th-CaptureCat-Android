@@ -57,13 +57,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 getScreenshotsUseCase().collect { screenshots ->
-                    val tags =
-                        listOf("전체") + screenshots
-                            .map { it.appName }
-                            .filter { it.isNotBlank() }
-                            .distinct()
                     updateState {
-                        copy(screenshots = screenshots, tags = tags)
+                        copy(screenshots = screenshots)
                     }
                 }
             } catch (e: Exception) {
@@ -80,11 +75,7 @@ class HomeViewModel @Inject constructor(
 
     private fun handleScreenshotClick(clickedScreenshot: UiScreenshotModel) {
         val currentState = currentState
-        val filteredScreenshots = if (currentState.selectedTag == "전체") {
-            currentState.screenshots
-        } else {
-            currentState.screenshots.filter { it.appName == currentState.selectedTag }
-        }
+        val filteredScreenshots = currentState.screenshots
 
         val currentIndex = filteredScreenshots.indexOf(clickedScreenshot)
         if (currentIndex != -1) {

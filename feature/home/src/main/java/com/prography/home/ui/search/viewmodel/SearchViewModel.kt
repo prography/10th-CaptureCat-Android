@@ -78,7 +78,7 @@ class SearchViewModel @Inject constructor(
         val results = currentState.screenshots.filter { screenshot ->
             screenshot.tags.any { tag ->
                 tag.contains(query, ignoreCase = true)
-            } || screenshot.appName.contains(query, ignoreCase = true)
+            }
         }
 
         updateState { copy(searchResults = results) }

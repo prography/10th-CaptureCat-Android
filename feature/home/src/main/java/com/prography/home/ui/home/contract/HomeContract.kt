@@ -21,6 +21,5 @@ sealed class HomeEffect {
 // Define UI State
 data class HomeState(
     val screenshots: List<UiScreenshotModel> = emptyList(),
-    val tags: List<String> = listOf("전체"),
     val selectedTag: String = "전체"
 )

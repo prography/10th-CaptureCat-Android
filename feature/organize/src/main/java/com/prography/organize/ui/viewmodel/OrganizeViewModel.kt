@@ -288,9 +288,6 @@ class OrganizeViewModel @Inject constructor(
 
             runCatching {
                 val uiScreenshots = screenshotsToSave.map { screenshot ->
-                    val parsedAppName = parseAppNameFromFileName(screenshot.fileName)
-                    Timber.d("Parsed app name: '$parsedAppName' from filename: ${screenshot.fileName}")
-
                     // 날짜 파싱 못하면 현재 날짜로 파싱
                     val now = Date()
                     val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
@@ -301,7 +298,6 @@ class OrganizeViewModel @Inject constructor(
                     UiScreenshotModel(
                         id = screenshot.id,
                         uri = screenshot.uri.toString(),
-                        appName = parsedAppName,
                         tags = screenshot.tags,
                         isFavorite = screenshot.isFavorite,
                         dateStr = dateStr
@@ -413,78 +409,5 @@ class OrganizeViewModel @Inject constructor(
                 state.screenshots.getOrNull(state.currentIndex)?.id ?: ""
             }
         }
-    }
-
-    /**
-     * 파일명에서 앱 이름을 파싱하는 함수
-     * 예: "Screenshot_20231215_143022_Instagram.jpg" -> "Instagram"
-     * 예: "Screenshot_Instagram_20231215.png" -> "Instagram"
-     * 예: "스크린샷_2023-12-15_14-30-22_카카오톡.jpg" -> "카카오톡"
-     */
-    private fun parseAppNameFromFileName(fileName: String?): String {
-        if (fileName.isNullOrBlank()) {
-            Timber.w("Filename is null or blank, returning empty app name")
-            return ""
-        }
-
-        return runCatching {
-            // 파일 확장자 제거
-            val nameWithoutExtension = fileName.substringBeforeLast(".")
-            Timber.d("Processing filename without extension: $nameWithoutExtension")
-
-            // 다양한 패턴으로 앱 이름 추출 시도
-            val appName = when {
-                // 패턴 1: Screenshot_날짜_시간_앱이름
-                nameWithoutExtension.contains("Screenshot_") && nameWithoutExtension.count { it == '_' } >= 3 -> {
-                    val parts = nameWithoutExtension.split("_")
-                    if (parts.size >= 4) parts.drop(3).joinToString("_") else ""
-                }
-
-                // 패턴 2: Screenshot_앱이름_날짜 또는 Screenshot_앱이름
-                nameWithoutExtension.startsWith("Screenshot_") -> {
-                    val withoutPrefix = nameWithoutExtension.removePrefix("Screenshot_")
-                    // 날짜 패턴 제거 (YYYYMMDD, YYYY-MM-DD 등)
-                    withoutPrefix.split("_")
-                        .firstOrNull { part ->
-                            !part.matches(Regex("\\d{8}")) && // YYYYMMDD
-                                    !part.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) && // YYYY-MM-DD
-                                    !part.matches(Regex("\\d{6}")) && // HHMMSS
-                                    !part.matches(Regex("\\d{2}-\\d{2}-\\d{2}")) // HH-MM-SS
-                        } ?: ""
-                }
-
-                // 패턴 3: 스크린샷_날짜_시간_앱이름 (한글)
-                nameWithoutExtension.contains("스크린샷_") -> {
-                    val parts = nameWithoutExtension.split("_")
-                    // 마지막 부분이 앱 이름일 가능성이 높음
-                    parts.lastOrNull { part ->
-                        !part.contains("스크린샷") &&
-                                !part.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) &&
-                                !part.matches(Regex("\\d{2}-\\d{2}-\\d{2}")) &&
-                                !part.matches(Regex("\\d+"))
-                    } ?: ""
-                }
-
-                // 패턴 4: 기타 언더스코어로 구분된 경우, 마지막 단어가 앱 이름일 가능성
-                nameWithoutExtension.contains("_") -> {
-                    val parts = nameWithoutExtension.split("_")
-                    parts.lastOrNull { part ->
-                        !part.matches(Regex("\\d+")) && // 숫자만 있는 부분 제외
-                                part.length > 1 // 한 글자 제외
-                    } ?: ""
-                }
-
-                // 패턴이 매칭되지 않으면 빈 문자열
-                else -> ""
-            }
-
-            // 결과 정리
-            val cleanedAppName = appName.trim()
-            Timber.d("Extracted app name: '$cleanedAppName'")
-            cleanedAppName
-
-        }.onFailure { exception ->
-            Timber.w(exception, "Failed to parse app name from filename: $fileName")
-        }.getOrDefault("")
     }
 }

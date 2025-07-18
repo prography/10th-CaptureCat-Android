@@ -100,7 +100,7 @@ fun FavoriteCardDeck(
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(screenshot.uri),
-                    contentDescription = screenshot.appName,
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )

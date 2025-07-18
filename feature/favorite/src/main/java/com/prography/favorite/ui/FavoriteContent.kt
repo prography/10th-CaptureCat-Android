@@ -162,7 +162,7 @@ fun FavoriteScreenshotItem(
         ) {
             Image(
                 painter = rememberAsyncImagePainter(screenshot.uri),
-                contentDescription = screenshot.appName,
+                contentDescription = null ,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )

@@ -41,7 +41,6 @@ class ImageDetailViewModel @Inject constructor(
                     UiScreenshotModel(
                         id = id,
                         uri = "",
-                        appName = "",
                         tags = emptyList(),
                         isFavorite = false,
                         dateStr = ""
@@ -109,7 +108,6 @@ class ImageDetailViewModel @Inject constructor(
                             UiScreenshotModel(
                                 id = id,
                                 uri = "",
-                                appName = "",
                                 tags = emptyList(),
                                 isFavorite = false,
                                 dateStr = ""

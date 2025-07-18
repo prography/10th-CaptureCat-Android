@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class ScreenshotEntity(
     @PrimaryKey val id: String,
     val uri: String,
-    val appName: String,
     val tags: String, // "tag1,tag2"
     val isFavorite: Boolean,
     val dateStr: String
