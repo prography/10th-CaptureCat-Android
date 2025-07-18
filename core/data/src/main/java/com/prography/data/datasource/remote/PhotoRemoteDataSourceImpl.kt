@@ -3,6 +3,7 @@ package com.prography.data.datasource.remote
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.prography.data.mapper.toUiScreenshotModel
 import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.network.api.PhotoService
@@ -72,7 +73,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                 UploadItem(
                     fileName = fileNames[index],
                     captureDate = captureDate,
-                    tagNames = screenshot.tags
+                    tagNames = screenshot.tags.map { it.name }
                 )
             }
 
@@ -154,6 +155,60 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                     Timber.e("Upload unknown error: ${networkState.errorState}")
                     throw networkState.t ?: Exception(networkState.errorState)
                 }
+            }
+        }
+    }
+
+    override suspend fun deleteTag(imageId: String, tagName: String): Result<Unit> {
+        return runCatching {
+            val networkState = photoService.deleteTag(imageId, tagName)
+
+            when (networkState) {
+                is NetworkState.Success -> {
+                    Timber.d("Tag deletion successful: imageId=$imageId, tagName=$tagName")
+                }
+
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("Tag deletion failed: $errorMessage")
+                    throw Exception("Tag deletion failed: $errorMessage")
+                }
+
+                is NetworkState.NetworkError -> {
+                    Timber.e("Tag deletion network error: ${networkState.error}")
+                    throw networkState.error
+                }
+
+                is NetworkState.UnknownError -> {
+                    Timber.e("Tag deletion unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
+            }
+        }
+    }
+
+    override suspend fun getScreenshotById(screenshotId: String): Result<UiScreenshotModel?> {
+        return when (val networkState = photoService.getScreenshotById(screenshotId)) {
+            is NetworkState.Success -> {
+                Timber.d("Single screenshot API Response: ${networkState.body}")
+                val screenshot = networkState.body.getDataOrNull()?.toUiScreenshotModel()
+                Timber.d("Converted screenshot: $screenshot")
+                Result.success(screenshot)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Single screenshot API Failure: ${networkState.error}")
+                Result.failure(Exception("API : ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Single screenshot Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Single screenshot Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
             }
         }
     }

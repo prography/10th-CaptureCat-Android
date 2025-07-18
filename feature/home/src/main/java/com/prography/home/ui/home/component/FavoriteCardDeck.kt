@@ -121,7 +121,7 @@ fun FavoriteCardDeck(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         screenshot.tags.forEach { tag ->
-                            UiTagInfoChip(tag)
+                            UiTagInfoChip(tag.name)
                         }
                     }
                     Image(

@@ -10,6 +10,9 @@ interface ScreenshotDao {
     @Query("SELECT * FROM screenshots")
     fun getAll(): Flow<List<ScreenshotEntity>>
 
+    @Query("SELECT * FROM screenshots WHERE id = :id")
+    suspend fun getById(id: String): ScreenshotEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(screenshot: ScreenshotEntity)
 

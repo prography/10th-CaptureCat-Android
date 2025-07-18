@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.imageDetail.ui.content.ImageDetailContent
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
@@ -79,21 +80,21 @@ fun ImageDetailScreenPreview() {
                     UiScreenshotModel(
                         id = "1",
                         uri = "https://via.placeholder.com/300x400",
-                        tags = listOf("쇼핑", "패션"),
+                        tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
                         isFavorite = false,
                         dateStr = "2024-01-15"
                     ),
                     UiScreenshotModel(
                         id = "2",
                         uri = "https://via.placeholder.com/300x400",
-                        tags = listOf("여행", "음식"),
+                        tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
                         isFavorite = true,
                         dateStr = "2024-01-14"
                     ),
                     UiScreenshotModel(
                         id = "3",
                         uri = "https://via.placeholder.com/300x400",
-                        tags = listOf("쇼핑", "생활용품"),
+                        tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
                         isFavorite = false,
                         dateStr = "2024-01-13"
                     )
@@ -102,7 +103,7 @@ fun ImageDetailScreenPreview() {
                 currentScreenshot = UiScreenshotModel(
                     id = "1",
                     uri = "https://via.placeholder.com/300x400",
-                    tags = listOf("쇼핑", "패션"),
+                    tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
                     isFavorite = false,
                     dateStr = "2024-01-15"
                 ),

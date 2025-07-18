@@ -37,6 +37,7 @@ import com.prography.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import com.prography.domain.model.TagModel
 
 @OptIn(
     ExperimentalFoundationApi::class,
@@ -212,7 +213,7 @@ fun ScreenshotPager(state: ImageDetailState, pagerState: PagerState) {
 
 @Composable
 fun ChipSection(
-    tags: List<String>,
+    tags: List<TagModel>,
     isFavorite: Boolean,
     onFavoriteToggle: () -> Unit,
     modifier: Modifier = Modifier
@@ -234,7 +235,7 @@ fun ChipSection(
                 modifier = Modifier.weight(1f)
             ) {
                 tags.forEach { tag ->
-                    UiTagInfoChip(text = tag)
+                    UiTagInfoChip(text = tag.name)
                 }
             }
         } else {
@@ -412,7 +413,7 @@ private fun TagEditBottomSheetContent(
                 ) {
                     state.currentScreenshot.tags.forEach { tag ->
                         UiTagSelectedChip(
-                            text = tag,
+                            text = tag.name,
                             onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
                         )
                     }
@@ -453,21 +454,21 @@ fun ImageDetailScreenPreview() {
         UiScreenshotModel(
             id = "1",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("쇼핑", "패션"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = false,
             dateStr = "2024년 1월 15일"
         ),
         UiScreenshotModel(
             id = "2",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("여행", "음식"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = true,
             dateStr = "2024년 1월 14일"
         ),
         UiScreenshotModel(
             id = "3",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("쇼핑", "생활용품"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = false,
             dateStr = "2024년 1월 13일"
         )

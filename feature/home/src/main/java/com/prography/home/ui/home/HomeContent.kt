@@ -44,7 +44,7 @@ fun HomeContent(
     // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
     val hasAnyScreenshots = state.screenshots.isNotEmpty()
     val filteredScreenshots = state.screenshots.filter {
-        state.selectedTag == "전체" || it.tags.contains(state.selectedTag)
+        state.selectedTag == "전체"
     }
 
     if (!hasAnyScreenshots) {
@@ -207,7 +207,7 @@ fun ScreenshotItem(
         ) {
             screenshot.tags.forEach { tag ->
                 Text(
-                    text = tag,
+                    text = tag.name,
                     style = caption01SemiBold,
                     color = Color.White,
                     modifier = Modifier

@@ -325,7 +325,7 @@ fun SearchResultItem(
                     .padding(start = 8.dp, bottom = 8.dp)
             ) {
                 screenshot.tags.forEach { tag ->
-                    UiTagInfoChip(text = tag)
+                    UiTagInfoChip(text = tag.name)
                 }
             }
         }

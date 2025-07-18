@@ -1,5 +1,6 @@
 package com.prography.imageDetail.ui.contract
 
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
 
 data class ImageDetailState(
@@ -25,7 +26,7 @@ sealed class ImageDetailAction {
     object OnToggleFavorite : ImageDetailAction()
     object OnShowTagEditBottomSheet : ImageDetailAction()
     object OnHideTagEditBottomSheet : ImageDetailAction()
-    data class OnTagDelete(val tag: String) : ImageDetailAction()
+    data class OnTagDelete(val tag: TagModel) : ImageDetailAction()
     data class OnNewTagTextChange(val text: String) : ImageDetailAction()
     object OnAddNewTag : ImageDetailAction()
     object OnDeleteScreenshot : ImageDetailAction()

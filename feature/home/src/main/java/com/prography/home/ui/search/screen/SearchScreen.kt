@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.prography.domain.model.TagModel
 import com.prography.home.ui.search.contract.SearchEffect
 import com.prography.home.ui.search.contract.SearchState
 import com.prography.home.ui.search.contract.TagWithCount
@@ -91,21 +92,21 @@ fun SearchScreenWithResultsPreview() {
         com.prography.domain.model.UiScreenshotModel(
             id = "1",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("쇼핑", "패션"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = false,
             dateStr = "2024-01-15"
         ),
         com.prography.domain.model.UiScreenshotModel(
             id = "2",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("쇼핑"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = true,
             dateStr = "2024-01-14"
         ),
         com.prography.domain.model.UiScreenshotModel(
             id = "3",
             uri = "https://via.placeholder.com/300x400",
-            tags = listOf("쇼핑", "생활용품"),
+            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
             isFavorite = false,
             dateStr = "2024-01-13"
         )

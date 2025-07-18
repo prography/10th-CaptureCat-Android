@@ -1,9 +1,12 @@
 package com.prography.imageDetail.ui.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
+import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
@@ -13,13 +16,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
     private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
+    private val getScreenshotByIdUseCase: GetScreenshotByIdUseCase,
     private val deleteScreenshotUseCase: DeleteScreenshotUseCase,
-    private val updateScreenshotUseCase: UpdateScreenshotUseCase
+    private val updateScreenshotUseCase: UpdateScreenshotUseCase,
+    private val deleteTagUseCase: DeleteTagUseCase
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
 ) {
@@ -57,7 +63,7 @@ class ImageDetailViewModel @Inject constructor(
         loadScreenshotById(screenshotIds.getOrNull(currentIndex) ?: "", currentIndex)
 
         // Then load all screenshots in background
-        loadAllScreenshots()
+        loadScreenshotsByIds()
     }
 
     private fun loadScreenshotById(screenshotId: String, index: Int) {
@@ -67,8 +73,7 @@ class ImageDetailViewModel @Inject constructor(
             try {
                 // Always load from database to get the latest data
                 Timber.d("Loading screenshot from database: $screenshotId")
-                val allScreenshots = getAllScreenshotsUseCase().firstOrNull() ?: emptyList()
-                val screenshot = allScreenshots.find { it.id == screenshotId }
+                val screenshot = getScreenshotByIdUseCase(screenshotId)
 
                 if (screenshot != null) {
                     // Update cache with latest data
@@ -90,50 +95,36 @@ class ImageDetailViewModel @Inject constructor(
         }
     }
 
-    private fun loadAllScreenshots() {
+    private fun loadScreenshotsByIds() {
         viewModelScope.launch {
-            try {
-                val allScreenshots = getAllScreenshotsUseCase().firstOrNull() ?: emptyList()
-
-                // Cache all relevant screenshots
-                val loadedScreenshots = mutableListOf<UiScreenshotModel>()
-                screenshotIds.forEachIndexed { index, id ->
-                    val screenshot = allScreenshots.find { it.id == id }
-                    if (screenshot != null) {
-                        screenshotCache[id] = screenshot
-                        loadedScreenshots.add(screenshot)
-                    } else {
-                        // Keep placeholder for missing screenshots
-                        loadedScreenshots.add(
-                            UiScreenshotModel(
-                                id = id,
-                                uri = "",
-                                tags = emptyList(),
-                                isFavorite = false,
-                                dateStr = ""
-                            )
+            updateState { copy(isLoading = true) }
+            val loadedScreenshots = mutableListOf<UiScreenshotModel>()
+            for (id in screenshotIds) {
+                val screenshot = getScreenshotByIdUseCase(id)
+                if (screenshot != null) {
+                    screenshotCache[id] = screenshot
+                    loadedScreenshots.add(screenshot)
+                } else {
+                    loadedScreenshots.add(
+                        UiScreenshotModel(
+                            id = id,
+                            uri = "",
+                            tags = emptyList(),
+                            isFavorite = false,
+                            dateStr = ""
                         )
-                        Timber.w("Screenshot not found in database: $id")
-                    }
-                }
-
-                // Update the complete screenshots list and current screenshot
-                val currentScreenshot = loadedScreenshots.getOrNull(currentState.currentIndex)
-                updateState {
-                    copy(
-                        screenshots = loadedScreenshots,
-                        currentScreenshot = currentScreenshot,
-                        isLoading = false
                     )
                 }
-
-                Timber.d("Successfully loaded ${screenshotCache.size} screenshots from ${screenshotIds.size} IDs")
-                Timber.d("Current screenshot set to: ${currentScreenshot?.id}")
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to load all screenshots")
-                updateState { copy(isLoading = false) }
-                emitEffect(ImageDetailEffect.ShowError("스크린샷을 불러오는데 실패했습니다."))
             }
+            val currentScreenshot = loadedScreenshots.getOrNull(currentState.currentIndex)
+            updateState {
+                copy(
+                    screenshots = loadedScreenshots,
+                    currentScreenshot = currentScreenshot,
+                    isLoading = false
+                )
+            }
+            Timber.d("Loaded by id! current=${currentScreenshot?.id}, total=${loadedScreenshots.size}")
         }
     }
 
@@ -295,9 +286,9 @@ class ImageDetailViewModel @Inject constructor(
         }
     }
 
-    private fun deleteTag(tag: String) {
+    private fun deleteTag(tag: TagModel) {
         val currentScreenshot = currentState.currentScreenshot ?: return
-        val updatedTags = currentScreenshot.tags.filter { it != tag }
+        val updatedTags = currentScreenshot.tags.filter { it.id != tag.id }
         val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
 
         // Update cache first
@@ -317,11 +308,18 @@ class ImageDetailViewModel @Inject constructor(
             )
         }
 
-        // Save to database
+        // Save to database/server
         viewModelScope.launch {
             runCatching {
-                updateScreenshotUseCase(updatedScreenshot)
-                Timber.d("Successfully deleted tag '$tag' from screenshot: ${updatedScreenshot.id}")
+                // 먼저 서버에서 태그 삭제 시도
+                try {
+                    deleteTagUseCase(currentScreenshot.id, tag.id)
+                    Timber.d("Successfully deleted tag '${tag.name}' from server for screenshot: ${updatedScreenshot.id}")
+                } catch (e: UnsupportedOperationException) {
+                    // 로컬 모드인 경우 UpdateScreenshotUseCase 사용
+                    updateScreenshotUseCase(updatedScreenshot)
+                    Timber.d("Successfully deleted tag '${tag.name}' locally for screenshot: ${updatedScreenshot.id}")
+                }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to delete tag")
                 // Revert cache on failure
@@ -349,7 +347,11 @@ class ImageDetailViewModel @Inject constructor(
         if (newTag.isEmpty()) return
 
         val currentScreenshot = currentState.currentScreenshot ?: return
-        val updatedTags = currentScreenshot.tags + newTag
+        val newTagModel = TagModel(
+            id = UUID.randomUUID().toString(),
+            name = newTag
+        )
+        val updatedTags = currentScreenshot.tags + newTagModel
         val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
 
         // Update cache first

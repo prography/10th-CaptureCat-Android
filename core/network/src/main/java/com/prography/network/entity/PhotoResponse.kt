@@ -11,8 +11,3 @@ data class PhotoResponse(
     val tags: List<TagResponse>
 )
 
-@Serializable
-data class TagResponse(
-    val id: Int,
-    val name: String
-)

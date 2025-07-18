@@ -86,4 +86,41 @@ class ScreenshotRepositoryImpl @Inject constructor(
     override suspend fun deleteScreenshot(screenshotId: String) {
         localDataSource.deleteById(screenshotId)
     }
+
+    override suspend fun getScreenshotById(screenshotId: String): UiScreenshotModel? {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드
+            localDataSource.getById(screenshotId)
+        } else {
+            // 서버 모드
+            remoteDataSource.getScreenshotById(screenshotId).getOrNull()
+        }
+    }
+
+    override suspend fun deleteTag(imageId: String, tagName: String) {
+        val token = userPrefs.accessToken
+        Timber.d("DeleteTag - userPrefs.accessToken: ${token.first()}")
+
+        if (token.first().isNullOrBlank()) {
+            // 로컬 모드: 로컬에서만 태그 삭제
+            Timber.d("DeleteTag - Local mode: deleting tag '$tagName' from image $imageId")
+            // 로컬에서는 UpdateScreenshotUseCase를 사용하는 것이 더 적합
+            // 여기서는 로그만 남기고 실제 구현은 ViewModel에서 처리
+            throw UnsupportedOperationException("Use UpdateScreenshotUseCase for local tag deletion")
+        } else {
+            // 서버 모드: 서버에서 태그 삭제
+            Timber.d("DeleteTag - Remote mode: deleting tag '$tagName' from image $imageId")
+            remoteDataSource.deleteTag(imageId, tagName)
+                .fold(
+                    onSuccess = {
+                        Timber.d("DeleteTag - Remote tag deletion success")
+                    },
+                    onFailure = { exception ->
+                        Timber.e(exception, "DeleteTag - Remote tag deletion failure")
+                        throw exception
+                    }
+                )
+        }
+    }
 }

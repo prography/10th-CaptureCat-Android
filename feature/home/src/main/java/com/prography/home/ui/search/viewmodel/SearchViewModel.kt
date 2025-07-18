@@ -77,7 +77,7 @@ class SearchViewModel @Inject constructor(
     private fun searchScreenshots(query: String) {
         val results = currentState.screenshots.filter { screenshot ->
             screenshot.tags.any { tag ->
-                tag.contains(query, ignoreCase = true)
+                tag.name.contains(query, ignoreCase = true)
             }
         }
 
@@ -138,7 +138,7 @@ class SearchViewModel @Inject constructor(
             // AND 조건: 선택된 모든 태그를 포함하는 스크린샷만 필터링
             selectedTags.all { selectedTag ->
                 screenshot.tags.any { tag ->
-                    tag.contains(selectedTag, ignoreCase = true)
+                    tag.name.contains(selectedTag, ignoreCase = true)
                 }
             }
         }
@@ -170,7 +170,7 @@ class SearchViewModel @Inject constructor(
         val matchingScreenshots = currentState.screenshots.filter { screenshot ->
             selectedTags.all { selectedTag ->
                 screenshot.tags.any { tag ->
-                    tag.contains(selectedTag, ignoreCase = true)
+                    tag.name.contains(selectedTag, ignoreCase = true)
                 }
             }
         }
@@ -181,17 +181,17 @@ class SearchViewModel @Inject constructor(
             screenshot.tags.forEach { tag ->
                 // 이미 선택된 태그는 제외
                 if (!selectedTags.any { selectedTag ->
-                        tag.equals(selectedTag, ignoreCase = true)
+                        tag.name.equals(selectedTag, ignoreCase = true)
                     }) {
-                    relatedTagsSet.add(tag)
+                    relatedTagsSet.add(tag.name)
                 }
             }
         }
 
         // 빈도순으로 정렬 (옵션)
-        val sortedRelatedTags = relatedTagsSet.toList().sortedByDescending { tag ->
+        val sortedRelatedTags = relatedTagsSet.toList().sortedByDescending { tagName ->
             matchingScreenshots.count { screenshot ->
-                screenshot.tags.any { it.equals(tag, ignoreCase = true) }
+                screenshot.tags.any { tag -> tag.name.equals(tagName, ignoreCase = true) }
             }
         }
 
@@ -217,7 +217,7 @@ class SearchViewModel @Inject constructor(
         // 해당 태그가 존재하는지 확인
         val tagExists = currentState.screenshots.any { screenshot ->
             screenshot.tags.any { tag ->
-                tag.contains(query, ignoreCase = true)
+                tag.name.contains(query, ignoreCase = true)
             }
         }
 
@@ -256,7 +256,7 @@ class SearchViewModel @Inject constructor(
 
         screenshots.forEach { screenshot ->
             screenshot.tags.forEach { tag ->
-                tagCounts[tag] = tagCounts.getOrDefault(tag, 0) + 1
+                tagCounts[tag.name] = tagCounts.getOrDefault(tag.name, 0) + 1
             }
         }
 

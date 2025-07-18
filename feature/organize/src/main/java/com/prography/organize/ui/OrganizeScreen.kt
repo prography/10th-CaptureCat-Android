@@ -86,7 +86,7 @@ fun OrganizeScreen(
             state = state,
             pagerState = pagerState,
             onAction = viewModel::sendAction,
-            getCurrentScreenshotTags = viewModel::getCurrentScreenshotTags,
+            getCurrentScreenshotTags = { viewModel.getCurrentScreenshotTags().map { it.name } } ,
             getCurrentScreenshotId = viewModel::getCurrentScreenshotId
         )
     }
