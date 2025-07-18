@@ -1,5 +1,6 @@
 package com.prography.network.api
 
+import com.prography.network.entity.AddTagsRequest
 import com.prography.network.entity.ApiListResponse
 import com.prography.network.entity.ApiResponse
 import com.prography.network.entity.PhotoResponse
@@ -43,7 +44,7 @@ interface PhotoService {
     @POST("/v1/images/{id}/tags")
     suspend fun addTagsToScreenshot(
         @Path("id") screenshotId: String,
-        @Body body: Map<String, List<String>>
+        @Body body: AddTagsRequest
     ): NetworkState<ApiResponse<Unit>>
 
 }

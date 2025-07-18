@@ -345,8 +345,11 @@ class ImageDetailViewModel @Inject constructor(
 
     private fun addNewTag() {
         val newTag = currentState.newTagText.trim()
+
+        Timber.d("newTag: $newTag")
         if (newTag.isEmpty()) return
 
+        Timber.d("currentState ${currentState.currentScreenshot}")
         val currentScreenshot = currentState.currentScreenshot ?: return
         val newTagModel = TagModel(
             id = UUID.randomUUID().toString(),
