@@ -3,6 +3,7 @@ package com.prography.imageDetail.ui.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
@@ -21,11 +22,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
-    private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
     private val getScreenshotByIdUseCase: GetScreenshotByIdUseCase,
     private val deleteScreenshotUseCase: DeleteScreenshotUseCase,
     private val updateScreenshotUseCase: UpdateScreenshotUseCase,
-    private val deleteTagUseCase: DeleteTagUseCase
+    private val deleteTagUseCase: DeleteTagUseCase,
+    private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
 ) {
@@ -354,58 +355,61 @@ class ImageDetailViewModel @Inject constructor(
         val updatedTags = currentScreenshot.tags + newTagModel
         val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
 
-        // Update cache first
-        screenshotCache[updatedScreenshot.id] = updatedScreenshot
 
-        updateState {
-            val updatedScreenshots = screenshots.map { screenshot ->
-                if (screenshot.id == currentScreenshot.id) {
-                    updatedScreenshot
-                } else {
-                    screenshot
-                }
-            }
-            copy(
-                screenshots = updatedScreenshots,
-                currentScreenshot = updatedScreenshot,
-                newTagText = "",
-                availableTags = if (!availableTags.contains(newTag)) {
-                    availableTags + newTag
-                } else {
-                    availableTags
-                }
-            )
-        }
-
-        // Save to database
         viewModelScope.launch {
-            runCatching {
-                updateScreenshotUseCase(updatedScreenshot)
+            val result = runCatching {
+                addTagsToScreenshotUseCase(currentScreenshot.id, updatedTags.map { it.name })
+            }
+            result.onSuccess {
                 Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
-            }.onFailure { exception ->
-                Timber.e(exception, "Failed to add tag")
-                // Revert cache on failure
-                screenshotCache[currentScreenshot.id] = currentScreenshot
+
+                // Update UI only after successful server response
+                screenshotCache[updatedScreenshot.id] = updatedScreenshot
                 updateState {
-                    val revertedScreenshots = screenshots.map { screenshot ->
-                        if (screenshot.id == currentScreenshot.id) {
-                            currentScreenshot
-                        } else {
-                            screenshot
-                        }
+                    val updatedScreenshots = screenshots.map { screenshot ->
+                        if (screenshot.id == currentScreenshot.id) updatedScreenshot else screenshot
                     }
                     copy(
-                        screenshots = revertedScreenshots,
-                        currentScreenshot = currentScreenshot,
+                        screenshots = updatedScreenshots,
+                        currentScreenshot = updatedScreenshot,
                         newTagText = "",
-                        availableTags = if (availableTags.contains(newTag)) {
-                            availableTags - newTag
-                        } else {
-                            availableTags
-                        }
+                        availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
+                        isLoading = false
                     )
                 }
-                emitEffect(ImageDetailEffect.ShowError("태그 추가에 실패했습니다."))
+            }.onFailure { exception ->
+                Timber.e(exception, "Failed to add tag (server or local)")
+
+                // Local 모드일 때 fallback
+                if (exception is UnsupportedOperationException) {
+                    val fallbackResult = runCatching {
+                        updateScreenshotUseCase(updatedScreenshot)
+                    }
+                    fallbackResult.onSuccess {
+                        // Update UI after successful local update
+                        screenshotCache[updatedScreenshot.id] = updatedScreenshot
+                        updateState {
+                            val updatedScreenshots = screenshots.map { screenshot ->
+                                if (screenshot.id == currentScreenshot.id) updatedScreenshot else screenshot
+                            }
+                            copy(
+                                screenshots = updatedScreenshots,
+                                currentScreenshot = updatedScreenshot,
+                                newTagText = "",
+                                availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
+                                isLoading = false
+                            )
+                        }
+                    }.onFailure { fallbackException ->
+                        emitEffect(
+                            ImageDetailEffect.ShowError(
+                                fallbackException.message ?: "태그 추가에 실패했습니다."
+                            )
+                        )
+                    }
+                } else {
+                    emitEffect(ImageDetailEffect.ShowError(exception.message ?: "태그 추가에 실패했습니다."))
+                }
             }
         }
     }

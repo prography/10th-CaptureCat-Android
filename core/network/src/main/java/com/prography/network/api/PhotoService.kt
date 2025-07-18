@@ -6,6 +6,7 @@ import com.prography.network.entity.PhotoResponse
 import com.prography.network.util.NetworkState
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -38,4 +39,11 @@ interface PhotoService {
         @Path("imageId") imageId: String,
         @Path("tagId") tagId: String
     ): NetworkState<ApiResponse<String>>
+
+    @POST("/v1/images/{id}/tags")
+    suspend fun addTagsToScreenshot(
+        @Path("id") screenshotId: String,
+        @Body body: Map<String, List<String>>
+    ): NetworkState<ApiResponse<Unit>>
+
 }

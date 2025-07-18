@@ -187,13 +187,48 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getScreenshotById(screenshotId: String): Result<UiScreenshotModel?> {
+    override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit> {
+        return runCatching {
+            val networkState = photoService.addTagsToScreenshot(
+                screenshotId = screenshotId,
+                body = mapOf("tagNames" to tagNames)
+            )
+
+            when (networkState) {
+                is NetworkState.Success -> {
+                    // : {"result":"SUCCESS"};
+                    Timber.d("Add Tags successful: imageId=$screenshotId, tags=$tagNames")
+                    Unit
+                }
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("AddTags failed: $errorMessage")
+                    throw Exception(errorMessage)
+                }
+                is NetworkState.NetworkError -> {
+                    Timber.e("AddTags network error: ${networkState.error}")
+                    throw networkState.error
+                }
+                is NetworkState.UnknownError -> {
+                    Timber.e("AddTags unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
+            }
+        }
+    }
+
+    override suspend fun getScreenshotById(screenshotId: String): Result<UiScreenshotModel> {
         return when (val networkState = photoService.getScreenshotById(screenshotId)) {
             is NetworkState.Success -> {
                 Timber.d("Single screenshot API Response: ${networkState.body}")
                 val screenshot = networkState.body.getDataOrNull()?.toUiScreenshotModel()
-                Timber.d("Converted screenshot: $screenshot")
-                Result.success(screenshot)
+                if (screenshot != null) {
+                    Timber.d("Converted screenshot: $screenshot")
+                    Result.success(screenshot)
+                } else {
+                    Timber.e("Screenshot not found in response for id $screenshotId")
+                    Result.failure(Exception("스크린샷을 찾을 수 없습니다."))
+                }
             }
 
             is NetworkState.Failure -> {

@@ -123,4 +123,24 @@ class ScreenshotRepositoryImpl @Inject constructor(
                 )
         }
     }
+
+    override suspend fun addTagsToScreenshot(
+        screenshotId: String,
+        tagNames: List<String>
+    ) {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            throw UnsupportedOperationException("Use Add for local tag deletion")
+        } else {
+            remoteDataSource.addTagsToScreenshot(screenshotId, tagNames).fold(
+                onSuccess = {
+                    Timber.d("AddTag - Remote tag Add success")
+                },
+                onFailure = { exception ->
+                    Timber.e(exception, "AddTag - Remote tag Add failure")
+                    throw exception
+                }
+            )
+        }
+    }
 }
