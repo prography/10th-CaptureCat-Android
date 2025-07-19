@@ -34,7 +34,7 @@ fun CompletionMessage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "${screenshotCount}장 태그 완료!",
+            text = "${screenshotCount}장 정리 완료!",
             style = headline01Bold,
             color = Text01,
             modifier = Modifier.padding(top = 150.dp, bottom = 8.dp)
