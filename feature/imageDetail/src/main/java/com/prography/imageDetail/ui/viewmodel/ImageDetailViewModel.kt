@@ -361,12 +361,13 @@ class ImageDetailViewModel @Inject constructor(
 
         viewModelScope.launch {
             val result = runCatching {
-                addTagsToScreenshotUseCase(currentScreenshot.id, updatedTags.map { it.name })
+                // 새로운 태그만 서버/로컬에 추가
+                addTagsToScreenshotUseCase(currentScreenshot.id, listOf(newTag))
             }
             result.onSuccess {
                 Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
 
-                // Update UI only after successful server response
+                // Update UI only after successful response
                 screenshotCache[updatedScreenshot.id] = updatedScreenshot
                 updateState {
                     val updatedScreenshots = screenshots.map { screenshot ->
@@ -381,38 +382,8 @@ class ImageDetailViewModel @Inject constructor(
                     )
                 }
             }.onFailure { exception ->
-                Timber.e(exception, "Failed to add tag (server or local)")
-
-                // Local 모드일 때 fallback
-                if (exception is UnsupportedOperationException) {
-                    val fallbackResult = runCatching {
-                        updateScreenshotUseCase(updatedScreenshot)
-                    }
-                    fallbackResult.onSuccess {
-                        // Update UI after successful local update
-                        screenshotCache[updatedScreenshot.id] = updatedScreenshot
-                        updateState {
-                            val updatedScreenshots = screenshots.map { screenshot ->
-                                if (screenshot.id == currentScreenshot.id) updatedScreenshot else screenshot
-                            }
-                            copy(
-                                screenshots = updatedScreenshots,
-                                currentScreenshot = updatedScreenshot,
-                                newTagText = "",
-                                availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
-                                isLoading = false
-                            )
-                        }
-                    }.onFailure { fallbackException ->
-                        emitEffect(
-                            ImageDetailEffect.ShowError(
-                                fallbackException.message ?: "태그 추가에 실패했습니다."
-                            )
-                        )
-                    }
-                } else {
-                    emitEffect(ImageDetailEffect.ShowError(exception.message ?: "태그 추가에 실패했습니다."))
-                }
+                Timber.e(exception, "Failed to add tag")
+                emitEffect(ImageDetailEffect.ShowError(exception.message ?: "태그 추가에 실패했습니다."))
             }
         }
     }

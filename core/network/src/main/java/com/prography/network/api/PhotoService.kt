@@ -41,6 +41,11 @@ interface PhotoService {
         @Path("tagId") tagId: String
     ): NetworkState<ApiResponse<String>>
 
+    @DELETE("v1/images/{imageId}")
+    suspend fun deleteScreenshot(
+        @Path("imageId") imageId: String
+    ): NetworkState<ApiResponse<String>>
+
     @POST("/v1/images/{id}/tags")
     suspend fun addTagsToScreenshot(
         @Path("id") screenshotId: String,

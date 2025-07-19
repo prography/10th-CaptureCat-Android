@@ -7,6 +7,7 @@ import com.prography.data.mapper.toUiScreenshotModel
 import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.network.api.PhotoService
+import com.prography.network.entity.AddTagsRequest
 import com.prography.network.entity.UploadItem
 import com.prography.network.util.NetworkState
 import com.prography.network.util.getDataOrNull
@@ -83,7 +84,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                 uploadItems
             )
             val uploadItemsPart = MultipartBody.Part.createFormData(
-                "uploadItems", "file", uploadItemsJson.toRequestBody("application/json".toMediaType())
+                "uploadItems", "uploadItems.json", uploadItemsJson.toRequestBody("application/json".toMediaType())
             )
 
 
@@ -110,7 +111,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
                     val contentType = when {
                         originalFileName.lowercase().endsWith(".png") -> "image/png"
-                        originalFileName.lowercase().endsWith(".jpg") -> "image/jpeg"
+                        originalFileName.lowercase().endsWith(".jpg") -> "image/jpg"
                         originalFileName.lowercase().endsWith(".jpeg") -> "image/jpeg"
                         originalFileName.lowercase().endsWith(".webp") -> "image/webp"
                         else -> "image/jpeg"
@@ -189,9 +190,11 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit> {
         return runCatching {
+            val requestBody = AddTagsRequest(tagNames = tagNames)
+
             val networkState = photoService.addTagsToScreenshot(
                 screenshotId = screenshotId,
-                body = mapOf("tagNames" to tagNames)
+                body = requestBody
             )
 
             when (networkState) {
@@ -244,6 +247,34 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             is NetworkState.UnknownError -> {
                 Timber.e("Single screenshot Unknown Error: ${networkState.errorState}")
                 Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun deleteScreenshot(screenshotId: String): Result<Unit> {
+        return runCatching {
+            val networkState = photoService.deleteScreenshot(screenshotId)
+
+            when (networkState) {
+                is NetworkState.Success -> {
+                    Timber.d("Screenshot deletion successful: screenshotId=$screenshotId")
+                }
+
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("Screenshot deletion failed: $errorMessage")
+                    throw Exception("Screenshot deletion failed: $errorMessage")
+                }
+
+                is NetworkState.NetworkError -> {
+                    Timber.e("Screenshot deletion network error: ${networkState.error}")
+                    throw networkState.error
+                }
+
+                is NetworkState.UnknownError -> {
+                    Timber.e("Screenshot deletion unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
             }
         }
     }

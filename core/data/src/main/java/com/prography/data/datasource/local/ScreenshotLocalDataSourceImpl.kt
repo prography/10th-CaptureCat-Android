@@ -6,10 +6,12 @@ import com.prography.data.mapper.toDomain
 import com.prography.data.mapper.toEntity
 import com.prography.database.dao.ScreenshotDao
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.model.TagModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
+import java.util.UUID
 
 
 class ScreenshotLocalDataSourceImpl @Inject constructor(
@@ -50,5 +52,27 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getById(screenshotId: String): UiScreenshotModel? {
         return dao.getById(screenshotId)?.toDomain()
+    }
+
+    override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>) {
+        val screenshotEntity = dao.getById(screenshotId)
+        if (screenshotEntity != null) {
+            val screenshot = screenshotEntity.toDomain()
+            // Convert tag names to TagModel objects
+            val newTags = tagNames.map { tagName ->
+                TagModel(
+                    id = UUID.randomUUID().toString(),
+                    name = tagName
+                )
+            }
+            // Ensure there are no duplicate tag names
+            val currentTags = screenshot.tags
+            val allTags = (currentTags + newTags).distinctBy { it.name }
+            val updatedScreenshot = screenshot.copy(tags = allTags)
+            dao.update(updatedScreenshot.toEntity())
+            Timber.d("Added tags $tagNames to screenshot $screenshotId")
+        } else {
+            Timber.w("addTagsToScreenshot: Screenshot with id $screenshotId not found.")
+        }
     }
 }

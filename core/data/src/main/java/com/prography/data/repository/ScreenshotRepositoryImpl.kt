@@ -84,7 +84,36 @@ class ScreenshotRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteScreenshot(screenshotId: String) {
-        localDataSource.deleteById(screenshotId)
+        val token = userPrefs.accessToken.first()
+
+        if (token.isNullOrBlank()) {
+            // 로컬 모드: 로컬에서만 스크린샷 삭제
+            Timber.d("DeleteScreenshot - Local mode: deleting screenshot $screenshotId")
+            localDataSource.deleteById(screenshotId)
+        } else {
+            // 서버 모드: 서버에서 스크린샷 삭제 시도
+            Timber.d("DeleteScreenshot - Remote mode: deleting screenshot $screenshotId")
+            remoteDataSource.deleteScreenshot(screenshotId)
+                .fold(
+                    onSuccess = {
+                        Timber.d("DeleteScreenshot - Remote deletion success")
+                        // 서버 삭제 성공 시 로컬에서도 삭제 (캐시 정리)
+                        try {
+                            localDataSource.deleteById(screenshotId)
+                        } catch (e: Exception) {
+                            Timber.w(e, "Failed to delete local cache after remote deletion")
+                        }
+                    },
+                    onFailure = { exception ->
+                        Timber.e(
+                            exception,
+                            "DeleteScreenshot - Remote deletion failure, fallback to local"
+                        )
+                        // 서버 삭제 실패 시 로컬에서만 삭제
+                        localDataSource.deleteById(screenshotId)
+                    }
+                )
+        }
     }
 
     override suspend fun getScreenshotById(screenshotId: String): UiScreenshotModel? {
@@ -130,8 +159,12 @@ class ScreenshotRepositoryImpl @Inject constructor(
     ) {
         val token = userPrefs.accessToken.first()
         return if (token.isNullOrBlank()) {
-            throw UnsupportedOperationException("Use Add for local tag deletion")
+            // 로컬 모드: 로컬 데이터소스를 사용하여 태그 추가
+            Timber.d("AddTagsToScreenshot - Local mode: adding tags $tagNames to screenshot $screenshotId")
+            localDataSource.addTagsToScreenshot(screenshotId, tagNames)
         } else {
+            // 서버 모드: 서버에 태그 추가
+            Timber.d("AddTagsToScreenshot - Remote mode: adding tags $tagNames to screenshot $screenshotId")
             remoteDataSource.addTagsToScreenshot(screenshotId, tagNames).fold(
                 onSuccess = {
                     Timber.d("AddTag - Remote tag Add success")
