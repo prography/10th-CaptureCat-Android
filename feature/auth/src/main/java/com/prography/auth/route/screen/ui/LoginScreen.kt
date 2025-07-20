@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -52,15 +53,8 @@ fun LoginScreen(
                 LoginEffect.StartGoogleLogin -> {
                     handleGoogleLogin(
                         context = context,
-                        onSuccess = { user ->
-                            Timber.d("Login success: ${user.email}")
-                            // Firebase에서 ID 토큰을 가져와서 API에 전달
-                            user.getIdToken(true).addOnSuccessListener { result ->
-                                val idToken = result.token
-                                if (idToken != null) {
-                                    viewModel.handleGoogleLoginSuccess(idToken)
-                                }
-                            }
+                        onSuccess = { idToken ->
+                            viewModel.handleGoogleLoginSuccess(idToken)
                         },
                         onFailure = { error ->
                             Timber.e("Login failed: $error")
@@ -130,43 +124,41 @@ suspend fun handleKakaoLogin(
 
 suspend fun handleGoogleLogin(
     context: Context,
-    onSuccess: (FirebaseUser) -> Unit,
+    onSuccess: (String) -> Unit,
     onFailure: (Throwable) -> Unit
 ) {
     try {
-        val credentialManager = CredentialManager.create(context)
-
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-            .setAutoSelectEnabled(false)
-            .build()
-
-        val request = androidx.credentials.GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        val result = credentialManager.getCredential(context, request)
-
-        val credential = result.credential
-        if (credential is CustomCredential &&
-            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-        ) {
-            val idTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            val idToken = idTokenCredential.idToken
-
-            if (idToken.isNullOrBlank()) {
-                throw IllegalStateException("ID Token is null or blank")
-            }
-
-            val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-            FirebaseAuth.getInstance().signInWithCredential(firebaseCredential)
-                .addOnSuccessListener { onSuccess(it.user!!) }
-                .addOnFailureListener { onFailure(it) }
-        } else {
-            throw IllegalStateException("Invalid Credential type: ${credential::class.simpleName}")
-        }
+        val idToken = getGoogleIdToken(context)
+        onSuccess(idToken)
     } catch (e: Exception) {
         onFailure(e)
     }
+}
+
+private suspend fun getGoogleIdToken(context: Context): String {
+    val credentialManager = CredentialManager.create(context)
+
+    val request = GetCredentialRequest.Builder()
+        .addCredentialOption(buildGoogleIdOption())
+        .build()
+
+    val result = credentialManager.getCredential(context, request)
+    val credential = result.credential
+
+    if (credential is CustomCredential &&
+        credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+    ) {
+        val idToken = GoogleIdTokenCredential.createFrom(credential.data).idToken
+        return requireNotNull(idToken) { "Google ID Token is null or blank." }
+    } else {
+        throw IllegalStateException("Expected GoogleIdTokenCredential but was ${credential::class.simpleName}")
+    }
+}
+
+private fun buildGoogleIdOption(): GetGoogleIdOption {
+    return GetGoogleIdOption.Builder()
+        .setFilterByAuthorizedAccounts(false)
+        .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+        .setAutoSelectEnabled(false)
+        .build()
 }

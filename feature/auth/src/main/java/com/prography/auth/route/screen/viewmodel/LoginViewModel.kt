@@ -27,19 +27,10 @@ class LoginViewModel @Inject constructor(
 
     fun handleGoogleLoginSuccess(idToken: String) {
         viewModelScope.launch {
-            try {
-                updateState { copy(isLoading = true) }
-                val result = socialLoginUseCase("google", idToken)
-                updateState { copy(isLoading = false) }
-
-                if (result.isSuccess) {
-                    emitEffect(LoginEffect.NavigateToOnboarding)
-                } else {
-                    showToast("구글 로그인에 실패했습니다")
-                }
-            } catch (e: Exception) {
-                updateState { copy(isLoading = false) }
-                showToast("구글 로그인 중 오류가 발생했습니다")
+            socialLoginUseCase("google", idToken).onSuccess {
+                emitEffect(LoginEffect.NavigateToStart)
+            }.onFailure {
+                showToast("구글 로그인에 실패했습니다")
             }
         }
     }
