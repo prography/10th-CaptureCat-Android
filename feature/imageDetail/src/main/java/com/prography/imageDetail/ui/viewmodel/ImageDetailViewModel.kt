@@ -7,6 +7,7 @@ import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
+import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
@@ -24,7 +25,8 @@ class ImageDetailViewModel @Inject constructor(
     private val deleteScreenshotUseCase: DeleteScreenshotUseCase,
     private val updateScreenshotUseCase: UpdateScreenshotUseCase,
     private val deleteTagUseCase: DeleteTagUseCase,
-    private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase
+    private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase,
+    private val toggleBookmarkUseCase: ToggleBookmarkUseCase
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
 ) {
@@ -254,30 +256,31 @@ class ImageDetailViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         val currentScreenshot = currentState.currentScreenshot ?: return
-        val updatedScreenshot = currentScreenshot.copy(isBookmarked = !currentScreenshot.isBookmarked)
+        val newBookmarkState = !currentScreenshot.isBookmarked
 
-        // Update cache first
-        screenshotCache[updatedScreenshot.id] = updatedScreenshot
-
-        updateState {
-            val updatedScreenshots = screenshots.map { screenshot ->
-                if (screenshot.id == currentScreenshot.id) {
-                    updatedScreenshot
-                } else {
-                    screenshot
-                }
-            }
-            copy(
-                screenshots = updatedScreenshots,
-                currentScreenshot = updatedScreenshot
-            )
-        }
-
-        // Save to database
+        // Save to database/server first
         viewModelScope.launch {
             runCatching {
-                updateScreenshotUseCase(updatedScreenshot)
-                Timber.d("Successfully updated favorite status for screenshot: ${updatedScreenshot.id}")
+                toggleBookmarkUseCase(currentScreenshot.id, newBookmarkState)
+                Timber.d("Successfully updated favorite status for screenshot: ${currentScreenshot.id}")
+            }.onSuccess {
+                // Update UI only after successful server response
+                val updatedScreenshot = currentScreenshot.copy(isBookmarked = newBookmarkState)
+                screenshotCache[updatedScreenshot.id] = updatedScreenshot
+
+                updateState {
+                    val updatedScreenshots = screenshots.map { screenshot ->
+                        if (screenshot.id == currentScreenshot.id) {
+                            updatedScreenshot
+                        } else {
+                            screenshot
+                        }
+                    }
+                    copy(
+                        screenshots = updatedScreenshots,
+                        currentScreenshot = updatedScreenshot
+                    )
+                }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to update favorite status")
                 emitEffect(ImageDetailEffect.ShowError("즐겨찾기 업데이트에 실패했습니다."))

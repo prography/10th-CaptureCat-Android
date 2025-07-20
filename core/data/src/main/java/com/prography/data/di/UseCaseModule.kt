@@ -6,6 +6,7 @@ import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
+import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,4 +40,9 @@ object UseCaseModule {
     fun provideAddTagsToScreenshotUseCase(
         repository: ScreenshotRepository
     ): AddTagsToScreenshotUseCase = AddTagsToScreenshotUseCase(repository)
+
+    @Provides
+    fun provideToggleBookmarkUseCase(
+        repository: ScreenshotRepository
+    ): ToggleBookmarkUseCase = ToggleBookmarkUseCase(repository)
 }

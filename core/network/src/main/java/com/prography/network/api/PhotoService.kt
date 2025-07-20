@@ -46,10 +46,19 @@ interface PhotoService {
         @Path("imageId") imageId: String
     ): NetworkState<ApiResponse<String>>
 
+    @POST("v1/bookmarks")
+    suspend fun addBookmark(
+        @Query("imageId") imageId: String
+    ): NetworkState<ApiResponse<String>>
+
+    @DELETE("v1/bookmarks")
+    suspend fun removeBookmark(
+        @Query("imageId") imageId: String
+    ): NetworkState<ApiResponse<String>>
+
     @POST("/v1/images/{id}/tags")
     suspend fun addTagsToScreenshot(
         @Path("id") screenshotId: String,
         @Body body: AddTagsRequest
     ): NetworkState<ApiResponse<Unit>>
-
 }

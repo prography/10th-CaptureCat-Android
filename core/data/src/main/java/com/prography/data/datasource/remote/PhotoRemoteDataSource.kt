@@ -8,5 +8,7 @@ interface PhotoRemoteDataSource {
     suspend fun getScreenshotById(screenshotId: String): Result<UiScreenshotModel>
     suspend fun deleteTag(imageId: String, tagName: String): Result<Unit>
     suspend fun deleteScreenshot(screenshotId: String): Result<Unit>
+    suspend fun addBookmark(imageId: String): Result<Unit>
+    suspend fun removeBookmark(imageId: String): Result<Unit>
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit>
 }

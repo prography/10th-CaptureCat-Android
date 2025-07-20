@@ -280,6 +280,62 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun addBookmark(imageId: String): Result<Unit> {
+        return runCatching {
+            val networkState = photoService.addBookmark(imageId)
+
+            when (networkState) {
+                is NetworkState.Success -> {
+                    Timber.d("Bookmark add successful: imageId=$imageId")
+                }
+
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("Bookmark add failed: $errorMessage")
+                    throw Exception("Bookmark add failed: $errorMessage")
+                }
+
+                is NetworkState.NetworkError -> {
+                    Timber.e("Bookmark add network error: ${networkState.error}")
+                    throw networkState.error
+                }
+
+                is NetworkState.UnknownError -> {
+                    Timber.e("Bookmark add unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
+            }
+        }
+    }
+
+    override suspend fun removeBookmark(imageId: String): Result<Unit> {
+        return runCatching {
+            val networkState = photoService.removeBookmark(imageId)
+
+            when (networkState) {
+                is NetworkState.Success -> {
+                    Timber.d("Bookmark remove successful: imageId=$imageId")
+                }
+
+                is NetworkState.Failure -> {
+                    val errorMessage = networkState.error ?: "Unknown error"
+                    Timber.e("Bookmark remove failed: $errorMessage")
+                    throw Exception("Bookmark remove failed: $errorMessage")
+                }
+
+                is NetworkState.NetworkError -> {
+                    Timber.e("Bookmark remove network error: ${networkState.error}")
+                    throw networkState.error
+                }
+
+                is NetworkState.UnknownError -> {
+                    Timber.e("Bookmark remove unknown error: ${networkState.errorState}")
+                    throw networkState.t ?: Exception(networkState.errorState)
+                }
+            }
+        }
+    }
+
     private fun getFileNameFromUri(uriString: String): String {
         val uri = Uri.parse(uriString)
 

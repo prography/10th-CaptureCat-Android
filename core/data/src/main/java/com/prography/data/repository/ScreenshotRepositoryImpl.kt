@@ -176,4 +176,47 @@ class ScreenshotRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean) {
+        val token = userPrefs.accessToken.first()
+
+        if (token.isNullOrBlank()) {
+            // 로컬 모드: 로컬에서만 북마크 상태 업데이트
+            Timber.d("ToggleBookmark - Local mode: updating bookmark for screenshot $screenshotId to $isBookmarked")
+            val screenshot = localDataSource.getById(screenshotId)
+            if (screenshot != null) {
+                val updatedScreenshot = screenshot.copy(isBookmarked = isBookmarked)
+                localDataSource.update(updatedScreenshot)
+            }
+        } else {
+            // 서버 모드: 서버에서 북마크 추가/삭제
+            Timber.d("ToggleBookmark - Remote mode: ${if (isBookmarked) "adding" else "removing"} bookmark for screenshot $screenshotId")
+
+            val remoteResult = if (isBookmarked) {
+                remoteDataSource.addBookmark(screenshotId)
+            } else {
+                remoteDataSource.removeBookmark(screenshotId)
+            }
+
+            remoteResult.fold(
+                onSuccess = {
+                    Timber.d("ToggleBookmark - Remote bookmark operation success")
+                    // 서버 성공 시 로컬 캐시도 업데이트
+                    try {
+                        val screenshot = localDataSource.getById(screenshotId)
+                        if (screenshot != null) {
+                            val updatedScreenshot = screenshot.copy(isBookmarked = isBookmarked)
+                            localDataSource.update(updatedScreenshot)
+                        }
+                    } catch (e: Exception) {
+                        Timber.w(e, "Failed to update local cache after remote bookmark operation")
+                    }
+                },
+                onFailure = { exception ->
+                    Timber.e(exception, "ToggleBookmark - Remote bookmark operation failure")
+                    throw exception
+                }
+            )
+        }
+    }
 }
