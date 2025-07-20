@@ -6,6 +6,7 @@ import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
+import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import dagger.Module
 import dagger.Provides
@@ -45,4 +46,10 @@ object UseCaseModule {
     fun provideToggleBookmarkUseCase(
         repository: ScreenshotRepository
     ): ToggleBookmarkUseCase = ToggleBookmarkUseCase(repository)
+
+    @Provides
+    fun provideGetFavoriteImagesUseCase(
+        repository: ScreenshotRepository
+    ): GetFavoriteImagesUseCase = GetFavoriteImagesUseCase(repository)
+
 }

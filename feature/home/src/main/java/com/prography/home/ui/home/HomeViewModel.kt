@@ -3,6 +3,7 @@ package com.prography.home.ui.home
 import androidx.lifecycle.viewModelScope
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeEffect
@@ -20,15 +21,18 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
+    private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
 
     init {
-        sendAction(HomeAction.LoadScreenshots)
+        loadScreenshots()
+        loadFavoriteImages()
     }
 
     fun refreshScreenshots() {
-        sendAction(HomeAction.LoadScreenshots)
+        loadScreenshots()
+        loadFavoriteImages()
     }
 
     override fun handleAction(action: HomeAction) {
@@ -67,6 +71,35 @@ class HomeViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 emitEffect(HomeEffect.ShowError("Failed to load screenshots: ${e.message}"))
+            }
+        }
+    }
+
+    private fun loadFavoriteImages() {
+        viewModelScope.launch {
+            try {
+                getFavoriteImagesUseCase(page = 0, size = 10).fold(
+                    onSuccess = { favoriteImages ->
+                        timber.log.Timber.d("HomeViewModel - Favorite images loaded: ${favoriteImages.size} items")
+                        favoriteImages.forEach { image ->
+                            timber.log.Timber.d("HomeViewModel - Favorite image: id=${image.id}, isBookmarked=${image.isBookmarked}")
+                        }
+                        updateState {
+                            copy(favoriteScreenshots = favoriteImages)
+                        }
+                        timber.log.Timber.d("HomeViewModel - State updated with ${favoriteImages.size} favorite screenshots")
+                    },
+                    onFailure = { exception ->
+                        timber.log.Timber.e(
+                            exception,
+                            "HomeViewModel - Failed to load favorite images"
+                        )
+                        emitEffect(HomeEffect.ShowError("Failed to load favorite images: ${exception.message}"))
+                    }
+                )
+            } catch (e: Exception) {
+                timber.log.Timber.e(e, "HomeViewModel - Exception while loading favorite images")
+                emitEffect(HomeEffect.ShowError("Failed to load favorite images: ${e.message}"))
             }
         }
     }

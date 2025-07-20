@@ -14,4 +14,5 @@ interface ScreenshotRepository {
     suspend fun deleteTag(imageId: String, tagName: String)
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)
     suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean)
+    suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
 }

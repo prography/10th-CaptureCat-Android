@@ -56,6 +56,12 @@ interface PhotoService {
         @Query("imageId") imageId: String
     ): NetworkState<ApiResponse<String>>
 
+    @GET("v1/bookmarks/images")
+    suspend fun getFavoriteImages(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): NetworkState<ApiListResponse<PhotoResponse>>
+
     @POST("/v1/images/{id}/tags")
     suspend fun addTagsToScreenshot(
         @Path("id") screenshotId: String,

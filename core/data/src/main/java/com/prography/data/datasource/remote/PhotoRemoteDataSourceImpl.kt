@@ -63,7 +63,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             // 1. uniqueFileName 리스트 먼저 생성
             val fileNames = screenshots.mapIndexed { index, screenshot ->
                 val originalFileName = getFileNameFromUri(screenshot.uri)
-                val safeFileName = sanitizeFileName(originalFileName) // 🔥 추가
+                val safeFileName = sanitizeFileName(originalFileName) // 
                 "${System.currentTimeMillis()}_${index}_$safeFileName"
             }
 
@@ -95,7 +95,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             screenshots.forEachIndexed { index, screenshot ->
                 val uri = Uri.parse(screenshot.uri)
                 val originalFileName = getFileNameFromUri(screenshot.uri)
-                val finalFileName = fileNames[index] // 🔥 여기서 미리 만든 이름 사용
+                val finalFileName = fileNames[index] // 
 
                 Timber.d("Creating file part for: $finalFileName from URI: ${screenshot.uri}")
 
@@ -131,7 +131,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
             Timber.d("Created ${fileParts.size} file parts, calling API...")
 
-            // API 호출
+            // API 
             val networkState = photoService.uploadScreenshots(
                 uploadItems = uploadItemsPart,
                 files = fileParts
@@ -332,6 +332,35 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                     Timber.e("Bookmark remove unknown error: ${networkState.errorState}")
                     throw networkState.t ?: Exception(networkState.errorState)
                 }
+            }
+        }
+    }
+
+    override suspend fun getFavoriteImages(page: Int, size: Int): Result<List<UiScreenshotModel>> {
+        Timber.d("Calling photoService.getFavoriteImages(page=$page, size=$size)")
+
+        return when (val networkState = photoService.getFavoriteImages(page, size)) {
+            is NetworkState.Success -> {
+                Timber.d("Favorite images API Response: ${networkState.body}")
+                val favoriteImages =
+                    networkState.body.getDataOrNull()?.toUiScreenshotModels() ?: emptyList()
+                Timber.d("Converted favorite images: ${favoriteImages.size} items")
+                Result.success(favoriteImages)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Favorite images API Failure: ${networkState.error}")
+                Result.failure(Exception("API : ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Favorite images Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Favorite images Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
             }
         }
     }

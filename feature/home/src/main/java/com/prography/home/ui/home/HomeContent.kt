@@ -35,12 +35,18 @@ import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun HomeContent(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
+    // Debug logging
+    LaunchedEffect(state.favoriteScreenshots) {
+        Timber.d("HomeContent - State has ${state.favoriteScreenshots.size} favorite screenshots")
+    }
+
     // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
     val hasAnyScreenshots = state.screenshots.isNotEmpty()
     val filteredScreenshots = state.screenshots.filter {
@@ -122,7 +128,7 @@ fun HomeContent(
 
             item {
                 FavoriteCardDeck(
-                    screenshots = state.screenshots,
+                    favoriteScreenshots = state.favoriteScreenshots,
                     onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
                 )
             }

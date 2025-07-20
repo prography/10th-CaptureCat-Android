@@ -219,4 +219,33 @@ class ScreenshotRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun getFavoriteImages(page: Int, size: Int): Result<List<UiScreenshotModel>> {
+        val token = userPrefs.accessToken.first()
+
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드: 로컬 DB에서 즐겨찾기 이미지를 페이징하여 가져오기
+            Timber.d("GetFavoriteImages - Local mode: page=$page, size=$size")
+            try {
+                val allScreenshots = localDataSource.getScreenshots().first()
+                val favoriteScreenshots = allScreenshots.filter { it.isBookmarked }
+
+                // 페이징 처리
+                val offset = page * size
+                val pagedFavorites = favoriteScreenshots
+                    .drop(offset)
+                    .take(size)
+
+                Timber.d("GetFavoriteImages - Local result: ${pagedFavorites.size} items (total: ${favoriteScreenshots.size})")
+                Result.success(pagedFavorites)
+            } catch (e: Exception) {
+                Timber.e(e, "GetFavoriteImages - Local mode failure")
+                Result.failure(e)
+            }
+        } else {
+            // 서버 모드: 서버에서 즐겨찾기 이미지 가져오기
+            Timber.d("GetFavoriteImages - Remote mode: page=$page, size=$size")
+            remoteDataSource.getFavoriteImages(page, size)
+        }
+    }
 }

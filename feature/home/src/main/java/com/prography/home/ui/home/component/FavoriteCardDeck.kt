@@ -34,15 +34,20 @@ import com.prography.domain.model.UiScreenshotModel
 import com.prography.ui.component.UiTagInfoChip
 import com.prography.ui.R
 import androidx.compose.ui.res.painterResource
+import timber.log.Timber
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun FavoriteCardDeck(
-    screenshots: List<UiScreenshotModel>,
+    favoriteScreenshots: List<UiScreenshotModel>,
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val favoriteScreenshots = remember(screenshots) {
-        screenshots.filter { it.isBookmarked }
+    LaunchedEffect(favoriteScreenshots) {
+        Timber.d("FavoriteCardDeck - Received ${favoriteScreenshots.size} favorite screenshots")
+        favoriteScreenshots.forEach { screenshot ->
+            Timber.d("FavoriteCardDeck - Screenshot: id=${screenshot.id}, isBookmarked=${screenshot.isBookmarked}")
+        }
     }
 
     if (favoriteScreenshots.isNotEmpty()) {
