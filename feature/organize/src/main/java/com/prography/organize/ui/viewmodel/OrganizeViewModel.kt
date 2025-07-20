@@ -223,7 +223,7 @@ class OrganizeViewModel @Inject constructor(
                         id = screenshot.id,
                         uri = screenshot.uri.toString(),
                         tags = screenshot.tags,
-                        isFavorite = screenshot.isFavorite,
+                        isBookmarked = screenshot.isFavorite,
                         dateStr = dateStr
                     )
                 }

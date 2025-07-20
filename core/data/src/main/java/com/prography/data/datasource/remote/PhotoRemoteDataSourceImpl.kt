@@ -74,7 +74,8 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                 UploadItem(
                     fileName = fileNames[index],
                     captureDate = captureDate,
-                    tagNames = screenshot.tags.map { it.name }
+                    tagNames = screenshot.tags.map { it.name },
+                    isBookmarked = screenshot.isBookmarked
                 )
             }
 

@@ -10,5 +10,7 @@ data class UploadItem(
     @SerialName("captureDate")
     val captureDate: String,
     @SerialName("tagNames")
-    val tagNames: List<String>
+    val tagNames: List<String>,
+    @SerialName("isBookmarked")
+    val isBookmarked: Boolean = false,
 )

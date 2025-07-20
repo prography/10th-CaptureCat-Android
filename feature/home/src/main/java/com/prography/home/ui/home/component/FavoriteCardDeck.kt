@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,9 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.UiScreenshotModel
-import com.prography.ui.component.UiTagChip
 import com.prography.ui.component.UiTagInfoChip
-import com.prography.ui.theme.caption01SemiBold
 import com.prography.ui.R
 import androidx.compose.ui.res.painterResource
 
@@ -45,7 +42,7 @@ fun FavoriteCardDeck(
     modifier: Modifier = Modifier
 ) {
     val favoriteScreenshots = remember(screenshots) {
-        screenshots.filter { it.isFavorite }
+        screenshots.filter { it.isBookmarked }
     }
 
     if (favoriteScreenshots.isNotEmpty()) {

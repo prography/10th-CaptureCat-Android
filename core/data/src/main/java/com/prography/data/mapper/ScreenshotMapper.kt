@@ -16,7 +16,7 @@ fun ScreenshotEntity.toDomain(): UiScreenshotModel {
                     name = tagName.trim()
                 )
             },
-        isFavorite = isFavorite,
+        isBookmarked = isBookmarked,
         dateStr = dateStr
     )
 }
@@ -26,7 +26,7 @@ fun UiScreenshotModel.toEntity(): ScreenshotEntity {
         id = id,
         uri = uri,
         tags = tags.joinToString(",") { it.name },
-        isFavorite = isFavorite,
+        isBookmarked = isBookmarked,
         dateStr = dateStr
     )
 }

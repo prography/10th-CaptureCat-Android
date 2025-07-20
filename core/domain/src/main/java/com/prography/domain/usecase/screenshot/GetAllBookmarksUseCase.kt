@@ -11,6 +11,6 @@ class GetAllBookmarksUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Flow<List<UiScreenshotModel>> {
         return repository.getScreenshots()
-            .map { list -> list.filter { it.isFavorite } }
+            .map { list -> list.filter { it.isBookmarked } }
     }
 }

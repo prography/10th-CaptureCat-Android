@@ -8,6 +8,6 @@ data class ScreenshotEntity(
     @PrimaryKey val id: String,
     val uri: String,
     val tags: String, // "tag1,tag2"
-    val isFavorite: Boolean,
+    val isBookmarked: Boolean,
     val dateStr: String
 )

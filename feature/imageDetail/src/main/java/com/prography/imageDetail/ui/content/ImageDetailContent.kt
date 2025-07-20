@@ -128,7 +128,7 @@ fun ImageDetailContent(
 
                 ChipSection(
                     tags = currentPageScreenshot?.tags.orEmpty(),
-                    isFavorite = currentPageScreenshot?.isFavorite == true,
+                    isFavorite = currentPageScreenshot?.isBookmarked == true,
                     onFavoriteToggle = { onAction(ImageDetailAction.OnToggleFavorite) },
                     modifier = Modifier
                         .align(Alignment.BottomStart)
@@ -455,21 +455,21 @@ fun ImageDetailScreenPreview() {
             id = "1",
             uri = "https://via.placeholder.com/300x400",
             tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isFavorite = false,
+            isBookmarked = false,
             dateStr = "2024년 1월 15일"
         ),
         UiScreenshotModel(
             id = "2",
             uri = "https://via.placeholder.com/300x400",
             tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isFavorite = true,
+            isBookmarked = true,
             dateStr = "2024년 1월 14일"
         ),
         UiScreenshotModel(
             id = "3",
             uri = "https://via.placeholder.com/300x400",
             tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isFavorite = false,
+            isBookmarked = false,
             dateStr = "2024년 1월 13일"
         )
     )

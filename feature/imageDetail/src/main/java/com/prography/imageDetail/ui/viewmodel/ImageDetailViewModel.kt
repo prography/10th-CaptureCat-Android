@@ -6,7 +6,6 @@ import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
-import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
@@ -14,7 +13,6 @@ import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
@@ -49,7 +47,7 @@ class ImageDetailViewModel @Inject constructor(
                         id = id,
                         uri = "",
                         tags = emptyList(),
-                        isFavorite = false,
+                        isBookmarked = false,
                         dateStr = ""
                     )
                 },
@@ -111,7 +109,7 @@ class ImageDetailViewModel @Inject constructor(
                             id = id,
                             uri = "",
                             tags = emptyList(),
-                            isFavorite = false,
+                            isBookmarked = false,
                             dateStr = ""
                         )
                     )
@@ -256,7 +254,7 @@ class ImageDetailViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         val currentScreenshot = currentState.currentScreenshot ?: return
-        val updatedScreenshot = currentScreenshot.copy(isFavorite = !currentScreenshot.isFavorite)
+        val updatedScreenshot = currentScreenshot.copy(isBookmarked = !currentScreenshot.isBookmarked)
 
         // Update cache first
         screenshotCache[updatedScreenshot.id] = updatedScreenshot

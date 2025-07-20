@@ -8,6 +8,7 @@ data class PhotoResponse(
     val name: String,
     val url: String,
     val captureDate: String,
-    val tags: List<TagResponse>
+    val tags: List<TagResponse>,
+    val isBookmarked : Boolean
 )
 
