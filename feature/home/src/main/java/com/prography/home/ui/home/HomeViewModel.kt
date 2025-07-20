@@ -27,6 +27,10 @@ class HomeViewModel @Inject constructor(
         sendAction(HomeAction.LoadScreenshots)
     }
 
+    fun refreshScreenshots() {
+        sendAction(HomeAction.LoadScreenshots)
+    }
+
     override fun handleAction(action: HomeAction) {
         when (action) {
             is HomeAction.LoadScreenshots -> loadScreenshots()

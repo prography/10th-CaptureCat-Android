@@ -42,6 +42,9 @@ import com.prography.ui.R
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.PrographyTheme
 import kotlinx.coroutines.flow.collectLatest
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.LifecycleEventEffect
 
 @Composable
 fun HomeScreen(
@@ -63,6 +66,12 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    // Refresh screenshots when screen becomes visible
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME, lifecycleOwner) {
+        viewModel.refreshScreenshots()
     }
 
     HomeContent(
