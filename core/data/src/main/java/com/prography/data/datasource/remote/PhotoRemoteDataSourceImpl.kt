@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import com.prography.data.mapper.toUiScreenshotModel
 import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.model.TagWithCount
 import com.prography.network.api.PhotoService
 import com.prography.network.entity.AddTagsRequest
 import com.prography.network.entity.UploadItem
@@ -360,6 +361,39 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
             is NetworkState.UnknownError -> {
                 Timber.e("Favorite images Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun getMostUsedTags(size: Int): Result<List<TagWithCount>> {
+        Timber.d("Calling photoService.getMostUsedTags(size=$size)")
+
+        return when (val networkState = photoService.getMostUsedTags(size = size)) {
+            is NetworkState.Success -> {
+                Timber.d("Most used tags API Response: ${networkState.body}")
+                val tags = networkState.body.data?.items?.map { tagResponse ->
+                    TagWithCount(
+                        tag = tagResponse.name,
+                        count = 0 // 
+                    )
+                } ?: emptyList()
+                Timber.d("Converted most used tags: ${tags.size} items")
+                Result.success(tags)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Most used tags API Failure: ${networkState.error}")
+                Result.failure(Exception("API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Most used tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Most used tags Unknown Error: ${networkState.errorState}")
                 Result.failure(networkState.t ?: Exception(networkState.errorState))
             }
         }

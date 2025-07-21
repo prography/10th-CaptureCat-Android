@@ -5,10 +5,12 @@ import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.data.mapper.toDomain
 import com.prography.data.mapper.toEntity
 import com.prography.database.dao.ScreenshotDao
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import javax.inject.Inject
 import java.util.UUID
@@ -74,5 +76,26 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         } else {
             Timber.w("addTagsToScreenshot: Screenshot with id $screenshotId not found.")
         }
+    }
+
+    override suspend fun getMostUsedTags(size: Int): List<TagWithCount> {
+        val screenshots = getScreenshots().firstOrNull() ?: emptyList()
+        val tagCounts = mutableMapOf<String, Int>()
+
+        // 모든 스크린샷의 태그를 수집하고 카운트
+        screenshots.forEach { screenshot ->
+            screenshot.tags.forEach { tag ->
+                tagCounts[tag.name] = tagCounts.getOrDefault(tag.name, 0) + 1
+            }
+        }
+
+        // 카운트가 높은 순으로 정렬하고 상위 size개만 반환
+        val mostUsedTags = tagCounts.entries
+            .map { TagWithCount(it.key, it.value) }
+            .sortedByDescending { it.count }
+            .take(size)
+
+        Timber.d("Local getMostUsedTags: returning ${mostUsedTags.size} tags from ${tagCounts.size} total tags")
+        return mostUsedTags
     }
 }

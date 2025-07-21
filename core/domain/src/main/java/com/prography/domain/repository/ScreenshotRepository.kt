@@ -1,5 +1,6 @@
 package com.prography.domain.repository
 
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import kotlinx.coroutines.flow.Flow
 
@@ -15,4 +16,5 @@ interface ScreenshotRepository {
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)
     suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean)
     suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
+    suspend fun getMostUsedTags(size: Int): List<TagWithCount>
 }

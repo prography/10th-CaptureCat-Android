@@ -1,5 +1,6 @@
 package com.prography.data.datasource.remote
 
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 
 interface PhotoRemoteDataSource {
@@ -12,4 +13,5 @@ interface PhotoRemoteDataSource {
     suspend fun removeBookmark(imageId: String): Result<Unit>
     suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit>
+    suspend fun getMostUsedTags(size: Int): Result<List<TagWithCount>>
 }

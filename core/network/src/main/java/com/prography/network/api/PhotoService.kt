@@ -4,6 +4,7 @@ import com.prography.network.entity.AddTagsRequest
 import com.prography.network.entity.ApiListResponse
 import com.prography.network.entity.ApiResponse
 import com.prography.network.entity.PhotoResponse
+import com.prography.network.entity.TagResponse
 import com.prography.network.util.NetworkState
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -67,4 +68,10 @@ interface PhotoService {
         @Path("id") screenshotId: String,
         @Body body: AddTagsRequest
     ): NetworkState<ApiResponse<Unit>>
+
+    @GET("v1/tags/most-used")
+    suspend fun getMostUsedTags(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): NetworkState<ApiListResponse<TagResponse>>
 }

@@ -4,6 +4,7 @@ import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.repository.ScreenshotRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -246,6 +247,21 @@ class ScreenshotRepositoryImpl @Inject constructor(
             // 서버 모드: 서버에서 즐겨찾기 이미지 가져오기
             Timber.d("GetFavoriteImages - Remote mode: page=$page, size=$size")
             remoteDataSource.getFavoriteImages(page, size)
+        }
+    }
+
+    override suspend fun getMostUsedTags(size: Int): List<TagWithCount> {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드
+            localDataSource.getMostUsedTags(size)
+        } else {
+            // 서버 모드
+            remoteDataSource.getMostUsedTags(size).getOrElse {
+                // 서버 실패 시 로컬 데이터로 fallback
+                Timber.w(it, "Server getMostUsedTags failed, falling back to local")
+                localDataSource.getMostUsedTags(size)
+            }
         }
     }
 }

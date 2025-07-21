@@ -1,6 +1,7 @@
 package com.prography.home.ui.search.contract
 
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.model.TagWithCount
 
 // Define UI State
 data class SearchState(
@@ -33,9 +34,3 @@ sealed class SearchEffect {
     data class ShowError(val message: String) : SearchEffect()
     object NavigateToStorage : SearchEffect()
 }
-
-// Helper data class for tags with count
-data class TagWithCount(
-    val tag: String,
-    val count: Int
-)

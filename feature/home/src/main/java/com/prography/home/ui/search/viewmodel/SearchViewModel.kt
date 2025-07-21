@@ -3,6 +3,8 @@ package com.prography.home.ui.search.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
+import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.*
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
@@ -14,11 +16,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
+    private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SearchState, SearchEffect, SearchAction>(SearchState()) {
 
     init {
         sendAction(SearchAction.LoadScreenshots)
+        loadMostUsedTags()
     }
 
     override fun handleAction(action: SearchAction) {
@@ -35,23 +39,45 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun loadMostUsedTags() {
+        viewModelScope.launch {
+            runCatching { getMostUsedTagsUseCase(size = 5) }
+                .onSuccess { topTags ->
+                    val tagsWithMiscategorized = topTags.toMutableList()
+                    val uncategorizedCount = currentState.screenshots.count { it.tags.isEmpty() }
+                    if (uncategorizedCount > 0) {
+                        tagsWithMiscategorized.add(TagWithCount("미분류", uncategorizedCount))
+                    }
+                    updateState { copy(popularTags = tagsWithMiscategorized) }
+                }
+                .onFailure {
+                    val screenshots = currentState.screenshots
+                    if (screenshots.isNotEmpty()) {
+                        val popularTags = getPopularTags(screenshots)
+                        updateState { copy(popularTags = popularTags) }
+                    }
+                }
+        }
+    }
+
     private fun loadScreenshots() {
         viewModelScope.launch {
             try {
                 updateState { copy(isLoading = true) }
 
                 getAllScreenshotsUseCase().collect { screenshots ->
-                    val popularTags = getPopularTags(screenshots)
                     val hasData = screenshots.isNotEmpty()
 
                     updateState {
                         copy(
                             screenshots = screenshots,
-                            popularTags = popularTags,
                             hasData = hasData,
                             isLoading = false
                         )
                     }
+
+                    // 스크린샷이 로드된 후 인기 태그 업데이트
+                    loadMostUsedTags()
                 }
             } catch (e: Exception) {
                 updateState { copy(isLoading = false) }

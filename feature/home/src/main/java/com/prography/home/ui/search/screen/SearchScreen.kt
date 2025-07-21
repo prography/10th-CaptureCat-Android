@@ -5,9 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.domain.model.TagModel
+import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.SearchEffect
 import com.prography.home.ui.search.contract.SearchState
-import com.prography.home.ui.search.contract.TagWithCount
 import com.prography.home.ui.search.viewmodel.SearchViewModel
 import com.prography.ui.theme.PrographyTheme
 import kotlinx.coroutines.flow.collectLatest

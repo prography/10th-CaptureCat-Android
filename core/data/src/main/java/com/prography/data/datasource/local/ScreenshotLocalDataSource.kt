@@ -1,6 +1,6 @@
 package com.prography.data.datasource.local
 
-
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import kotlinx.coroutines.flow.Flow
 
@@ -13,4 +13,5 @@ interface ScreenshotLocalDataSource {
     suspend fun deleteById(screenshotId: String)
     suspend fun deleteTag(imageId: String, tagName: String)
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)
+    suspend fun getMostUsedTags(size: Int): List<TagWithCount>
 }
