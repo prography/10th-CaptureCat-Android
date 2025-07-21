@@ -11,6 +11,7 @@ data class ImageDetailState(
     val isTagEditBottomSheetVisible: Boolean = false,
     val isDeleteDialogVisible: Boolean = false,
     val newTagText: String = "",
+    val tagErrorMessage: String? = null,
     val isLoading: Boolean = false
 )
 

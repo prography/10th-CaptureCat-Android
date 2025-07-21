@@ -369,7 +369,7 @@ private fun TagEditBottomSheetContent(
                 }
             },
             placeholder = "추가할 태그를 입력해주세요",
-            errorMessage = null,
+            errorMessage = state.tagErrorMessage,
             onClear = { onAction(ImageDetailAction.OnNewTagTextChange("")) },
             modifier = Modifier
                 .fillMaxWidth()

@@ -196,7 +196,8 @@ class ImageDetailViewModel @Inject constructor(
                 updateState {
                     copy(
                         isTagEditBottomSheetVisible = false,
-                        newTagText = ""
+                        newTagText = "",
+                        tagErrorMessage = null // 바텀시트 닫을 때 에러 메시지도 초기화
                     )
                 }
             }
@@ -207,7 +208,10 @@ class ImageDetailViewModel @Inject constructor(
 
             is ImageDetailAction.OnNewTagTextChange -> {
                 updateState {
-                    copy(newTagText = action.text)
+                    copy(
+                        newTagText = action.text,
+                        tagErrorMessage = null // 텍스트 변경 시 에러 메시지 초기화
+                    )
                 }
             }
 
@@ -346,12 +350,19 @@ class ImageDetailViewModel @Inject constructor(
 
     private fun addNewTag() {
         val newTag = currentState.newTagText.trim()
-
-        Timber.d("newTag: $newTag")
         if (newTag.isEmpty()) return
 
-        Timber.d("currentState ${currentState.currentScreenshot}")
         val currentScreenshot = currentState.currentScreenshot ?: return
+
+        val isDuplicate = currentScreenshot.tags.any { it.name.equals(newTag, ignoreCase = true) }
+        if (isDuplicate) {
+            updateState {
+                copy(tagErrorMessage = "이미 등록된 태그입니다.")
+            }
+            return
+        }
+
+
         val newTagModel = TagModel(
             id = UUID.randomUUID().toString(),
             name = newTag
@@ -359,16 +370,23 @@ class ImageDetailViewModel @Inject constructor(
         val updatedTags = currentScreenshot.tags + newTagModel
         val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
 
+        // 에러 메시지 초기화 및 로딩 상태 표시
+        updateState {
+            copy(
+                isLoading = true,
+                tagErrorMessage = null
+            )
+        }
 
         viewModelScope.launch {
-            val result = runCatching {
-                // 새로운 태그만 서버/로컬에 추가
-                addTagsToScreenshotUseCase(currentScreenshot.id, listOf(newTag))
-            }
-            result.onSuccess {
+            runCatching {
+                addTagsToScreenshotUseCase(
+                    currentScreenshot.id,
+                    updatedTags.map { it.name })
+            }.onSuccess {
                 Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
 
-                // Update UI only after successful response
+                // Update UI only after successful server response
                 screenshotCache[updatedScreenshot.id] = updatedScreenshot
                 updateState {
                     val updatedScreenshots = screenshots.map { screenshot ->
@@ -379,12 +397,23 @@ class ImageDetailViewModel @Inject constructor(
                         currentScreenshot = updatedScreenshot,
                         newTagText = "",
                         availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
-                        isLoading = false
+                        isLoading = false,
+                        tagErrorMessage = null
                     )
                 }
             }.onFailure { exception ->
-                Timber.e(exception, "Failed to add tag")
-                emitEffect(ImageDetailEffect.ShowError(exception.message ?: "태그 추가에 실패했습니다."))
+                Timber.e(exception, "Failed to add tag (server or local)")
+
+                // 서버 에러 메시지 처리
+                val errorMessage = exception.message
+
+                // Local 모드일 때 fallback
+                updateState {
+                    copy(
+                        isLoading = false,
+                        tagErrorMessage = errorMessage
+                    )
+                }
             }
         }
     }
