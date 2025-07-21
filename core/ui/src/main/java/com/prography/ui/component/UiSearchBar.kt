@@ -2,6 +2,7 @@ package com.prography.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -38,67 +39,80 @@ fun UiSearchBar(
     val focusManager = LocalFocusManager.current
 
     val showBorder = value.isEmpty() && !focusState.value
+    val showCompleteButton = focusState.value
+
+    val handleComplete = {
+        focusManager.clearFocus()
+        onSearchComplete?.invoke()
+    }
+
+    val handleCancel = {
+        onValueChange("")
+        focusManager.clearFocus()
+    }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .let {
-                if (!showBorder) {
-                    it.border(1.dp, Gray03, shape = RoundedCornerShape(6.dp))
-                } else {
-                    it
-                }
-            }
-            .background(
-                color = Gray01,
-                shape = RoundedCornerShape(6.dp)
-            )
-            .padding(vertical = 10.dp, horizontal = 16.dp),
+            .wrapContentHeight(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (showBorder) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_search_bar_icon),
-                contentDescription = "검색",
-                tint = Gray05,
-                modifier = Modifier.size(16.dp)
-            )
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .let {
+                    if (!showBorder) {
+                        it.border(1.dp, Gray03, shape = RoundedCornerShape(6.dp))
+                    } else it
+                }
+                .background(Gray01, shape = RoundedCornerShape(6.dp))
+                .padding(vertical = 10.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (showBorder) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_search_bar_icon),
+                    contentDescription = "검색",
+                    tint = Gray05,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+            }
 
-            Spacer(modifier = Modifier.width(6.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                BasicTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    textStyle = body02Regular.copy(color = Text02),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { handleComplete() }),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { focusState.value = it.isFocused },
+                    singleLine = true
+                )
+
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = body02Regular,
+                        color = Text03
+                    )
+                }
+            }
         }
 
-        Box(modifier = Modifier.weight(1f)) {
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                textStyle = body02Regular.copy(color = Text02),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        focusManager.clearFocus()
-                        onSearchComplete?.invoke()
-                    }
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusChanged { focusState.value = it.isFocused },
-                singleLine = true
+        if (showCompleteButton) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "취소",
+                style = body02Regular,
+                color = Text02,
+                modifier = Modifier.clickableWithoutRipple { handleCancel() }
             )
-
-            if (value.isEmpty()) {
-                Text(
-                    text = placeholder,
-                    style = body02Regular,
-                    color = Text03
-                )
-            }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
