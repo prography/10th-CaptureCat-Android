@@ -243,7 +243,7 @@ class SearchViewModel @Inject constructor(
         // 해당 태그가 존재하는지 확인
         val tagExists = currentState.screenshots.any { screenshot ->
             screenshot.tags.any { tag ->
-                tag.name.contains(query, ignoreCase = true)
+                tag.name.equals(query, ignoreCase = true)
             }
         }
 
