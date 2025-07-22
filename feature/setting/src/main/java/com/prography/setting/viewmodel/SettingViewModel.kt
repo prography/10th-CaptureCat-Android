@@ -3,6 +3,7 @@ package com.prography.setting.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
+import com.prography.domain.usecase.user.GetNicknameUseCase
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingEffect
 import com.prography.setting.contract.SettingState
@@ -15,13 +16,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getAuthTokenUseCase: GetAuthTokenUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val getNicknameUseCase: GetNicknameUseCase
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
     initialState = SettingState()
 ) {
 
     init {
-        checkLoginStatus()
+        loadUserInfo()
     }
 
     override fun handleAction(action: SettingAction) {
@@ -60,7 +62,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun checkLoginStatus() {
+    private fun loadUserInfo() {
         viewModelScope.launch {
             runCatching {
                 val isLoggedIn = getAuthTokenUseCase.isLoggedIn()
@@ -69,6 +71,13 @@ class SettingViewModel @Inject constructor(
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to check login status")
                 updateState { copy(isLoggedIn = false) }
+            }
+        }
+
+        viewModelScope.launch {
+            getNicknameUseCase().collect { nickname ->
+                Timber.d("Nickname updated: $nickname")
+                updateState { copy(nickname = nickname) }
             }
         }
     }

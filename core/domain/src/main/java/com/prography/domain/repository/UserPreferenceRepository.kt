@@ -10,6 +10,9 @@ interface UserPreferenceRepository {
     val isStartTagScreenShown: Flow<Boolean>
     suspend fun setStartTagScreenShown(shown: Boolean)
 
+    val nickname: Flow<String?>
+    suspend fun setNickname(nickname: String)
+
     val accessToken : Flow<String?>
     val refreshToken: Flow<String?>
     suspend fun clearTokens()

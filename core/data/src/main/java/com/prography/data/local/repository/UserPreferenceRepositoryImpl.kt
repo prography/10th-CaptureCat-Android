@@ -25,6 +25,13 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         userPrefs.setStartTagScreenShown(shown)
     }
 
+    override val nickname: Flow<String?>
+        get() = userPrefs.nickname
+
+    override suspend fun setNickname(nickname: String) {
+        userPrefs.saveNickname(nickname)
+    }
+
     override val accessToken: Flow<String?> get() = userPrefs.accessToken
 
     override val refreshToken: Flow<String?> get() = userPrefs.refreshToken

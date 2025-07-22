@@ -13,7 +13,7 @@ interface AuthService {
     suspend fun socialLogin(
         @Path("provider") provider: String,
         @Body request: SocialLoginRequest
-    ): Response<AuthResponse>
+    ): Response<ApiResponse<SocialLoginResponse>>
 
     @POST("/token/reissue")
     suspend fun refreshToken(

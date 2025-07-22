@@ -19,16 +19,12 @@ import com.kakao.sdk.user.UserApiClient
 import com.prography.auth.BuildConfig
 import com.prography.auth.route.screen.contract.LoginEffect
 import com.prography.auth.route.screen.viewmodel.LoginViewModel
-import com.prography.navigation.AppRoute
-import com.prography.navigation.NavigationEvent
-import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
-    navigationHelper: NavigationHelper
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
@@ -60,15 +56,6 @@ fun LoginScreen(
                             Timber.e("Login failed: $error")
                         }
                     )
-                }
-                LoginEffect.NavigateToOnboarding -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
-                }
-                LoginEffect.NavigateUp -> {
-                    navigationHelper.navigate(NavigationEvent.Up)
-                }
-                LoginEffect.NavigateToStart -> {
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
             }
         }

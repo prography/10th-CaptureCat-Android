@@ -1,7 +1,9 @@
 package com.prography.data.repository
 
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
+import com.prography.domain.model.LoginResult
 import com.prography.domain.repository.AuthRepository
+import com.prography.domain.repository.UserPreferenceRepository
 import com.prography.network.api.AuthService
 import com.prography.network.entity.SocialLoginRequest
 import com.prography.network.interceptor.TokenManager
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val tokenManager: TokenManager,
-    private val photoRemoteDataSource: PhotoRemoteDataSource
+    private val photoRemoteDataSource: PhotoRemoteDataSource,
+    private val userPreferenceRepository: UserPreferenceRepository
 ) : AuthRepository {
 
     private val _authEvents = MutableSharedFlow<AuthRepository.AuthEvent>()
@@ -38,7 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
         return _authEvents.asSharedFlow()
     }
 
-    override suspend fun socialLogin(provider: String, idToken: String): Result<Unit> {
+    override suspend fun socialLogin(provider: String, idToken: String): Result<LoginResult> {
         return try {
             val request = SocialLoginRequest(idToken)
             val response = authService.socialLogin(provider, request)
@@ -46,16 +49,28 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val authHeader = response.headers()["authorization"]
                 val refreshHeader = response.headers()["refresh-token"]
+                val responseBody = response.body()?.data
 
                 Timber.d("DEBUG: Auth header: $authHeader")
                 Timber.d("DEBUG: Refresh header: $refreshHeader")
+                Timber.d("DEBUG: Response body: $responseBody")
 
-                if (!authHeader.isNullOrBlank() && !refreshHeader.isNullOrBlank()) {
+                if (!authHeader.isNullOrBlank() && !refreshHeader.isNullOrBlank() && responseBody != null) {
                     val accessToken = authHeader.removePrefix("Bearer ")
                     val refreshToken = refreshHeader.removePrefix("Bearer ")
 
                     tokenManager.saveTokens(accessToken, refreshToken)
-                    Result.success(Unit)
+
+                    // 닉네임 저장
+                    userPreferenceRepository.setNickname(responseBody.nickname)
+
+                    Result.success(
+                        LoginResult(
+                            email = responseBody.email,
+                            nickname = responseBody.nickname,
+                            tutorialCompleted = responseBody.tutorialCompleted
+                        )
+                    )
                 } else {
                     Timber.d("DEBUG: 토큰 헤더가 비어있음 - auth: $authHeader, refresh: $refreshHeader")
                     Result.failure(Exception("토큰을 받지 못했습니다"))

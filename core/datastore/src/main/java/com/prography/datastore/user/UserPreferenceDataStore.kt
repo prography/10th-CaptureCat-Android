@@ -14,6 +14,7 @@ private val Context.userDataStore by preferencesDataStore(name = "user_prefs")
 object UserPreferenceKeys {
     val IS_ONBOARDING_SHOWN = booleanPreferencesKey("is_onboarding_shown")
     val IS_START_TAG_SCREEN_SHOWN = booleanPreferencesKey("is_start_tag_screen_shown")
+    val NICKNAME = stringPreferencesKey("nickname")
     val ACCESS_TOKEN = stringPreferencesKey("access_token")
     val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
 }
@@ -34,6 +35,13 @@ class UserPreferenceDataStore(private val context: Context) {
 
     suspend fun setStartTagScreenShown(shown: Boolean) {
         dataStore.edit { it[UserPreferenceKeys.IS_START_TAG_SCREEN_SHOWN] = shown }
+    }
+
+    val nickname: Flow<String?> =
+        dataStore.data.map { it[UserPreferenceKeys.NICKNAME] }
+
+    suspend fun saveNickname(nickname: String) {
+        dataStore.edit { it[UserPreferenceKeys.NICKNAME] = nickname }
     }
 
     val accessToken: Flow<String?> =

@@ -14,12 +14,12 @@ fun SettingRoute(navigationHelper: NavigationHelper) {
         },
         onNavigateToLogin = {
             navigationHelper.navigate(
-                NavigationEvent.To(AppRoute.Login, popUpTo = true)
+                NavigationEvent.To(AppRoute.Login)
             )
         },
         onNavigateToWithdraw = {
             navigationHelper.navigate(
-                NavigationEvent.To(AppRoute.SettingRoute.Withdraw, popUpTo = true)
+                NavigationEvent.To(AppRoute.SettingRoute.Withdraw)
             )
         },
         onNavigateToStorage = {

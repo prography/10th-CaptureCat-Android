@@ -50,7 +50,7 @@ fun AppNavGraph(
             OnboardingRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.Login> {
-            LoginRoute(navigationHelper = navigationHelper)
+            LoginRoute()
         }
         composable<AppRoute.Start> {
             StartRoute(navigationHelper = navigationHelper)

@@ -9,7 +9,9 @@ data class SocialLoginRequest(
 
 @Serializable
 data class SocialLoginResponse(
-    val result: String
+    val email: String,
+    val nickname: String,
+    val tutorialCompleted: Boolean
 )
 
 data class TokenResponse(

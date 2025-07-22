@@ -54,7 +54,10 @@ fun SettingContent(
         }
 
         if (state.isLoggedIn) {
-            MemberSettingContent(onAction = onAction)
+            MemberSettingContent(
+                nickname = state.nickname ?: "사용자",
+                onAction = onAction
+            )
         } else {
             GuestSettingContent(onAction = onAction)
         }
@@ -141,7 +144,10 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
 }
 
 @Composable
-private fun MemberSettingContent(onAction: (SettingAction) -> Unit) {
+private fun MemberSettingContent(
+    nickname: String,
+    onAction: (SettingAction) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -152,7 +158,7 @@ private fun MemberSettingContent(onAction: (SettingAction) -> Unit) {
                 .background(Gray02, shape = RoundedCornerShape(12.dp))
         ) {
             Text(
-                text = stringResource(UiString.setting_member_nickname, "캐치"),
+                text = stringResource(UiString.setting_member_nickname, nickname),
                 style = headline03Bold,
                 color = Text01,
                 modifier = Modifier.padding(24.dp)
@@ -233,7 +239,7 @@ fun SettingContentGuestPreview() {
 @Composable
 fun SettingContentMemberPreview() {
     SettingContent(
-        state = SettingState(isLoggedIn = true),
+        state = SettingState(isLoggedIn = true, nickname = "테스트"),
         onAction = {}
     )
 }
