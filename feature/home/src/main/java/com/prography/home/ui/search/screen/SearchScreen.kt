@@ -26,8 +26,6 @@ fun SearchScreen(
         effectFlow.collectLatest { effect ->
             when (effect) {
                 is SearchEffect.ShowError -> {
-                    // TODO: Show error message (could use SnackBar or Toast)
-                    // For now, just log the error
                     println("Search Error: ${effect.message}")
                 }
                 is SearchEffect.NavigateToStorage -> {
@@ -59,7 +57,6 @@ fun SearchScreenWithTagsPreview() {
             TagWithCount("통키", 6),
             TagWithCount("여러분", 4)
         ),
-        hasData = true,
         isLoading = false
     )
 
@@ -77,7 +74,6 @@ fun SearchScreenEmptyPreview() {
     PrographyTheme {
         SearchContent(
             state = SearchState(
-                hasData = false,
                 isLoading = false
             ),
             onAction = {}
@@ -119,7 +115,6 @@ fun SearchScreenWithResultsPreview() {
                 selectedTags = listOf("쇼핑"),
                 relatedTags = listOf("패션", "예쁜가방", "서울", "서울숲", "옷", "콜라보"),
                 searchResults = sampleScreenshots,
-                hasData = true,
                 isLoading = false
             ),
             onAction = {}

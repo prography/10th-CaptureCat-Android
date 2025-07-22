@@ -17,4 +17,11 @@ interface ScreenshotRepository {
     suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean)
     suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
     suspend fun getMostUsedTags(size: Int): List<TagWithCount>
+    suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int = 0,
+        size: Int = 20
+    ): List<UiScreenshotModel>
+
+    suspend fun getRelatedTags(tagNames: List<String>, page: Int = 0, size: Int = 10): List<String>
 }

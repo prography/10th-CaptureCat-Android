@@ -47,12 +47,14 @@ fun UiEmptyState(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (buttonText.isNotBlank()) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            UiLabelAddButton(
-                text = buttonText,
-                onClick = onClick
-            )
+                UiLabelAddButton(
+                    text = buttonText,
+                    onClick = onClick
+                )
+            }
         }
     }
 }

@@ -15,4 +15,15 @@ interface PhotoRemoteDataSource {
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit>
     suspend fun getMostUsedTags(size: Int): Result<List<TagWithCount>>
     suspend fun completeTutorial(): Result<Unit>
+    suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int = 0,
+        size: Int = 20
+    ): Result<List<UiScreenshotModel>>
+
+    suspend fun getRelatedTags(
+        tagNames: List<String>,
+        page: Int = 0,
+        size: Int = 10
+    ): Result<List<String>>
 }

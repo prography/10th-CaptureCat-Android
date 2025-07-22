@@ -425,6 +425,71 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): Result<List<UiScreenshotModel>> {
+        Timber.d("Calling photoService.searchImagesByTags(tagNames=$tagNames, page=$page, size=$size)")
+
+        return when (val networkState = photoService.searchImagesByTags(tagNames, page, size)) {
+            is NetworkState.Success -> {
+                Timber.d("Search images by tags API Response: ${networkState.body}")
+                val screenshots =
+                    networkState.body.data?.items?.map { it.toUiScreenshotModel() } ?: emptyList()
+                Timber.d("Converted search results: ${screenshots.size} items")
+                Result.success(screenshots)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Search images by tags API Failure: ${networkState.error}")
+                Result.failure(Exception("API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Search images by tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Search images by tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun getRelatedTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): Result<List<String>> {
+        Timber.d("Calling photoService.getRelatedTags(tagNames=$tagNames, page=$page, size=$size)")
+
+        return when (val networkState = photoService.getRelatedTags(tagNames, page, size)) {
+            is NetworkState.Success -> {
+                Timber.d("Get related tags API Response: ${networkState.body}")
+                val relatedTags = networkState.body.data?.items?.map { it.name } ?: emptyList()
+                Timber.d("Converted related tags: ${relatedTags.size} items")
+                Result.success(relatedTags)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Get related tags API Failure: ${networkState.error}")
+                Result.failure(Exception("API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Get related tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Get related tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
     private fun getFileNameFromUri(uriString: String): String {
         val uri = Uri.parse(uriString)
 

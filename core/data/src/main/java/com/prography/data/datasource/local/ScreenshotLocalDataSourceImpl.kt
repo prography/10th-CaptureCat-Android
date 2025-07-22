@@ -98,4 +98,79 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         Timber.d("Local getMostUsedTags: returning ${mostUsedTags.size} tags from ${tagCounts.size} total tags")
         return mostUsedTags
     }
+
+    override suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): List<UiScreenshotModel> {
+        val allScreenshots = getScreenshots().firstOrNull() ?: emptyList()
+
+        // 모든 태그가 포함된 스크린샷만 필터링
+        val filteredScreenshots = allScreenshots.filter { screenshot ->
+            tagNames.all { searchTag ->
+                screenshot.tags.any { tag ->
+                    tag.name.equals(searchTag, ignoreCase = true)
+                }
+            }
+        }
+
+        // 페이징 처리
+        val startIndex = page * size
+        val endIndex = minOf(startIndex + size, filteredScreenshots.size)
+
+        val pagedResults = if (startIndex < filteredScreenshots.size) {
+            filteredScreenshots.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+
+        Timber.d("Local searchImagesByTags: found ${pagedResults.size} screenshots for tags $tagNames (page=$page, size=$size)")
+        return pagedResults
+    }
+
+    override suspend fun getRelatedTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): List<String> {
+        val allScreenshots = getScreenshots().firstOrNull() ?: emptyList()
+
+        // 선택된 모든 태그를 가진 스크린샷들 찾기
+        val screenshotsWithAllTags = allScreenshots.filter { screenshot ->
+            tagNames.all { searchTag ->
+                screenshot.tags.any { tag ->
+                    tag.name.equals(searchTag, ignoreCase = true)
+                }
+            }
+        }
+
+        // 해당 스크린샷들의 다른 태그들을 수집하고 빈도수 계산
+        val tagCounts = mutableMapOf<String, Int>()
+        screenshotsWithAllTags.forEach { screenshot ->
+            screenshot.tags.forEach { tag ->
+                // 이미 선택된 태그는 제외
+                if (!tagNames.contains(tag.name)) {
+                    tagCounts[tag.name] = tagCounts.getOrDefault(tag.name, 0) + 1
+                }
+            }
+        }
+
+        // 빈도순으로 정렬하고 페이징 처리
+        val sortedTags = tagCounts.entries
+            .sortedByDescending { it.value }
+            .map { it.key }
+
+        val startIndex = page * size
+        val endIndex = minOf(startIndex + size, sortedTags.size)
+
+        val pagedResults = if (startIndex < sortedTags.size) {
+            sortedTags.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+
+        Timber.d("Local getRelatedTags: found ${pagedResults.size} related tags for $tagNames (page=$page, size=$size)")
+        return pagedResults
+    }
 }

@@ -32,8 +32,8 @@ class ScreenshotRepositoryImpl @Inject constructor(
                         flowOf(screenshots)
                     },
                     onFailure = { exception ->
-                        Timber.e(exception, "Remote failure, fallback to local")
-                        localDataSource.getScreenshots()
+                        Timber.e(exception, "Remote failure")
+                        throw exception
                     }
                 )
         }
@@ -60,17 +60,10 @@ class ScreenshotRepositoryImpl @Inject constructor(
                 .fold(
                     onSuccess = {
                         Timber.d("BulkInsert - Remote upload success")
-                        // 서버 업로드 성공 시 로컬에도 저장 (캐시 목적)
-/*                        screenshots.forEach { screenshot ->
-                            localDataSource.insert(screenshot)
-                        }*/
                     },
                     onFailure = { exception ->
-                        Timber.e(exception, "BulkInsert - Remote upload failure, fallback to local")
-                        // 서버 업로드 실패 시 로컬에 저장
-                        screenshots.forEach { screenshot ->
-                            localDataSource.insert(screenshot)
-                        }
+                        Timber.e(exception, "BulkInsert - Remote upload failure")
+                        throw exception
                     }
                 )
         }
@@ -106,12 +99,8 @@ class ScreenshotRepositoryImpl @Inject constructor(
                         }
                     },
                     onFailure = { exception ->
-                        Timber.e(
-                            exception,
-                            "DeleteScreenshot - Remote deletion failure, fallback to local"
-                        )
-                        // 서버 삭제 실패 시 로컬에서만 삭제
-                        localDataSource.deleteById(screenshotId)
+                        Timber.e(exception, "DeleteScreenshot - Remote deletion failure")
+                        throw exception
                     }
                 )
         }
@@ -257,10 +246,45 @@ class ScreenshotRepositoryImpl @Inject constructor(
             localDataSource.getMostUsedTags(size)
         } else {
             // 서버 모드
-            remoteDataSource.getMostUsedTags(size).getOrElse {
-                // 서버 실패 시 로컬 데이터로 fallback
-                Timber.w(it, "Server getMostUsedTags failed, falling back to local")
-                localDataSource.getMostUsedTags(size)
+            remoteDataSource.getMostUsedTags(size).getOrElse { exception ->
+                Timber.w(exception, "Server getMostUsedTags failed")
+                throw exception
+            }
+        }
+    }
+
+    override suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): List<UiScreenshotModel> {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드
+            localDataSource.searchImagesByTags(tagNames, page, size)
+        } else {
+            // 서버 모드
+            remoteDataSource.searchImagesByTags(tagNames, page, size).getOrElse { exception ->
+                Timber.w(exception, "Server searchImagesByTags failed")
+                throw exception
+            }
+        }
+    }
+
+    override suspend fun getRelatedTags(
+        tagNames: List<String>,
+        page: Int,
+        size: Int
+    ): List<String> {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드
+            localDataSource.getRelatedTags(tagNames, page, size)
+        } else {
+            // 서버 모드
+            remoteDataSource.getRelatedTags(tagNames, page, size).getOrElse { exception ->
+                Timber.w(exception, "Server getRelatedTags failed")
+                throw exception
             }
         }
     }

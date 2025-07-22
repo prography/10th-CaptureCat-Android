@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
+import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
+import com.prography.domain.usecase.screenshot.GetRelatedTagsUseCase
 import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.*
 import com.prography.navigation.AppRoute
@@ -15,19 +17,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getAllScreenshotsUseCase: GetAllScreenshotsUseCase,
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
+    private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
+    private val getRelatedTagsUseCase: GetRelatedTagsUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SearchState, SearchEffect, SearchAction>(SearchState()) {
 
     init {
-        sendAction(SearchAction.LoadScreenshots)
         loadMostUsedTags()
     }
 
     override fun handleAction(action: SearchAction) {
         when (action) {
-            is SearchAction.LoadScreenshots -> loadScreenshots()
             is SearchAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             is SearchAction.SearchByTag -> searchByTag(action.tag)
             is SearchAction.AddTag -> addTag(action.tag)
@@ -57,32 +58,6 @@ class SearchViewModel @Inject constructor(
                         updateState { copy(popularTags = popularTags) }
                     }
                 }
-        }
-    }
-
-    private fun loadScreenshots() {
-        viewModelScope.launch {
-            try {
-                updateState { copy(isLoading = true) }
-
-                getAllScreenshotsUseCase().collect { screenshots ->
-                    val hasData = screenshots.isNotEmpty()
-
-                    updateState {
-                        copy(
-                            screenshots = screenshots,
-                            hasData = hasData,
-                            isLoading = false
-                        )
-                    }
-
-                    // 스크린샷이 로드된 후 인기 태그 업데이트
-                    loadMostUsedTags()
-                }
-            } catch (e: Exception) {
-                updateState { copy(isLoading = false) }
-                emitEffect(SearchEffect.ShowError("스크린샷을 불러오는 중 오류가 발생했습니다."))
-            }
         }
     }
 
@@ -160,16 +135,15 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        val results = currentState.screenshots.filter { screenshot ->
-            // AND 조건: 선택된 모든 태그를 포함하는 스크린샷만 필터링
-            selectedTags.all { selectedTag ->
-                screenshot.tags.any { tag ->
-                    tag.name.contains(selectedTag, ignoreCase = true)
+        viewModelScope.launch {
+            runCatching { searchImagesByTagsUseCase(selectedTags) }
+                .onSuccess { results ->
+                    updateState { copy(searchResults = results) }
                 }
-            }
+                .onFailure {
+                    emitEffect(SearchEffect.ShowError("스크린샷을 불러오는 중 오류가 발생했습니다."))
+                }
         }
-
-        updateState { copy(searchResults = results) }
     }
 
     private fun searchUncategorizedScreenshots() {
@@ -192,36 +166,15 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        // 선택된 모든 태그를 포함하는 스크린샷들만 찾기 (AND 로직)
-        val matchingScreenshots = currentState.screenshots.filter { screenshot ->
-            selectedTags.all { selectedTag ->
-                screenshot.tags.any { tag ->
-                    tag.name.contains(selectedTag, ignoreCase = true)
+        viewModelScope.launch {
+            runCatching { getRelatedTagsUseCase(selectedTags) }
+                .onSuccess { relatedTags ->
+                    updateState { copy(relatedTags = relatedTags) }
                 }
-            }
-        }
-
-        // 매칭된 스크린샷들의 다른 태그들을 수집 (이미 선택된 태그는 제외)
-        val relatedTagsSet = mutableSetOf<String>()
-        matchingScreenshots.forEach { screenshot ->
-            screenshot.tags.forEach { tag ->
-                // 이미 선택된 태그는 제외
-                if (!selectedTags.any { selectedTag ->
-                        tag.name.equals(selectedTag, ignoreCase = true)
-                    }) {
-                    relatedTagsSet.add(tag.name)
+                .onFailure {
+                    emitEffect(SearchEffect.ShowError("연관 태그를 불러오는 중 오류가 발생했습니다."))
                 }
-            }
         }
-
-        // 빈도순으로 정렬 (옵션)
-        val sortedRelatedTags = relatedTagsSet.toList().sortedByDescending { tagName ->
-            matchingScreenshots.count { screenshot ->
-                screenshot.tags.any { tag -> tag.name.equals(tagName, ignoreCase = true) }
-            }
-        }
-
-        updateState { copy(relatedTags = sortedRelatedTags) }
     }
 
     private fun clearSearch() {

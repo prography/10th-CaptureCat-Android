@@ -12,13 +12,11 @@ data class SearchState(
     val relatedTags: List<String> = emptyList(),
     val searchResults: List<UiScreenshotModel> = emptyList(),
     val isLoading: Boolean = false,
-    val hasData: Boolean = false,
     val hasSearched: Boolean = false
 )
 
 // Define Actions
 sealed class SearchAction {
-    object LoadScreenshots : SearchAction()
     data class UpdateSearchQuery(val query: String) : SearchAction()
     data class SearchByTag(val tag: String) : SearchAction()
     data class AddTag(val tag: String) : SearchAction()

@@ -72,6 +72,20 @@ interface PhotoService {
     @POST("v1/user/tutorialComplete")
     suspend fun completeTutorial(): NetworkState<ApiResponse<String>>
 
+    @GET("v1/images/search")
+    suspend fun searchImagesByTags(
+        @Query("tagNames") tagNames: List<String>,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): NetworkState<ApiListResponse<PhotoResponse>>
+
+    @GET("v1/tags/related")
+    suspend fun getRelatedTags(
+        @Query("tagNames") tagNames: List<String>,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): NetworkState<ApiListResponse<TagResponse>>
+
     @GET("v1/tags/most-used")
     suspend fun getMostUsedTags(
         @Query("page") page: Int = 0,

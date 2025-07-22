@@ -63,7 +63,7 @@ fun SearchContent(
         val isSearchMode = state.selectedTags.isNotEmpty() || state.searchResults.isNotEmpty()
 
         when {
-            !state.hasData || state.popularTags.isEmpty() -> {
+            state.popularTags.isEmpty() -> {
                 // 초기 Empty 상태
                 Box(
                     modifier = Modifier
@@ -83,6 +83,7 @@ fun SearchContent(
                 UiEmptyState(
                     title = "검색 결과가 없어요.",
                     info = "스크린샷을 태그해 정리해보세요",
+                    buttonText = "",
                     onClick = { onAction(SearchAction.NavigateToStorage) }
                 )
             }
@@ -342,8 +343,7 @@ fun SearchContentPreview() {
             TagWithCount("여행", 8),
             TagWithCount("음식", 6),
             TagWithCount("가나다라마바사마바사아자타카하", 4)
-        ),
-        hasData = true
+        )
     )
 
     PrographyTheme {

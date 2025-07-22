@@ -14,4 +14,11 @@ interface ScreenshotLocalDataSource {
     suspend fun deleteTag(imageId: String, tagName: String)
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)
     suspend fun getMostUsedTags(size: Int): List<TagWithCount>
+    suspend fun searchImagesByTags(
+        tagNames: List<String>,
+        page: Int = 0,
+        size: Int = 20
+    ): List<UiScreenshotModel>
+
+    suspend fun getRelatedTags(tagNames: List<String>, page: Int = 0, size: Int = 10): List<String>
 }
