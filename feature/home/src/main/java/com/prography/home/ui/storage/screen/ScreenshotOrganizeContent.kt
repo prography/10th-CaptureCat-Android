@@ -36,6 +36,7 @@ import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.component.UiCheckBox
 import com.prography.ui.component.UiButtonText
+import com.prography.ui.component.UiBasicDialog
 import com.prography.ui.component.ButtonSize
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Gray04
@@ -229,8 +230,9 @@ fun ScreenshotOrganizeContent(
         }
     }
 
+    // Show DeleteConfirmDialog only if at least one screenshot is selected, otherwise show UiBasicDialog
     DeleteConfirmDialog(
-        isVisible = state.showDeleteDialog,
+        isVisible = state.showDeleteDialog && state.selectedCount > 0,
         selectedCount = state.selectedCount,
         onDismiss = { onAction(ScreenshotAction.DismissDeleteDialog) },
         onConfirm = {
@@ -246,6 +248,13 @@ fun ScreenshotOrganizeContent(
                 }
             )
         }
+    )
+
+    UiBasicDialog(
+        isVisible = state.showDeleteDialog && state.selectedCount == 0,
+        info = "삭제할 이미지를 선택해주세요.",
+        confirmButtonText = "확인",
+        onConfirm = { onAction(ScreenshotAction.DismissDeleteDialog) }
     )
 }
 
