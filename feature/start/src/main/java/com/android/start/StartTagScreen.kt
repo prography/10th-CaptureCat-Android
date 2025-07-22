@@ -131,10 +131,10 @@ fun StartTagScreen(
 
     UiCommonDialog(
         isVisible = showExitDialog,
-        title = "여기서 그만둘까요?",
-        message = "지금 나가면 캐치가 미리 태그를 만들어줄 수 없어요.",
+        title = "앱을 종료하시겠습니까?",
+        message = "지금 종료하면 캐치가 미리 태그를 만들어줄 수 없어요.",
         leftButtonText = "계속",
-        rightButtonText = "그만두기",
+        rightButtonText = "종료",
         onDismiss = { showExitDialog = false },
         onConfirm = {
             showExitDialog = false
