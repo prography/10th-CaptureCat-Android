@@ -64,6 +64,9 @@ fun LoginScreen(
                 LoginEffect.NavigateToOnboarding -> {
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Onboarding, popUpTo = true))
                 }
+                LoginEffect.NavigateUp -> {
+                    navigationHelper.navigate(NavigationEvent.Up)
+                }
                 LoginEffect.NavigateToStart -> {
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                 }
