@@ -399,6 +399,32 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun completeTutorial(): Result<Unit> {
+        Timber.d("Calling photoService.completeTutorial()")
+
+        return when (val networkState = photoService.completeTutorial()) {
+            is NetworkState.Success -> {
+                Timber.d("Tutorial complete API Response: ${networkState.body}")
+                Result.success(Unit)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Tutorial complete API Failure: ${networkState.error}")
+                Result.failure(Exception("튜토리얼 완료 API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Tutorial complete Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Tutorial complete Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
     private fun getFileNameFromUri(uriString: String): String {
         val uri = Uri.parse(uriString)
 

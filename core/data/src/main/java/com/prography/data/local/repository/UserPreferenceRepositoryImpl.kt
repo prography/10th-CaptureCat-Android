@@ -18,6 +18,13 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         userPrefs.setOnboardingShown(shown)
     }
 
+    override val isStartTagScreenShown: Flow<Boolean>
+        get() = userPrefs.isStartTagScreenShown
+
+    override suspend fun setStartTagScreenShown(shown: Boolean) {
+        userPrefs.setStartTagScreenShown(shown)
+    }
+
     override val accessToken: Flow<String?> get() = userPrefs.accessToken
 
     override val refreshToken: Flow<String?> get() = userPrefs.refreshToken

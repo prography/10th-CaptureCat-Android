@@ -6,6 +6,7 @@ interface AuthRepository {
     suspend fun socialLogin(provider: String, idToken: String): Result<Unit>
     suspend fun logout(): Result<Unit>
     fun isLoggedIn(): Boolean
+    suspend fun completeTutorial(): Result<Unit>
 
     sealed class AuthEvent {
         object RefreshTokenExpired : AuthEvent()

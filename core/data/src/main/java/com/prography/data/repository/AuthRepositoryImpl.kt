@@ -1,5 +1,6 @@
 package com.prography.data.repository
 
+import com.prography.data.datasource.remote.PhotoRemoteDataSource
 import com.prography.domain.repository.AuthRepository
 import com.prography.network.api.AuthService
 import com.prography.network.entity.SocialLoginRequest
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val photoRemoteDataSource: PhotoRemoteDataSource
 ) : AuthRepository {
 
     private val _authEvents = MutableSharedFlow<AuthRepository.AuthEvent>()
@@ -92,6 +94,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun isLoggedIn(): Boolean {
         return !tokenManager.getAccessToken().isNullOrBlank()
+    }
+
+    override suspend fun completeTutorial(): Result<Unit> {
+        return photoRemoteDataSource.completeTutorial()
     }
 
     suspend fun refreshTokens(): Result<Unit> {

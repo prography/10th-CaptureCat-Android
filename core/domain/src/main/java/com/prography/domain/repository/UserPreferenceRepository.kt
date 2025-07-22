@@ -7,6 +7,9 @@ interface UserPreferenceRepository {
     val isOnboardingShown: Flow<Boolean>
     suspend fun setOnboardingShown(shown: Boolean)
 
+    val isStartTagScreenShown: Flow<Boolean>
+    suspend fun setStartTagScreenShown(shown: Boolean)
+
     val accessToken : Flow<String?>
     val refreshToken: Flow<String?>
     suspend fun clearTokens()

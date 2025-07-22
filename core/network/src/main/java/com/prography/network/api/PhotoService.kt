@@ -69,6 +69,9 @@ interface PhotoService {
         @Body body: AddTagsRequest
     ): NetworkState<ApiResponse<Unit>>
 
+    @POST("v1/user/tutorialComplete")
+    suspend fun completeTutorial(): NetworkState<ApiResponse<String>>
+
     @GET("v1/tags/most-used")
     suspend fun getMostUsedTags(
         @Query("page") page: Int = 0,
