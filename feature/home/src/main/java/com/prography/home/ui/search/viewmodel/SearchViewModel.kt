@@ -193,25 +193,18 @@ class SearchViewModel @Inject constructor(
         val query = currentState.searchQuery.trim()
         if (query.isEmpty()) return
 
-        // 해당 태그가 존재하는지 확인
-        val tagExists = currentState.screenshots.any { screenshot ->
-            screenshot.tags.any { tag ->
-                tag.name.equals(query, ignoreCase = true)
-            }
+        // 태그를 selectedTags에 추가하고 서버에서 검색
+        val newTags = listOf(query) + currentState.selectedTags
+        updateState {
+            copy(
+                selectedTags = newTags,
+                searchQuery = ""
+            )
         }
 
-        if (tagExists) {
-            // 태그가 존재하면 selectedTags에 추가
-            addTag(query)
-        } else {
-            // 태그가 존재하지 않으면 빈 결과로 설정
-            updateState {
-                copy(
-                    searchResults = emptyList(),
-                    hasSearched = true
-                )
-            }
-        }
+        // 서버에서 검색 및 연관 태그 업데이트
+        searchBySelectedTags(newTags)
+        updateRelatedTags(newTags)
     }
 
     private fun handleScreenshotClick(clickedScreenshot: com.prography.domain.model.UiScreenshotModel) {
