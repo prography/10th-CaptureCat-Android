@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -20,7 +19,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import com.prography.ui.R
 import com.prography.ui.component.ButtonState
 import com.prography.ui.component.UiPrimaryButton
@@ -37,9 +35,7 @@ fun StartChooseScreen(
     maxSelectableImages: Int = 10,
     onFinishSelection: (List<ScreenshotItem>) -> Unit
 ) {
-    val screenshots = viewModel.screenshots
-    val selectedImages = viewModel.selectedScreenshots
-    val selectedIds = remember(selectedImages) { selectedImages.map { it.id }.toSet() }
+    val state by viewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -55,13 +51,12 @@ fun StartChooseScreen(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
         ) {
-            // 🔹 헤더
             item(span = { GridItemSpan(3) }) {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Text(
-                        text = "시작하기 전에\n${screenshots.size}장의 스크린샷이 있어요",
+                        text = "시작하기 전에\n${state.screenshots.size}장의 스크린샷이 있어요",
                         style = headline02Bold,
                         color = Text01
                     )
@@ -75,9 +70,8 @@ fun StartChooseScreen(
                 }
             }
 
-            // 🔹 이미지 그리드
-            items(screenshots, key = { it.id }) { screenshot ->
-                val isSelected = screenshot in selectedImages
+            items(state.screenshots, key = { it.id }) { screenshot ->
+                val isSelected = state.selectedScreenshots.contains(screenshot)
                 Box(
                     modifier = Modifier
                         .aspectRatio(45f / 76f)
@@ -85,7 +79,11 @@ fun StartChooseScreen(
                             width = 2.dp,
                             color = if (isSelected) Primary else Gray04
                         )
-                        .clickable { viewModel.toggleSelection(screenshot, maxSelectableImages) }
+                        .clickable {
+                            viewModel.sendAction(
+                                StartChooseAction.ToggleSelection(screenshot, maxSelectableImages)
+                            )
+                        }
                 ) {
                     AsyncImage(
                         model = screenshot.uri,
@@ -109,7 +107,6 @@ fun StartChooseScreen(
             }
         }
 
-        // ✅ 하단 고정 버튼
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -118,9 +115,9 @@ fun StartChooseScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             UiPrimaryButton(
-                text = "정리하기 (${selectedImages.size}/$maxSelectableImages)",
-                state = if (selectedImages.isNotEmpty()) ButtonState.Enabled else ButtonState.Disabled,
-                onClick = { onFinishSelection(selectedImages) },
+                text = "정리하기 (${state.selectedScreenshots.size}/$maxSelectableImages)",
+                state = if (state.selectedScreenshots.isNotEmpty()) ButtonState.Enabled else ButtonState.Disabled,
+                onClick = { onFinishSelection(state.selectedScreenshots) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

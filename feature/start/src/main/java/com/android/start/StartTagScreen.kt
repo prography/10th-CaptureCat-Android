@@ -42,11 +42,10 @@ fun StartTagScreen(
         "공부", "글귀", "여행", "자기계발",
         "맛집", "노래", "레시피", "운동"
     ),
-    maxSelectableTags: Int = 5, // 최대 선택 가능한 태그 개수
     onFinishSelection: (List<String>) -> Unit,
     viewModel: StartTagViewModel = hiltViewModel()
 ) {
-    var selectedTags by remember { mutableStateOf(listOf<String>()) }
+    val state by viewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -73,7 +72,7 @@ fun StartTagScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "관심 주제를 선택(5개 이하)해주시면\n캡처 시 미리 태그로 만들어드려요.",
+                    text = "관심 주제를 선택(${state.maxSelectableTags}개 이하)해주시면\n캡처 시 미리 태그로 만들어드려요.",
                     style = body02Regular,
                     color = Text03
                 )
@@ -87,16 +86,12 @@ fun StartTagScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 tagOptions.forEach { tag ->
-                    val isSelected = tag in selectedTags
+                    val isSelected = tag in state.selectedTags
                     UiTagChip(
                         text = tag,
                         isSelected = isSelected,
                         onClick = {
-                            if (isSelected) {
-                                selectedTags = selectedTags - tag
-                            } else if (selectedTags.size < maxSelectableTags) {
-                                selectedTags = selectedTags + tag
-                            }
+                            viewModel.sendAction(StartTagAction.ToggleTag(tag))
                         }
                     )
                 }
@@ -109,16 +104,16 @@ fun StartTagScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 26.dp)
         ) {
-            val buttonState = remember(selectedTags) {
-                if (selectedTags.isEmpty()) ButtonState.Disabled
+            val buttonState = remember(state.selectedTags) {
+                if (state.selectedTags.isEmpty()) ButtonState.Disabled
                 else ButtonState.Enabled
             }
 
             UiPrimaryButton(
-                text = "선택 완료 (${selectedTags.size}/$maxSelectableTags)",
+                text = "선택 완료 (${state.selectedTags.size}/${state.maxSelectableTags})",
                 onClick = {
-                    viewModel.saveSelectedTags(selectedTags)
-                    onFinishSelection(selectedTags)
+                    viewModel.sendAction(StartTagAction.SaveSelectedTags(state.selectedTags))
+                    onFinishSelection(state.selectedTags)
                 },
                 state = buttonState,
                 modifier = Modifier.fillMaxWidth()
@@ -136,7 +131,6 @@ fun StartTagScreenPreview() {
             "공부", "글귀", "여행", "자기계발",
             "맛집", "노래", "레시피", "운동"
         ),
-        maxSelectableTags = 5,
         onFinishSelection = { }
     )
 }
