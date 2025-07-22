@@ -1,5 +1,6 @@
 package com.android.start
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.component.ButtonState
+import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.component.UiTagChip
 import com.prography.ui.theme.Gray04
@@ -43,9 +45,15 @@ fun StartTagScreen(
         "맛집", "노래", "레시피", "운동"
     ),
     onFinishSelection: (List<String>) -> Unit,
+    onNavigateBack: () -> Unit = {},
     viewModel: StartTagViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        showExitDialog = true
+    }
 
     Box(
         modifier = Modifier
@@ -120,6 +128,19 @@ fun StartTagScreen(
             )
         }
     }
+
+    UiCommonDialog(
+        isVisible = showExitDialog,
+        title = "여기서 그만둘까요?",
+        message = "지금 나가면 캐치가 미리 태그를 만들어줄 수 없어요.",
+        leftButtonText = "계속",
+        rightButtonText = "그만두기",
+        onDismiss = { showExitDialog = false },
+        onConfirm = {
+            showExitDialog = false
+            onNavigateBack()
+        }
+    )
 }
 
 @Preview(showBackground = true)

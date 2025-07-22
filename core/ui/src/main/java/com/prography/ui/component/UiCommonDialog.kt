@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.prography.ui.theme.Gray02
@@ -45,7 +46,7 @@ fun UiCommonDialog(
         Dialog(onDismissRequest = onDismiss) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -77,47 +78,42 @@ fun UiCommonDialog(
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            TextButton(
+                            UiLabelAddButton (
+                                text = leftButtonText,
                                 onClick = onDismiss,
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                                    .background(
-                                        color = Gray02,
-                                        shape = RoundedCornerShape(6.dp)
-                                    )
-                            ) {
-                                Text(
-                                    text = leftButtonText,
-                                    style = subhead02Bold,
-                                    color = Text03,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                                    .weight(1f),
+                                size = ButtonSize.LARGE,
+                                type = ButtonType.SUB
+                            )
 
-                            TextButton(
+                            UiLabelAddButton (
+                                text = rightButtonText,
                                 onClick = onConfirm,
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                                    .background(
-                                        color = Primary,
-                                        shape = RoundedCornerShape(6.dp)
-                                    )
-                            ) {
-                                Text(
-                                    text = rightButtonText,
-                                    style = subhead02Bold,
-                                    color = PureWhite,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                                    .weight(1f),
+                                size = ButtonSize.LARGE
+                            )
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UiCommonDialogPreview() {
+    UiCommonDialog(
+        isVisible = true,
+        title = "삭제할까요?",
+        message = "5개의 항목을 삭제하시겠습니까?\n삭제된 항목은 복구할 수 없습니다.",
+        leftButtonText = "취소",
+        rightButtonText = "삭제",
+        onDismiss = {},
+        onConfirm = {}
+    )
 }
