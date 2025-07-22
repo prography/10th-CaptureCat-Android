@@ -22,7 +22,8 @@ fun SearchScreen(
     val effectFlow = viewModel.effect
 
     // Handle effects
-    LaunchedEffect(effectFlow) {
+    LaunchedEffect(Unit) {
+        viewModel.loadMostUsedTags()
         effectFlow.collectLatest { effect ->
             when (effect) {
                 is SearchEffect.ShowError -> {

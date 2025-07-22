@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun loadMostUsedTags() {
+    fun loadMostUsedTags() {
         viewModelScope.launch {
             runCatching { getMostUsedTagsUseCase(size = 5) }
                 .onSuccess { topTags ->
