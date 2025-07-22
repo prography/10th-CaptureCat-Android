@@ -158,7 +158,7 @@ fun OnboardingPager(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 33.dp, end = 16.dp)
-                .clickable { onAction(OnboardingAction.SkipClicked) }
+                .clickable { onAction(OnboardingAction.LoginClicked) }
         )
     }
 }
