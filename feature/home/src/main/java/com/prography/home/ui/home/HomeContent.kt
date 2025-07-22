@@ -36,6 +36,7 @@ import com.prography.ui.R
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.LaunchedEffect
+import com.prography.ui.component.clickableWithoutRipple
 
 @Composable
 fun HomeContent(
@@ -119,7 +120,7 @@ fun HomeContent(
                     Image(
                         painter = painterResource(id = R.drawable.ic_profile),
                         contentDescription = "프로필 아이콘",
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.clickableWithoutRipple {
                             onAction(HomeAction.NavigateToSettings)
                         }
                     )
