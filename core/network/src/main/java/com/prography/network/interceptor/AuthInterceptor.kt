@@ -3,6 +3,8 @@ package com.prography.network.interceptor
 import com.prography.network.api.AuthService
 import com.prography.network.util.NetworkState
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Response
 import timber.log.Timber
@@ -13,6 +15,9 @@ class AuthInterceptor @Inject constructor(
     private val tokenManager: TokenManager,
     @Named("TokenRefreshAuthService") private val tokenRefreshAuthService: AuthService
 ) : Interceptor {
+
+    // 토큰 갱신 동시성 제어를 위한 Mutex
+    private val tokenRefreshMutex = Mutex()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
@@ -46,53 +51,68 @@ class AuthInterceptor @Inject constructor(
         if (response.code == 401) {
             Timber.d("401 error detected, attempting token refresh")
 
-            val refreshToken = tokenManager.getRefreshToken()
-            if (!refreshToken.isNullOrBlank()) {
-                try {
-                    val refreshResult = runBlocking {
-                        tokenRefreshAuthService.refreshToken("Bearer $refreshToken")
+            return runBlocking {
+                tokenRefreshMutex.withLock {
+                    // 이미 다른 요청에서 토큰을 갱신했는지 확인
+                    val currentAccessToken = tokenManager.getAccessToken()
+                    if (currentAccessToken != accessToken) {
+                        // 토큰이 이미 갱신됨 - 새로운 토큰으로 재시도
+                        Timber.d("Token already refreshed by another request, retrying with new token")
+                        val newAuthenticatedRequest = originalRequest.newBuilder()
+                            .header("Authorization", "Bearer $currentAccessToken")
+                            .build()
+                        response.close()
+                        return@withLock chain.proceed(newAuthenticatedRequest)
                     }
 
-                    if (refreshResult.isSuccessful) {
-                        val authHeader = refreshResult.headers()["authorization"]
-                        val newRefreshHeader = refreshResult.headers()["refresh-token"]
+                    val refreshToken = tokenManager.getRefreshToken()
+                    if (!refreshToken.isNullOrBlank()) {
+                        try {
+                            val refreshResult =
+                                tokenRefreshAuthService.refreshToken("Bearer $refreshToken")
 
-                        if (!authHeader.isNullOrBlank() && !newRefreshHeader.isNullOrBlank()) {
-                            val newAccessToken = authHeader.removePrefix("Bearer ")
-                            val newRefreshToken = newRefreshHeader.removePrefix("Bearer ")
+                            if (refreshResult.isSuccessful) {
+                                val authHeader = refreshResult.headers()["authorization"]
+                                val newRefreshHeader = refreshResult.headers()["refresh-token"]
 
-                            tokenManager.saveTokens(newAccessToken, newRefreshToken)
-                            Timber.d("Token refresh successful")
+                                if (!authHeader.isNullOrBlank() && !newRefreshHeader.isNullOrBlank()) {
+                                    val newAccessToken = authHeader.removePrefix("Bearer ")
+                                    val newRefreshToken = newRefreshHeader.removePrefix("Bearer ")
 
-                            // 새로운 액세스 토큰으로 원래 요청 재시도
-                            val newAuthenticatedRequest = originalRequest.newBuilder()
-                                .header("Authorization", "Bearer $newAccessToken")
-                                .build()
+                                    tokenManager.saveTokens(newAccessToken, newRefreshToken)
+                                    Timber.d("Token refresh successful")
 
-                            response.close()
-                            return chain.proceed(newAuthenticatedRequest)
-                        } else {
-                            Timber.e("Token refresh failed: Missing headers")
+                                    // 새로운 액세스 토큰으로 원래 요청 재시도
+                                    val newAuthenticatedRequest = originalRequest.newBuilder()
+                                        .header("Authorization", "Bearer $newAccessToken")
+                                        .build()
+
+                                    response.close()
+                                    return@withLock chain.proceed(newAuthenticatedRequest)
+                                } else {
+                                    Timber.e("Token refresh failed: Missing headers")
+                                    tokenManager.clearTokens()
+                                }
+                            } else {
+                                Timber.e("Token refresh failed: ${refreshResult.code()}")
+                                tokenManager.clearTokens()
+
+                                // 리프레시 토큰이 만료된 경우 (400 에러)
+                                if (refreshResult.code() == 400) {
+                                    tokenManager.emitAuthEvent(TokenManager.AuthEvent.RefreshTokenExpired)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Token refresh exception")
                             tokenManager.clearTokens()
                         }
                     } else {
-                        Timber.e("Token refresh failed: ${refreshResult.code()}")
+                        Timber.d("No refresh token available")
                         tokenManager.clearTokens()
-
-                        // 리프레시 토큰이 만료된 경우 (400 에러)
-                        if (refreshResult.code() == 400) {
-                            runBlocking {
-                                tokenManager.emitAuthEvent(TokenManager.AuthEvent.RefreshTokenExpired)
-                            }
-                        }
                     }
-                } catch (e: Exception) {
-                    Timber.e(e, "Token refresh exception")
-                    tokenManager.clearTokens()
+
+                    return@withLock response
                 }
-            } else {
-                Timber.d("No refresh token available")
-                tokenManager.clearTokens()
             }
         }
 
