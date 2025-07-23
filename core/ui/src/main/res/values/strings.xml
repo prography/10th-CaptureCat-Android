@@ -33,7 +33,7 @@
     <string name="setting_terms_of_service">서비스 이용약관</string>
     <string name="setting_version_info">버전 정보</string>
     <string name="setting_help">도움말</string>
-    <string name="setting_how_to_use">서비스 이용방법</string>
+    <string name="setting_screenshot_reset">초기화</string>
 
     <!-- 회원 모드 -->
     <string name="setting_member_nickname">%1$s님</string>
@@ -48,7 +48,11 @@
     <string name="setting_withdraw_dialog_title">회원탈퇴하면</string>
     <string name="setting_withdraw_dialog_message">캡쳐캣에 쌓인 유저님의 모든 데이터가 삭제됩니다.\n그래도 회원탈퇴하시겠어요?</string>
 
+    <!-- 초기화 -->
+    <string name="setting_reset_dialog_title">초기화하면</string>
+    <string name="setting_reset_dialog_message">캡처캣에 쌓인 유저님의 모든 데이터가 삭제됩니다.\n그래도 로그아웃하시겠어요?</string>
+
     <!-- 공통 -->
     <string name="setting_cancel">취소</string>
-
+    <string name="setting_ok">확인</string>
 </resources>
