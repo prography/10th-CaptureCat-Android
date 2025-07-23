@@ -51,12 +51,15 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             socialLoginUseCase("google", idToken).onSuccess { navigationResult ->
                 when (navigationResult) {
-                    is LoginNavigationResult.NavigateToStartTag -> {
+                    LoginNavigationResult.NavigateToStartTag -> {
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
                     }
 
-                    is LoginNavigationResult.NavigateToHome -> {
-                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
+                    LoginNavigationResult.NavigateToHome -> {
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                    }
+                    LoginNavigationResult.NavigateToUpload -> {
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
                     }
                 }
             }.onFailure {
@@ -69,12 +72,15 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             socialLoginUseCase("kakao", accessToken).onSuccess { navigationResult ->
                 when (navigationResult) {
-                    is LoginNavigationResult.NavigateToStartTag -> {
+                    LoginNavigationResult.NavigateToStartTag -> {
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
                     }
 
-                    is LoginNavigationResult.NavigateToHome -> {
+                    LoginNavigationResult.NavigateToHome -> {
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
+                    }
+                    LoginNavigationResult.NavigateToUpload -> {
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
                     }
                 }
             }.onFailure {
