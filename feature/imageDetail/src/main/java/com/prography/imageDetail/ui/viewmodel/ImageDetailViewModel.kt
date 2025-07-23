@@ -382,7 +382,7 @@ class ImageDetailViewModel @Inject constructor(
             runCatching {
                 addTagsToScreenshotUseCase(
                     currentScreenshot.id,
-                    updatedTags.map { it.name })
+                    listOf(newTag))
             }.onSuccess {
                 Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
 
