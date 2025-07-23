@@ -6,6 +6,7 @@ import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.usecase.screenshot.GetRelatedTagsUseCase
+import com.prography.domain.usecase.screenshot.GetUncategorizedScreenshotsUseCase
 import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.*
 import com.prography.navigation.AppRoute
@@ -20,6 +21,7 @@ class SearchViewModel @Inject constructor(
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
     private val getRelatedTagsUseCase: GetRelatedTagsUseCase,
+    private val getUncategorizedScreenshotsUseCase: GetUncategorizedScreenshotsUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SearchState, SearchEffect, SearchAction>(SearchState()) {
 
@@ -45,10 +47,11 @@ class SearchViewModel @Inject constructor(
             runCatching { getMostUsedTagsUseCase(size = 5) }
                 .onSuccess { topTags ->
                     val tagsWithMiscategorized = topTags.toMutableList()
-                    val uncategorizedCount = currentState.screenshots.count { it.tags.isEmpty() }
-                    if (uncategorizedCount > 0) {
-                        tagsWithMiscategorized.add(TagWithCount("미분류", uncategorizedCount))
-                    }
+
+                    // 태그가 있는 스크린샷이 있을 경우에만 미분류 칩을 표시하도록 한다.
+                    if (tagsWithMiscategorized.size > 0)
+                        tagsWithMiscategorized.add(TagWithCount("미분류", 0))
+
                     updateState { copy(popularTags = tagsWithMiscategorized) }
                 }
                 .onFailure {
@@ -147,16 +150,21 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun searchUncategorizedScreenshots() {
-        // 태그가 없는 스크린샷들만 필터링
-        val results = currentState.screenshots.filter { screenshot ->
-            screenshot.tags.isEmpty()
-        }
-
-        updateState {
-            copy(
-                searchResults = results,
-                relatedTags = emptyList() // 미분류는 연관 태그 없음
-            )
+        viewModelScope.launch {
+            runCatching { getUncategorizedScreenshotsUseCase() }
+                .onSuccess { screenshotsFlow ->
+                    screenshotsFlow.collect { results ->
+                        updateState {
+                            copy(
+                                searchResults = results,
+                                relatedTags = emptyList() // 미분류는 연관 태그 없음
+                            )
+                        }
+                    }
+                }
+                .onFailure {
+                    emitEffect(SearchEffect.ShowError("미분류 스크린샷을 불러오는 중 오류가 발생했습니다."))
+                }
         }
     }
 
