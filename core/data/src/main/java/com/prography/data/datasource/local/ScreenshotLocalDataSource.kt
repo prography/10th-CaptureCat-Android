@@ -5,7 +5,7 @@ import com.prography.domain.model.UiScreenshotModel
 import kotlinx.coroutines.flow.Flow
 
 interface ScreenshotLocalDataSource {
-    suspend fun getScreenshots(): Flow<List<UiScreenshotModel>>
+    suspend fun getScreenshots(hasTags: Boolean? = null): Flow<List<UiScreenshotModel>>
     suspend fun getById(screenshotId: String): UiScreenshotModel?
     suspend fun insert(screenshot: UiScreenshotModel)
     suspend fun update(screenshot: UiScreenshotModel)

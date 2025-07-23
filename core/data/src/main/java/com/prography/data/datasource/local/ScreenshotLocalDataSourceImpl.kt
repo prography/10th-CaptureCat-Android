@@ -20,8 +20,15 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
     private val dao: ScreenshotDao
 ) : ScreenshotLocalDataSource {
 
-    override suspend fun getScreenshots(): Flow<List<UiScreenshotModel>> {
-        return dao.getAll().map { list -> list.map { it.toDomain() } }
+    override suspend fun getScreenshots(hasTags: Boolean?): Flow<List<UiScreenshotModel>> {
+        return dao.getAll().map { list ->
+            val screenshots = list.map { it.toDomain() }
+            when (hasTags) {
+                true -> screenshots.filter { it.tags.isNotEmpty() }
+                false -> screenshots.filter { it.tags.isEmpty() }
+                null -> screenshots
+            }
+        }
     }
 
     override suspend fun insert(screenshot: UiScreenshotModel) {
@@ -83,7 +90,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getMostUsedTags(size: Int): List<TagWithCount> {
-        val screenshots = getScreenshots().firstOrNull() ?: emptyList()
+        val screenshots = getScreenshots(null).firstOrNull() ?: emptyList()
         val tagCounts = mutableMapOf<String, Int>()
 
         // 모든 스크린샷의 태그를 수집하고 카운트
@@ -108,7 +115,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         page: Int,
         size: Int
     ): List<UiScreenshotModel> {
-        val allScreenshots = getScreenshots().firstOrNull() ?: emptyList()
+        val allScreenshots = getScreenshots(null).firstOrNull() ?: emptyList()
 
         // 모든 태그가 포함된 스크린샷만 필터링
         val filteredScreenshots = allScreenshots.filter { screenshot ->
@@ -138,7 +145,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         page: Int,
         size: Int
     ): List<String> {
-        val allScreenshots = getScreenshots().firstOrNull() ?: emptyList()
+        val allScreenshots = getScreenshots(null).firstOrNull() ?: emptyList()
 
         // 선택된 모든 태그를 가진 스크린샷들 찾기
         val screenshotsWithAllTags = allScreenshots.filter { screenshot ->

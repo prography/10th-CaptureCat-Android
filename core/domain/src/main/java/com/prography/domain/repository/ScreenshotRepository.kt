@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ScreenshotRepository {
 
     suspend fun getLocalScreenshots(): Flow<List<UiScreenshotModel>>
-    suspend fun getScreenshots(): Flow<List<UiScreenshotModel>>
+    suspend fun getScreenshots(hasTags: Boolean? = null): Flow<List<UiScreenshotModel>>
     suspend fun getScreenshotById(screenshotId: String): UiScreenshotModel?
     suspend fun insert(screenshot: UiScreenshotModel)
     suspend fun bulkInsert(screenshots: List<UiScreenshotModel>)

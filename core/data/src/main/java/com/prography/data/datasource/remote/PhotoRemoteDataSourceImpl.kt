@@ -28,12 +28,13 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : PhotoRemoteDataSource {
     override suspend fun getScreenshots(
+        hasTags: Boolean?,
         page: Int,
         size: Int
     ): Result<List<UiScreenshotModel>> {
-        Timber.d("Calling photoService.getScreenshots(page=$page, size=$size)")
+        Timber.d("Calling photoService.getScreenshots(hasTags=$hasTags, page=$page, size=$size)")
 
-        return when (val networkState = photoService.getScreenshots(page, size)) {
+        return when (val networkState = photoService.getScreenshots(hasTags, page, size)) {
             is NetworkState.Success -> {
                 Timber.d("API Response: ${networkState.body}")
                 val screenshots =

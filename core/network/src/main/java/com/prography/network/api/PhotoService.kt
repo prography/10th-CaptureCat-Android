@@ -20,6 +20,7 @@ import retrofit2.http.Query
 interface PhotoService {
     @GET("v1/images")
     suspend fun getScreenshots(
+        @Query("hasTags") hasTags: Boolean? = null,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): NetworkState<ApiListResponse<PhotoResponse>>

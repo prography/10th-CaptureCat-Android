@@ -22,17 +22,15 @@ class ScreenshotRepositoryImpl @Inject constructor(
         return localDataSource.getScreenshots()
     }
 
-    override suspend fun getScreenshots(): Flow<List<UiScreenshotModel>> {
+    override suspend fun getScreenshots(hasTags: Boolean?): Flow<List<UiScreenshotModel>> {
         val token = userPrefs.accessToken
-        Timber.d("userPrefs.accessToken  ${token.first()}")
-
         return if (token.first().isNullOrBlank()) {
-            localDataSource.getScreenshots()
+            localDataSource.getScreenshots(hasTags)
         } else {
-            remoteDataSource.getScreenshots()
+            remoteDataSource.getScreenshots(hasTags)
                 .fold(
                     onSuccess = { screenshots ->
-                        Timber.d("Remote success: ${screenshots.size} screenshots")
+                        Timber.d("Remote success: ${screenshots.size} screenshots with hasTags=$hasTags")
                         flowOf(screenshots)
                     },
                     onFailure = { exception ->

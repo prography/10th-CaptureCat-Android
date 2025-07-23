@@ -5,10 +5,10 @@ import com.prography.domain.repository.ScreenshotRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetAllScreenshotsUseCase @Inject constructor(
+class GetUncategorizedScreenshotsUseCase @Inject constructor(
     private val repository: ScreenshotRepository
 ) {
-    suspend operator fun invoke(hasTags: Boolean? = null): Flow<List<UiScreenshotModel>> {
-        return repository.getScreenshots(hasTags = hasTags)
+    suspend operator fun invoke(): Flow<List<UiScreenshotModel>> {
+        return repository.getScreenshots(hasTags = false)
     }
 }
