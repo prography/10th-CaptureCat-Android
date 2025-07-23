@@ -44,4 +44,7 @@ sealed interface AppRoute : Route {
         @Serializable
         data object Withdraw : SettingRoute
     }
+
+    @Serializable
+    data object Upload : AppRoute
 }

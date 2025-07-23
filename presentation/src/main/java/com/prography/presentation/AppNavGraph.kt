@@ -19,6 +19,7 @@ import com.prography.organize.navigation.OrganizeRoute
 import com.prography.setting.route.SettingRoute
 import com.prography.setting.route.WithdrawRoute
 import com.prography.favorite.ui.route.FavoriteRoute
+import com.prography.home.ui.home.upload.UploadRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -54,6 +55,9 @@ fun AppNavGraph(
         }
         composable<AppRoute.Start> {
             StartRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.Upload> {
+            UploadRoute()
         }
         composable<AppRoute.Main> {
             MainRoute(navigationHelper = navigationHelper)

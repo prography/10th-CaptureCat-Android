@@ -1,6 +1,8 @@
 package com.prography.ui.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size // Ensure Modifier.size is properly imported
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -17,6 +19,7 @@ import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Gray06
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.PrimaryPress
+import com.prography.ui.theme.headline03Bold
 import kotlin.math.roundToInt
 
 enum class ButtonState {
@@ -41,11 +44,12 @@ fun UiPrimaryButton(
         ButtonState.Loading -> ButtonDefaults.buttonColors(containerColor = Primary)
     }
 
-    Button(
+    Button (
         onClick = { if (state == ButtonState.Enabled) onClick() },
-        modifier = modifier.height(55.dp),
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = colors,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
         enabled = state != ButtonState.Disabled && state != ButtonState.Loading
     ) {
         if (state == ButtonState.Loading) {
@@ -55,7 +59,7 @@ fun UiPrimaryButton(
                 text = text,
                 color = if (state == ButtonState.Disabled) Gray06 else Color.White,
                 fontSize = fontSize,
-                fontFamily = FontFamily(Font(R.font.prography_pretendard_semibold))
+                style = headline03Bold
             )
         }
     }
