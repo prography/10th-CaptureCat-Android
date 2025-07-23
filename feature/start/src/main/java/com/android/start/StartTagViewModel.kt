@@ -26,10 +26,13 @@ sealed class StartTagAction {
 @HiltViewModel
 class StartTagViewModel @Inject constructor(
     private val addRecentTagsUseCase: AddRecentTagsUseCase,
+    private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
     private val completeTutorialUseCase: CompleteTutorialUseCase
 ) : BaseComposeViewModel<StartTagState, Nothing, StartTagAction>(
     initialState = StartTagState()
 ) {
+
+    val isStartTagScreenShown: Flow<Boolean> = getStartTagScreenShownUseCase()
 
     init {
         // 화면 접근 시 튜토리얼 완료 처리
@@ -47,7 +50,6 @@ class StartTagViewModel @Inject constructor(
         val currentTags = currentState.selectedTags
         val maxTags = currentState.maxSelectableTags
 
-        Timber.d("toggleTag: $tag")
         if (tag in currentTags) {
             // 이미 선택된 태그면 제거
             updateState { copy(selectedTags = selectedTags - tag) }
@@ -55,6 +57,7 @@ class StartTagViewModel @Inject constructor(
             // 최대 개수 미만이면 추가
             updateState { copy(selectedTags = selectedTags + tag) }
         } else {
+            Timber.d("startTag: 최대 태그 개수 초과")
             // 5개 초과 시 토스트 메시지
             showToast("최대 ${maxTags}개까지만 선택할 수 있습니다.")
         }
@@ -72,7 +75,7 @@ class StartTagViewModel @Inject constructor(
         }
     }
 
-    private fun saveSelectedTags(tags: List<String>) {
+    fun saveSelectedTags(tags: List<String>) {
         viewModelScope.launch {
             try {
                 addRecentTagsUseCase(tags)
