@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingState
 import com.prography.ui.component.SelectableCard
@@ -45,7 +46,6 @@ fun SettingContent(
                 contentDescription = stringResource(id = UiString.setting_title),
                 modifier = Modifier.clickable { onAction(SettingAction.OnNavigateUp) }
             )
-            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(id = UiString.setting_title),
                 style = headline02Bold,
@@ -85,6 +85,15 @@ fun SettingContent(
                 onConfirm = { onAction(SettingAction.OnNavigateToWithdraw) }
             )
         }
+        UiCommonDialog(
+            isVisible = state.showResetDialog,
+            title = stringResource(UiString.setting_reset_dialog_title),
+            message = stringResource(UiString.setting_reset_dialog_message),
+            leftButtonText = stringResource(UiString.setting_cancel),
+            rightButtonText = stringResource(UiString.setting_ok),
+            onDismiss = { onAction(SettingAction.DismissResetDialog) },
+            onConfirm = { onAction(SettingAction.OnReset) }
+        )
     }
 }
 
@@ -96,14 +105,14 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 12.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Gray01)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -116,7 +125,8 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
                 UiPrimaryButton(
                     text = stringResource(UiString.setting_login_button),
                     onClick = { onAction(SettingAction.OnLogin) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 14.sp
                 )
             }
         }
@@ -137,8 +147,8 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
 
         SettingTitleMenuItem(text = stringResource(UiString.setting_help))
 
-        SettingMenuItem(text = stringResource(UiString.setting_how_to_use)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/terms"))
+        SettingMenuItem(text = stringResource(UiString.setting_screenshot_reset)) {
+            onAction(SettingAction.OnClickReset)
         }
     }
 }
@@ -181,15 +191,11 @@ private fun MemberSettingContent(
 
         SettingTitleMenuItem(text = stringResource(UiString.setting_help))
 
-        SettingMenuItem(text = stringResource(UiString.setting_how_to_use)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/terms"))
-        }
-
         SettingMenuItem(text = stringResource(UiString.setting_logout)) {
             onAction(SettingAction.OnClickLogout)
         }
 
-        SettingMenuItem(text = stringResource(UiString.setting_withdraw)) {
+        SettingMenuWithdrawItem(text = stringResource(UiString.setting_withdraw)) {
             onAction(SettingAction.OnClickWithdraw)
         }
     }
@@ -203,6 +209,22 @@ private fun SettingMenuItem(
     Text(
         text = text,
         style = body01Regular,
+        color = Text01,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun SettingMenuWithdrawItem(
+    text: String,
+    onClick: () -> Unit
+) {
+    Text(
+        text = text,
+        style = caption02Regular,
         color = Text01,
         modifier = Modifier
             .fillMaxWidth()

@@ -3,6 +3,7 @@ package com.prography.setting.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
 import com.prography.domain.usecase.user.GetNicknameUseCase
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingEffect
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val getAuthTokenUseCase: GetAuthTokenUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val getNicknameUseCase: GetNicknameUseCase
+    private val getNicknameUseCase: GetNicknameUseCase,
+    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
     initialState = SettingState()
 ) {
@@ -56,9 +58,18 @@ class SettingViewModel @Inject constructor(
 
             SettingAction.OnClickLogout -> updateState { copy(showLogoutDialog = true) }
             SettingAction.DismissLogoutDialog -> updateState { copy(showLogoutDialog = false) }
-
             SettingAction.OnClickWithdraw -> updateState { copy(showWithdrawDialog = true) }
             SettingAction.DismissWithdrawDialog -> updateState { copy(showWithdrawDialog = false) }
+            SettingAction.OnClickReset -> updateState { copy(showResetDialog = true) }
+            SettingAction.DismissResetDialog -> updateState { copy(showResetDialog = false) }
+            SettingAction.OnReset -> {
+                updateState { copy(showResetDialog = false) }
+
+                viewModelScope.launch {
+                    deleteAllScreenshotsUseCase()
+                    showToast("캡처캣의 데이터가 삭제 되었습니다.")
+                }
+            }
         }
     }
 

@@ -5,7 +5,8 @@ data class SettingState(
     val nickname: String? = null,
     val isLoading: Boolean = false,
     val showLogoutDialog: Boolean = false,
-    val showWithdrawDialog: Boolean = false
+    val showWithdrawDialog: Boolean = false,
+    val showResetDialog: Boolean = false
 )
 
 sealed class SettingEffect {
@@ -26,6 +27,9 @@ sealed class SettingAction {
 
     object OnClickLogout : SettingAction()
     object OnClickWithdraw : SettingAction()
+    object OnClickReset : SettingAction()
     object DismissLogoutDialog : SettingAction()
     object DismissWithdrawDialog : SettingAction()
+    object DismissResetDialog : SettingAction()
+    object OnReset : SettingAction()
 }
