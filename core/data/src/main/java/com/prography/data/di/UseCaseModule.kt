@@ -7,6 +7,7 @@ import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
@@ -76,4 +77,9 @@ object UseCaseModule {
     fun provideGetNicknameUseCase(
         repository: UserPreferenceRepository
     ): GetNicknameUseCase = GetNicknameUseCase(repository)
+
+    @Provides
+    fun provideDeleteAllScreenshotsUseCase(
+        repository: ScreenshotRepository
+    ): DeleteAllScreenshotsUseCase = DeleteAllScreenshotsUseCase(repository)
 }

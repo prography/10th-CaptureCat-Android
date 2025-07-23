@@ -36,6 +36,10 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         dao.delete(screenshot.toEntity())
     }
 
+    override suspend fun deleteAll() {
+        dao.deleteAll()
+    }
+
     override suspend fun deleteById(screenshotId: String) {
         dao.deleteById(screenshotId)
     }

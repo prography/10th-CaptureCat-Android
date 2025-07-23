@@ -10,6 +10,7 @@ interface ScreenshotLocalDataSource {
     suspend fun insert(screenshot: UiScreenshotModel)
     suspend fun update(screenshot: UiScreenshotModel)
     suspend fun delete(screenshot: UiScreenshotModel)
+    suspend fun deleteAll()
     suspend fun deleteById(screenshotId: String)
     suspend fun deleteTag(imageId: String, tagName: String)
     suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)

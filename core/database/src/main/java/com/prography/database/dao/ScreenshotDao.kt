@@ -24,4 +24,7 @@ interface ScreenshotDao {
 
     @Query("DELETE FROM screenshots WHERE id = :id")
     suspend fun deleteById(id: String)
+
+    @Query("DELETE FROM screenshots")
+    suspend fun deleteAll()
 }

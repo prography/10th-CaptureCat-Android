@@ -18,6 +18,10 @@ class ScreenshotRepositoryImpl @Inject constructor(
     private val userPrefs: UserPreferenceDataStore
 ) : ScreenshotRepository {
 
+    override suspend fun getLocalScreenshots(): Flow<List<UiScreenshotModel>> {
+        return localDataSource.getScreenshots()
+    }
+
     override suspend fun getScreenshots(): Flow<List<UiScreenshotModel>> {
         val token = userPrefs.accessToken
         Timber.d("userPrefs.accessToken  ${token.first()}")
@@ -75,6 +79,10 @@ class ScreenshotRepositoryImpl @Inject constructor(
 
     override suspend fun delete(screenshot: UiScreenshotModel) {
         localDataSource.delete(screenshot)
+    }
+
+    override suspend fun deleteAll() {
+        localDataSource.deleteAll()
     }
 
     override suspend fun deleteScreenshot(screenshotId: String) {
