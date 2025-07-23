@@ -1,3 +1,7 @@
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
@@ -37,12 +41,16 @@ fun AppNavGraph(
                         if (event.popUpTo) popUpTo(0) { inclusive = true }
                     }
                 }
+
                 is NavigationEvent.Up -> navController.popBackStack()
             }
         }
     }
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        navController = navController, startDestination = startDestination,
+        enterTransition = { slideInHorizontally { it }  },
+        popEnterTransition = { slideInHorizontally { -it } }) {
         composable<AppRoute.InitOnboarding> {
             InitOnboardingRoute(navigationHelper = navigationHelper)
         }
