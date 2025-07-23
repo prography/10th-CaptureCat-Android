@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.prography.ui.theme.Gray01
+import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Gray07
+import com.prography.ui.theme.Secondary
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.body01Regular
 
@@ -43,7 +45,7 @@ fun SelectableCard(
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(horizontal = 12.dp, vertical = 16.dp)
-            .clickable { onClick() },
+            .clickableWithoutRipple { onClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -56,8 +58,8 @@ fun SelectableCard(
             selected = selected,
             onClick = null, // 전체 Row 클릭으로 처리
             colors = RadioButtonDefaults.colors(
-                selectedColor = Color.Black,
-                unselectedColor = Color(0xFFDADADA)
+                selectedColor = Secondary,
+                unselectedColor = Gray04
             )
         )
     }

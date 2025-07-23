@@ -18,6 +18,7 @@ import com.prography.ui.theme.*
 @Composable
 fun UiBasicDialog(
     isVisible: Boolean,
+    title: String = "",
     info: String,
     confirmButtonText: String = "확인",
     onConfirm: () -> Unit
@@ -42,6 +43,15 @@ fun UiBasicDialog(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    if (title.isNotBlank()){
+                        Text(
+                            text = title,
+                            style = headline02Bold,
+                            color = Text01,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                        )
+                    }
                     Text(
                         text = info,
                         style = body02Regular,
