@@ -29,9 +29,11 @@ internal fun Project.configureBuildTypes(
                         }
                         create("staging") {
                             configureStagingBuildType(properties)
+                            resValue("string", "kakao_native_app_key", "\"kakao${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
                         }
                         release {
                             configureReleaseBuildType(commonExtension, properties)
+                            resValue("string", "kakao_native_app_key", "\"kakao${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
                         }
                     }
                 }
@@ -65,6 +67,8 @@ private fun BuildType.configureDebugBuildType(properties: Properties) {
 private fun BuildType.configureStagingBuildType(properties: Properties) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
     buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_DEV_URL")}\"")
+    buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
+    buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
 }
 
 private fun BuildType.configureReleaseBuildType(
@@ -73,6 +77,8 @@ private fun BuildType.configureReleaseBuildType(
 ) {
     buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
     buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_RELEASE_URL")}\"")
+    buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
+    buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
 
     isMinifyEnabled = true
     proguardFiles(
