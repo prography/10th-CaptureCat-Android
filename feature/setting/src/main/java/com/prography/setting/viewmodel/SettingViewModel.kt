@@ -54,6 +54,7 @@ class SettingViewModel @Inject constructor(
 
             is SettingAction.OnExternalLink -> {
                 Timber.d("Opening external link: ${action.url}")
+                emitEffect(SettingEffect.OpenExternalLink(action.url))
             }
 
             SettingAction.OnClickLogout -> updateState { copy(showLogoutDialog = true) }

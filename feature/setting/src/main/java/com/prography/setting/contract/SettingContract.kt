@@ -15,6 +15,7 @@ sealed class SettingEffect {
     object NavigateToWithdraw : SettingEffect()
     object ShowLogoutSuccess : SettingEffect()
     object ShowWithdrawSuccess : SettingEffect()
+    data class OpenExternalLink(val url: String) : SettingEffect()
 }
 
 sealed class SettingAction {

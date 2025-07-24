@@ -1,9 +1,13 @@
 package com.prography.setting.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.setting.contract.SettingEffect
 import com.prography.setting.viewmodel.SettingViewModel
+import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
@@ -15,6 +19,7 @@ fun SettingsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
+    val context = LocalContext.current
 
     // Handle effects
     LaunchedEffect(Unit) {
@@ -26,6 +31,14 @@ fun SettingsScreen(
                 SettingEffect.ShowLogoutSuccess -> onNavigateToStorage()
                 SettingEffect.ShowWithdrawSuccess -> {
                     // 회원 탈퇴 완료 시 effect
+                }
+                is SettingEffect.OpenExternalLink -> {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        // 브라우저가 없거나 URL이 잘못된 경우 처리
+                    }
                 }
             }
         }

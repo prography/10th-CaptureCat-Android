@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +29,15 @@ fun SettingContent(
     state: SettingState,
     onAction: (SettingAction) -> Unit
 ) {
+    val context = LocalContext.current
+    val versionName = remember {
+        try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "-"
+        } catch (e: Exception) {
+            "-"
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,10 +66,11 @@ fun SettingContent(
         if (state.isLoggedIn) {
             MemberSettingContent(
                 nickname = state.nickname ?: "사용자",
-                onAction = onAction
+                onAction = onAction,
+                versionName = versionName
             )
         } else {
-            GuestSettingContent(onAction = onAction)
+            GuestSettingContent(onAction = onAction, versionName = versionName)
         }
 
         if (state.showLogoutDialog) {
@@ -98,7 +109,10 @@ fun SettingContent(
 }
 
 @Composable
-private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
+private fun GuestSettingContent(
+    onAction: (SettingAction) -> Unit,
+    versionName: String
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -136,13 +150,16 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
         SettingTitleMenuItem(text = stringResource(UiString.setting_service_info))
 
         SettingMenuItem(text = stringResource(UiString.setting_privacy_policy)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/privacy"))
+            onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd"))
         }
         SettingMenuItem(text = stringResource(UiString.setting_terms_of_service)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/terms"))
+            onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
         }
-        SettingMenuItem(text = stringResource(UiString.setting_version_info)) {}
-
+        SettingMenuItem(
+            text = stringResource(UiString.setting_version_info),
+            trailing = { Text(text = versionName, style = caption02Regular, color = Text03) },
+            onClick = {}
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         SettingTitleMenuItem(text = stringResource(UiString.setting_help))
@@ -156,7 +173,8 @@ private fun GuestSettingContent(onAction: (SettingAction) -> Unit) {
 @Composable
 private fun MemberSettingContent(
     nickname: String,
-    onAction: (SettingAction) -> Unit
+    onAction: (SettingAction) -> Unit,
+    versionName: String
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -180,12 +198,16 @@ private fun MemberSettingContent(
         SettingTitleMenuItem(text = stringResource(UiString.setting_service_info))
 
         SettingMenuItem(text = stringResource(UiString.setting_privacy_policy)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/privacy"))
+            onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd"))
         }
         SettingMenuItem(text = stringResource(UiString.setting_terms_of_service)) {
-            onAction(SettingAction.OnExternalLink("https://example.com/terms"))
+            onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
         }
-        SettingMenuItem(text = stringResource(UiString.setting_version_info)) {}
+        SettingMenuItem(
+            text = stringResource(UiString.setting_version_info),
+            trailing = { Text(text = versionName, style = caption02Regular, color = Text03) },
+            onClick = {}
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -204,17 +226,24 @@ private fun MemberSettingContent(
 @Composable
 private fun SettingMenuItem(
     text: String,
+    trailing: @Composable (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
-    Text(
-        text = text,
-        style = body01Regular,
-        color = Text01,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 16.dp)
-    )
+            .clickable(enabled = onClick != {}, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = body01Regular,
+            color = Text01
+        )
+        if (trailing != null) trailing()
+    }
 }
 
 @Composable
