@@ -13,7 +13,8 @@ data class ScreenshotState(
     val isLoading: Boolean = false,
     val hasMoreData: Boolean = true,
     val currentPage: Int = 0,
-    val pageSize: Int = 20
+    val pageSize: Int = 20,
+    val selectedItems: Set<String> = emptySet() // Paging3에서 선택된 아이템 ID 추적
 )
 
 data class ScreenshotItem(

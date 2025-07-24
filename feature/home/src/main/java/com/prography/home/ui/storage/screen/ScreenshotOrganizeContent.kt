@@ -1,20 +1,16 @@
 package com.prography.home.ui.storage.screen
 
 import android.app.Activity
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,15 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.blur
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.prography.home.ui.storage.contract.ScreenshotAction
-import com.prography.home.ui.storage.contract.ScreenshotItem
 import com.prography.home.ui.storage.contract.ScreenshotState
+import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.ui.R
 import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.component.UiLabelAddButton
@@ -49,16 +46,17 @@ import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.subhead02Bold
 import com.prography.ui.theme.headline02Bold
-import com.prography.ui.theme.body01Regular
 import com.prography.ui.theme.body02Regular
 import timber.log.Timber
 
 @Composable
 fun ScreenshotOrganizeContent(
     state: ScreenshotState,
-    onAction: (ScreenshotAction) -> Unit
+    onAction: (ScreenshotAction) -> Unit,
+    viewModel: ScreenshotViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
 
     val deleteLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -90,7 +88,7 @@ fun ScreenshotOrganizeContent(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${state.groupedScreenshots.values.flatten().size}개의 스크린샷이 있어요",
+                        text = "${pagingItems.itemCount}개의 스크린샷이 있어요",
                         style = body02Regular,
                         color = Text01
                     )
@@ -103,23 +101,26 @@ fun ScreenshotOrganizeContent(
             }
         }
 
-        // 체크박스/삭제 영역과 그리드 (블러 처리됨)
+        // 메인 컨텐츠
         Box(
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         ) {
-            LazyColumn (
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(if (!state.isLoggedIn) Modifier.blur(12.dp) else Modifier)
+                    .then(if (!state.isLoggedIn) Modifier.blur(12.dp) else Modifier),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                // 선택 체크박스 영역 (스크롤 가능 + sticky 고정도 가능)
-                item {
+                // 전체 선택/삭제 헤더
+                item(span = { GridItemSpan(3) }) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                            .padding(vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -127,8 +128,10 @@ fun ScreenshotOrganizeContent(
                             text = "전체 선택",
                             isChecked = state.isAllSelected,
                             onCheckedChange = {
-                                val action =
-                                    if (state.isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll
+                                val action = if (state.isAllSelected)
+                                    ScreenshotAction.CancelSelection
+                                else
+                                    ScreenshotAction.SelectAll
                                 onAction(action)
                             }
                         )
@@ -143,51 +146,80 @@ fun ScreenshotOrganizeContent(
                     }
                 }
 
-                // 이미지 그리드 영역
-                item {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 0.dp, max = 9999.dp), // 확장 가능하게
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                        userScrollEnabled = false // ← 스크롤은 LazyColumn이 담당
-                    ) {
-                        items(state.groupedScreenshots.values.flatten()) { screenshot ->
-                            Box(
-                                modifier = Modifier
-                                    .border(
-                                        width = 2.dp,
-                                        color = if (screenshot.isSelected) Primary else Gray04
-                                    )
-                                    .fillMaxWidth()
-                                    .height(180.dp)
-                                    .clickable {
-                                        onAction(ScreenshotAction.ToggleSelect(screenshot.id))
-                                    }
-                            ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(screenshot.uri),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
+                // Paging된 스크린샷들
+                items(count = pagingItems.itemCount) { index ->
+                    pagingItems[index]?.let { screenshot ->
+                        val isSelected = state.selectedItems.contains(screenshot.id)
 
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (screenshot.isSelected)
-                                            R.drawable.ic_check_box_able
-                                        else
-                                            R.drawable.ic_check_box_unchecked
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart)
-                                        .padding(4.dp),
-                                    tint = Color.Unspecified
+                        Box(
+                            modifier = Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = if (isSelected) Primary else Gray04
                                 )
-                            }
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .clickable {
+                                    onAction(ScreenshotAction.ToggleSelect(screenshot.id))
+                                }
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(screenshot.uri),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            Icon(
+                                painter = painterResource(
+                                    id = if (isSelected)
+                                        R.drawable.ic_check_box_able
+                                    else
+                                        R.drawable.ic_check_box_unchecked
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(4.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
+                    }
+                }
+
+                // 로딩 인디케이터
+                if (pagingItems.loadState.append is LoadState.Loading) {
+                    item(span = { GridItemSpan(3) }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Primary
+                            )
+                        }
+                    }
+                }
+
+                // 에러 상태
+                if (pagingItems.loadState.append is LoadState.Error) {
+                    item(span = { GridItemSpan(3) }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "더 불러오기 실패",
+                                color = Color.Red,
+                                modifier = Modifier.clickable {
+                                    pagingItems.retry()
+                                }
+                            )
                         }
                     }
                 }
@@ -230,14 +262,16 @@ fun ScreenshotOrganizeContent(
         }
     }
 
-    // Show DeleteConfirmDialog only if at least one screenshot is selected, otherwise show UiBasicDialog
+    // 삭제 확인 다이얼로그
     DeleteConfirmDialog(
         isVisible = state.showDeleteDialog && state.selectedCount > 0,
         selectedCount = state.selectedCount,
         onDismiss = { onAction(ScreenshotAction.DismissDeleteDialog) },
         onConfirm = {
-            val selectedItems = state.groupedScreenshots.values.flatten()
-                .filter { it.isSelected }
+            val selectedIds = state.selectedItems.toList()
+            val selectedItems = (0 until pagingItems.itemCount).mapNotNull { index ->
+                pagingItems[index]?.takeIf { it.id in selectedIds }
+            }
 
             DeleteHelper.deleteScreenshots(
                 context = context,
@@ -262,7 +296,7 @@ fun ScreenshotOrganizeContent(
 @Composable
 fun ScreenshotOrganizeContentPreview() {
     val fakeScreenshots = List(9) { index ->
-        ScreenshotItem(
+        com.prography.home.ui.storage.contract.ScreenshotItem(
             id = "id_$index",
             uri = android.net.Uri.parse("file:///fake_path_to_file_$index.jpg"),
             dateGroup = "",
@@ -271,7 +305,7 @@ fun ScreenshotOrganizeContentPreview() {
         )
     }
 
-    val fakeState = ScreenshotState(
+    val fakeState = com.prography.home.ui.storage.contract.ScreenshotState(
         groupedScreenshots = mapOf("" to fakeScreenshots), // Use flat list
         totalCount = fakeScreenshots.size,
         selectedCount = fakeScreenshots.count { it.isSelected },

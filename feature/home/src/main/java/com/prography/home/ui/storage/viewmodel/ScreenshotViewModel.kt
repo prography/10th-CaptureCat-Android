@@ -4,15 +4,21 @@ import android.app.Application
 import android.content.ContentUris
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.home.ui.storage.contract.*
+import com.prography.home.ui.storage.source.ScreenshotOrganizePagingSource
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -30,64 +36,27 @@ class ScreenshotViewModel @Inject constructor(
 ) {
     private val dateFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.KOREA)
 
+    // Paging3 Flow 추가
+    val screenshotsPagingFlow: Flow<PagingData<ScreenshotItem>> =
+        Pager(
+            config = PagingConfig(pageSize = 20, initialLoadSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { ScreenshotOrganizePagingSource(app) }
+        ).flow.cachedIn(viewModelScope)
+
     init {
-        loadScreenshots()
+        loadInitialData()
     }
 
     fun refreshScreenshots() {
-        loadScreenshots()
+        loadInitialData()
     }
 
-    private fun loadScreenshots() {
+    private fun loadInitialData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val items = mutableListOf<ScreenshotItem>()
-            val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            val projection = arrayOf(
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATE_ADDED,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.Media.DISPLAY_NAME
-            )
-            val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
-            val selectionArgs = arrayOf("Screenshots")
-            val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
-
-            val cursor = app.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
-            cursor?.use {
-                val idCol = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-                val dateCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
-                val nameCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-
-                while (it.moveToNext()) {
-                    val id = it.getLong(idCol)
-                    val dateSeconds = it.getLong(dateCol)
-                    val fileName = it.getString(nameCol)
-
-                    val uriItem = ContentUris.withAppendedId(uri, id)
-                    val dateStr = dateFormat.format(Date(dateSeconds * 1000))
-
-                    items.add(
-                        ScreenshotItem(
-                            id = id.toString(),
-                            uri = uriItem,
-                            dateGroup = dateStr,
-                            isSelected = false,
-                            fileName = fileName
-                        )
-                    )
-                }
-            } ?: Timber.d("ScreenshotViewModel", "Cursor is null - no access to media store")
-
-            val grouped = items.groupBy { it.dateGroup }
-            Timber.d("ScreenshotViewModel", "Loading completed: ${items.size} screenshots found")
-
             updateState {
                 copy(
-                    groupedScreenshots = grouped,
-                    totalCount = items.size,
-                    selectedCount = 0,
-                    isSelectionMode = false,
-                    isAllSelected = false,
+                    currentPage = 0,
+                    hasMoreData = true,
                     isLoggedIn = checkLoginStatusUseCase()
                 )
             }
@@ -97,23 +66,24 @@ class ScreenshotViewModel @Inject constructor(
     override fun handleAction(action: ScreenshotAction) {
         when (action) {
             is ScreenshotAction.ToggleSelect -> {
-                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
-                    list.map {
-                        if (it.id == action.id) it.copy(isSelected = !it.isSelected) else it
+                // 선택된 아이템 관리는 별도로 처리
+                val currentSelected = currentState.selectedItems
+                val updatedSelected = if (currentSelected.contains(action.id)) {
+                    currentSelected - action.id
+                } else {
+                    if (currentSelected.size >= 20) {
+                        showToast("최대 20장까지 선택할 수 있어요.")
+                        return
                     }
+                    currentSelected + action.id
                 }
-                val flat = updated.values.flatten()
-                val count = flat.count { it.isSelected }
-                if (count > 20) {
-                    showToast("최대 20장까지 선택할 수 있어요.")
-                    return // 더 이상 처리하지 않음
-                }
+
                 updateState {
                     copy(
-                        groupedScreenshots = updated,
-                        selectedCount = count,
-                        isSelectionMode = count > 0,
-                        isAllSelected = count == totalCount
+                        selectedItems = updatedSelected,
+                        selectedCount = updatedSelected.size,
+                        isSelectionMode = updatedSelected.isNotEmpty(),
+                        isAllSelected = false // 개별 선택이므로 전체선택은 해제
                     )
                 }
             }
@@ -123,31 +93,14 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.SelectAll -> {
-                val totalCount = currentState.totalCount
-                if (totalCount > 20) {
-                    showToast("최대 20장까지 선택할 수 있어요.")
-                    return // 초과 시 선택 중단
-                }
-                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
-                    list.map { it.copy(isSelected = true) }
-                }
-                updateState {
-                    copy(
-                        groupedScreenshots = updated,
-                        selectedCount = totalCount,
-                        isSelectionMode = true,
-                        isAllSelected = true
-                    )
-                }
+                // TODO: 현재 로드된 모든 아이템 선택 (최대 20개)
+                showToast("전체 선택은 현재 화면의 최대 20개까지만 가능합니다.")
             }
 
             ScreenshotAction.CancelSelection -> {
-                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
-                    list.map { it.copy(isSelected = false) }
-                }
                 updateState {
                     copy(
-                        groupedScreenshots = updated,
+                        selectedItems = emptySet(),
                         selectedCount = 0,
                         isSelectionMode = false,
                         isAllSelected = false
@@ -160,16 +113,10 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.ConfirmDelete -> {
-                val selectedItems = currentState.groupedScreenshots.values.flatten().filter { it.isSelected }
-                val deletedIds = selectedItems.map { it.id }
-
-                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
-                    list.filterNot { it.id in deletedIds }
-                }
-
+                // 삭제 후 선택 초기화
                 updateState {
                     copy(
-                        groupedScreenshots = updated,
+                        selectedItems = emptySet(),
                         selectedCount = 0,
                         isSelectionMode = false,
                         isAllSelected = false,
@@ -178,36 +125,26 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
-
             ScreenshotAction.DismissDeleteDialog -> {
                 updateState { copy(showDeleteDialog = false) }
             }
 
             ScreenshotAction.OrganizeSelected -> {
-                // 선택된 스크린샷들을 정리하기 화면으로 전달
-                val selectedItems = currentState.groupedScreenshots.values.flatten()
-                    .filter { it.isSelected }
-
-                if (selectedItems.isEmpty()) {
+                val selectedIds = currentState.selectedItems.toList()
+                if (selectedIds.isEmpty()) {
                     showToast("정리할 스크린샷을 선택해주세요")
-                    return@handleAction
+                    return
                 }
 
-                val selectedIds = selectedItems.map { it.id }
-
-                // 정리하기 화면으로 이동 (ID만 전달)
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedIds))
                 )
             }
 
             ScreenshotAction.OrganizeCompleted -> {
-                val updated = currentState.groupedScreenshots.mapValues { (_, list) ->
-                    list.map { it.copy(isSelected = false) }
-                }
                 updateState {
                     copy(
-                        groupedScreenshots = updated,
+                        selectedItems = emptySet(),
                         selectedCount = 0,
                         isSelectionMode = false,
                         isAllSelected = false
@@ -216,11 +153,15 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.RefreshScreenshots -> {
-                loadScreenshots()
+                refreshScreenshots()
             }
 
             ScreenshotAction.NavigateToLogin -> {
                 navigationHelper.navigate(NavigationEvent.To(AppRoute.Login))
+            }
+
+            ScreenshotAction.LoadMoreScreenshots -> {
+                // Paging3가 자동으로 처리하므로 빈 구현
             }
         }
     }
