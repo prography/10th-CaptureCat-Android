@@ -1,11 +1,14 @@
 package com.prography.home.ui.storage.source
 
+import android.Manifest
 import android.app.Application
 import android.content.ContentUris
+import android.content.pm.PackageManager
+import android.os.Build
 import android.provider.MediaStore
+import androidx.core.content.ContextCompat
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.storage.contract.ScreenshotItem
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -19,6 +22,25 @@ class ScreenshotOrganizePagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ScreenshotItem> {
         return try {
+            // 권한 체크
+            val permission = when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> Manifest.permission.READ_MEDIA_IMAGES
+                else -> Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+
+            if (ContextCompat.checkSelfPermission(
+                    app,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.w("Permission not granted: $permission")
+                return LoadResult.Page(
+                    data = emptyList(),
+                    prevKey = null,
+                    nextKey = null
+                )
+            }
+
             val page = params.key ?: 0
             val pageSize = 20 // 고정된 페이지 크기
             
@@ -34,8 +56,8 @@ class ScreenshotOrganizePagingSource(
             )
             val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
             val selectionArgs = arrayOf("Screenshots")
-            val sortOrder =
-                "${MediaStore.Images.Media.DATE_ADDED} DESC LIMIT $pageSize OFFSET ${page * pageSize}"
+            // LIMIT과 OFFSET 제거 - 전체 데이터를 가져온 후 페이징 처리
+            val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
             val cursor =
                 app.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
@@ -44,6 +66,7 @@ class ScreenshotOrganizePagingSource(
                 val dateCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
                 val nameCol = it.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
 
+                val allItems = mutableListOf<ScreenshotItem>()
                 while (it.moveToNext()) {
                     val id = it.getLong(idCol)
                     val dateSeconds = it.getLong(dateCol)
@@ -52,7 +75,7 @@ class ScreenshotOrganizePagingSource(
                     val uriItem = ContentUris.withAppendedId(uri, id)
                     val dateStr = dateFormat.format(Date(dateSeconds * 1000))
 
-                    items.add(
+                    allItems.add(
                         ScreenshotItem(
                             id = id.toString(),
                             uri = uriItem,
@@ -61,6 +84,14 @@ class ScreenshotOrganizePagingSource(
                             fileName = fileName
                         )
                     )
+                }
+
+                // 페이징 처리
+                val startIndex = page * pageSize
+                val endIndex = minOf(startIndex + pageSize, allItems.size)
+
+                if (startIndex < allItems.size) {
+                    items.addAll(allItems.subList(startIndex, endIndex))
                 }
             }
 

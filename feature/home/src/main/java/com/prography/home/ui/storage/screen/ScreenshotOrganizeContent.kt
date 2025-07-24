@@ -1,6 +1,9 @@
 package com.prography.home.ui.storage.screen
 
 import android.app.Activity
+import android.content.Context
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -11,42 +14,42 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.blur
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.rememberAsyncImagePainter
 import com.prography.home.ui.storage.contract.ScreenshotAction
 import com.prography.home.ui.storage.contract.ScreenshotState
+import com.prography.home.ui.storage.permission.DeleteHelper
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.ui.R
-import com.prography.ui.component.DeleteConfirmDialog
-import com.prography.ui.component.UiLabelAddButton
-import com.prography.ui.component.UiCheckBox
-import com.prography.ui.component.UiButtonText
-import com.prography.ui.component.UiBasicDialog
 import com.prography.ui.component.ButtonSize
-import com.prography.ui.theme.Primary
-import com.prography.ui.theme.Gray04
-import coil3.compose.rememberAsyncImagePainter
-import com.prography.home.ui.storage.permission.DeleteHelper
+import com.prography.ui.component.DeleteConfirmDialog
+import com.prography.ui.component.UiBasicDialog
+import com.prography.ui.component.UiButtonText
+import com.prography.ui.component.UiCheckBox
+import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.component.clickableWithoutRipple
+import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.OverlayDim
+import com.prography.ui.theme.Primary
 import com.prography.ui.theme.PureWhite
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
-import com.prography.ui.theme.subhead02Bold
-import com.prography.ui.theme.headline02Bold
 import com.prography.ui.theme.body02Regular
+import com.prography.ui.theme.headline02Bold
+import com.prography.ui.theme.subhead02Bold
 import timber.log.Timber
 
 @Composable
@@ -57,6 +60,13 @@ fun ScreenshotOrganizeContent(
 ) {
     val context = LocalContext.current
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
+
+    // 전체 스크린샷 개수를 별도로 가져오기
+    var totalScreenshotCount by remember { mutableStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        totalScreenshotCount = getTotalScreenshotCount(context)
+    }
 
     val deleteLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -88,7 +98,7 @@ fun ScreenshotOrganizeContent(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${pagingItems.itemCount}개의 스크린샷이 있어요",
+                        text = "${totalScreenshotCount}개의 스크린샷이 있어요",
                         style = body02Regular,
                         color = Text01
                     )
@@ -112,7 +122,7 @@ fun ScreenshotOrganizeContent(
                     .then(if (!state.isLoggedIn) Modifier.blur(12.dp) else Modifier),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 // 전체 선택/삭제 헤더
                 item(span = { GridItemSpan(3) }) {
@@ -120,7 +130,7 @@ fun ScreenshotOrganizeContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(vertical = 10.dp),
+                            .padding(vertical = 10.dp, horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -148,7 +158,8 @@ fun ScreenshotOrganizeContent(
 
                 // Paging된 스크린샷들
                 items(count = pagingItems.itemCount) { index ->
-                    pagingItems[index]?.let { screenshot ->
+                    val screenshot = pagingItems[index]
+                    if (screenshot != null) {
                         val isSelected = state.selectedItems.contains(screenshot.id)
 
                         Box(
@@ -290,6 +301,24 @@ fun ScreenshotOrganizeContent(
         confirmButtonText = "확인",
         onConfirm = { onAction(ScreenshotAction.DismissDeleteDialog) }
     )
+}
+
+// 전체 스크린샷 개수만 가져오는 함수
+private fun getTotalScreenshotCount(context: Context): Int {
+    return try {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
+        val selectionArgs = arrayOf("Screenshots")
+
+        val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+        val count = cursor?.count ?: 0
+        cursor?.close()
+        count
+    } catch (e: Exception) {
+        Timber.e(e, "Error getting total screenshot count")
+        0
+    }
 }
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
