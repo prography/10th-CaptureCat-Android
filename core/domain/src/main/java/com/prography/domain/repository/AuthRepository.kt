@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     suspend fun socialLogin(provider: String, idToken: String): Result<LoginResult>
     suspend fun logout(): Result<Unit>
+    suspend fun withdraw(): Result<Unit>
     fun isLoggedIn(): Boolean
     suspend fun completeTutorial(): Result<Unit>
 

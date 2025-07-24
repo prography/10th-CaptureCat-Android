@@ -24,4 +24,9 @@ interface AuthService {
     suspend fun logout(
         @Header("Refresh-Token") refreshTokenWithBearer: String // Should include "Bearer " prefix
     ): Response<AuthResponse>
+
+    @DELETE("/v1/user/withdraw")
+    suspend fun withdraw(
+        @Header("Authorization") accessTokenWithBearer: String // Should include "Bearer " prefix
+    ): Response<AuthResponse>
 }

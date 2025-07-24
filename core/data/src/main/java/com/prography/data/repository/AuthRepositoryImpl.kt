@@ -107,6 +107,27 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun withdraw(): Result<Unit> {
+        return try {
+            val accessToken = tokenManager.getAccessToken()
+            if (accessToken.isNullOrBlank()) {
+                return Result.failure(Exception("액세스 토큰이 없습니다"))
+            }
+
+            val response = authService.withdraw("Bearer $accessToken")
+
+            if (response.isSuccessful) {
+                tokenManager.clearTokens()
+                userPreferenceRepository.setNickname("")
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("회원탈퇴에 실패했습니다"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun isLoggedIn(): Boolean {
         return !tokenManager.getAccessToken().isNullOrBlank()
     }

@@ -64,14 +64,6 @@ fun CompletionMessage(
                 .padding(bottom = 26.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "광고 배너",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp),
-                textAlign = TextAlign.Center
-            )
-
             UiPrimaryButton(
                 onClick = onNext,
                 text = "다음",

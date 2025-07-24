@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -65,6 +66,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 getScreenshotsUseCase().collect { screenshots ->
+                    Timber.d("getScreenshotsUseCase: ${screenshots.size}")
                     updateState {
                         copy(screenshots = screenshots)
                     }
