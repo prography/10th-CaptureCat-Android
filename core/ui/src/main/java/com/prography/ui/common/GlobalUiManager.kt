@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.prography.ui.theme.Error
 import com.prography.ui.theme.OverlayDim
+import com.prography.ui.theme.Primary
 import com.prography.ui.theme.subhead02Bold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,13 +125,12 @@ fun GlobalUiHandler() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f))
                 .pointerInput(Unit) {},
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(50.dp)
+                color = Color.Black,
+                modifier = Modifier.size(48.dp)
             )
         }
     }

@@ -206,7 +206,7 @@ class OrganizeViewModel @Inject constructor(
     private fun saveScreenshots() {
         val screenshotsToSave = currentState.screenshots
         viewModelScope.launch {
-            updateState { copy(isLoading = true) }
+            showLoading()
             runCatching {
                 val uiScreenshots = screenshotsToSave.map { screenshot ->
                     val now = Date()
@@ -229,9 +229,10 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                hideLoading()
                 updateState { copy(showCompletionMessage = true) }
             }.onFailure {
-                updateState { copy(isLoading = false) }
+                hideLoading()
             }
         }
     }

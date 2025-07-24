@@ -1,6 +1,7 @@
 package com.prography.organize.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,31 +34,37 @@ fun CompletionMessage(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "${screenshotCount}장 정리 완료!",
-            style = headline01Bold,
-            color = Text01,
-            modifier = Modifier.padding(top = 150.dp, bottom = 8.dp)
-        )
+        // 상단 비워두고 중앙에 정렬된 콘텐츠
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f), // 화면 중간을 차지
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "${screenshotCount}장 정리 완료!",
+                style = headline01Bold,
+                color = Text01,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
-        Text(
-            text = "즐겨찾기한 스크린샷은\n홈에서 더 자주 만날 수 있어요.",
-            style = body01Regular.copy(lineHeight = 25.92.sp),
-            color = Text02,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+            Text(
+                text = "즐겨찾기한 스크린샷은\n홈에서 더 자주 만날 수 있어요.",
+                style = body01Regular.copy(lineHeight = 25.92.sp),
+                color = Text02,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
-        Image(
-            painter = painterResource(id = com.prography.ui.R.drawable.ic_organize_complete),
-            contentDescription = "Completion Icon",
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+            Image(
+                painter = painterResource(id = com.prography.ui.R.drawable.ic_organize_complete),
+                contentDescription = "Completion Icon",
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
-        // 여백 추가해서 아래로 밀기
-        Spacer(modifier = Modifier.weight(1f))
-
-        // 하단 고정 광고 배너 & 버튼
+        // 하단 고정 영역
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,6 +79,7 @@ fun CompletionMessage(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
