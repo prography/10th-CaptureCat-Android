@@ -82,8 +82,8 @@ fun ImageDetailContent(
         if (state.screenshots.isNotEmpty() && !state.isLoading) {
             val targetPage = state.currentIndex.coerceIn(0, state.screenshots.size - 1)
             if (pagerState.currentPage != targetPage) {
-                println("Animating to page: $targetPage, current pager page: ${pagerState.currentPage}")
-                pagerState.animateScrollToPage(targetPage)
+                println("Scrolling to page: $targetPage, current pager page: ${pagerState.currentPage}")
+                pagerState.scrollToPage(targetPage)
             }
         }
     }
