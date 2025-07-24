@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.prography.ui.R
 import com.prography.ui.component.ButtonState
@@ -35,7 +36,8 @@ fun StartChooseScreen(
     maxSelectableImages: Int = 10,
     onFinishSelection: (List<ScreenshotItem>) -> Unit
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
+    val state by viewModel.uiState.collectAsState() // 선택 상태 등
 
     Box(
         modifier = Modifier
@@ -45,18 +47,15 @@ fun StartChooseScreen(
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
         ) {
             item(span = { GridItemSpan(3) }) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = "시작하기 전에\n${state.screenshots.size}장의 스크린샷이 있어요",
+                        text = "시작하기 전에\n${state.totalCount}장의 스크린샷이 있어요",
                         style = headline02Bold,
                         color = Text01
                     )
@@ -69,44 +68,42 @@ fun StartChooseScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
-
-            items(state.screenshots, key = { it.id }) { screenshot ->
-                val isSelected = state.selectedScreenshots.contains(screenshot)
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(45f / 76f)
-                        .border(
-                            width = 2.dp,
-                            color = if (isSelected) Primary else Gray04
-                        )
-                        .clickable {
-                            viewModel.sendAction(
-                                StartChooseAction.ToggleSelection(screenshot, maxSelectableImages)
-                            )
-                        }
-                ) {
-                    AsyncImage(
-                        model = screenshot.uri,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Icon(
-                        painter = painterResource(
-                            id = if (isSelected) R.drawable.ic_check_box_able
-                            else R.drawable.ic_check_box_unchecked
-                        ),
-                        contentDescription = null,
+            // Paging된 스크린샷들
+            items(pagingItems.itemCount) { index ->
+                pagingItems[index]?.let { screenshot ->
+                    val isSelected = state.selectedScreenshots.contains(screenshot)
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(4.dp),
-                        tint = Color.Unspecified
-                    )
+                            .aspectRatio(45f / 76f)
+                            .border(width = 2.dp, color = if (isSelected) Primary else Gray04)
+                            .clickable {
+                                viewModel.sendAction(
+                                    StartChooseAction.ToggleSelection(
+                                        screenshot,
+                                        maxSelectable = maxSelectableImages
+                                    )
+                                )
+                            }
+                    ) {
+                        AsyncImage(
+                            model = screenshot.uri,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Icon(
+                            painter = painterResource(id = if (isSelected) R.drawable.ic_check_box_able else R.drawable.ic_check_box_unchecked),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(4.dp),
+                            tint = Color.Unspecified
+                        )
+                    }
                 }
             }
         }
-
+        // 하단 버튼은 기존 그대로!
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
