@@ -8,6 +8,11 @@ interface ScreenshotRepository {
 
     suspend fun getLocalScreenshots(): Flow<List<UiScreenshotModel>>
     suspend fun getScreenshots(hasTags: Boolean? = null): Flow<List<UiScreenshotModel>>
+    suspend fun getScreenshots(
+        page: Int,
+        pageSize: Int,
+        hasTags: Boolean? = null
+    ): List<UiScreenshotModel>
     suspend fun getScreenshotById(screenshotId: String): UiScreenshotModel?
     suspend fun insert(screenshot: UiScreenshotModel)
     suspend fun bulkInsert(screenshots: List<UiScreenshotModel>)

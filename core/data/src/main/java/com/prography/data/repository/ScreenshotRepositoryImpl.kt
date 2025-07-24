@@ -41,6 +41,34 @@ class ScreenshotRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getScreenshots(
+        page: Int,
+        pageSize: Int,
+        hasTags: Boolean?
+    ): List<UiScreenshotModel> {
+        val token = userPrefs.accessToken.first()
+        return if (token.isNullOrBlank()) {
+            // 로컬 모드: 전체 데이터를 가져와서 페이징 처리
+            val allScreenshots = localDataSource.getScreenshots(hasTags).first()
+            val offset = page * pageSize
+            val result = allScreenshots.drop(offset).take(pageSize)
+            Timber.d("Local paged success: ${result.size} screenshots (page=$page, size=$pageSize, total=${allScreenshots.size})")
+            result
+        } else {
+            val allScreenshots = remoteDataSource.getScreenshots(
+                page = page,
+                size = pageSize)
+                .fold(
+                    onSuccess = { screenshots -> screenshots },
+                    onFailure = { exception ->
+                        Timber.e(exception, "Remote failure")
+                        throw exception
+                    }
+                )
+            allScreenshots
+        }
+    }
+
     override suspend fun insert(screenshot: UiScreenshotModel) {
         localDataSource.insert(screenshot)
     }

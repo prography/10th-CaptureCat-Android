@@ -4,8 +4,6 @@ import com.prography.domain.model.UiScreenshotModel
 
 // Define Actions
 sealed class HomeAction {
-    object LoadScreenshots : HomeAction()
-    data class SelectTag(val tag: String) : HomeAction()
     object NavigateToSettings : HomeAction()
     object NavigateToFavorite : HomeAction()
     object NavigateToStorage : HomeAction()
@@ -21,6 +19,5 @@ sealed class HomeEffect {
 // Define UI State
 data class HomeState(
     val screenshots: List<UiScreenshotModel> = emptyList(),
-    val favoriteScreenshots: List<UiScreenshotModel> = emptyList(),
-    val selectedTag: String = "전체"
+    val favoriteScreenshots: List<UiScreenshotModel> = emptyList()
 )

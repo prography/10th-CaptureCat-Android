@@ -9,7 +9,11 @@ data class ScreenshotState(
     val totalCount: Int = 0,
     val isAllSelected: Boolean = false,
     val showDeleteDialog: Boolean = false,
-    val isLoggedIn: Boolean = false
+    val isLoggedIn: Boolean = false,
+    val isLoading: Boolean = false,
+    val hasMoreData: Boolean = true,
+    val currentPage: Int = 0,
+    val pageSize: Int = 20
 )
 
 data class ScreenshotItem(

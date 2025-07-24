@@ -6,11 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeState
@@ -20,42 +15,72 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import com.prography.ui.theme.caption01SemiBold
 import com.prography.ui.component.UiEmptyState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.platform.LocalContext
 import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
+import com.prography.ui.theme.Primary
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.runtime.LaunchedEffect
 import com.prography.ui.component.clickableWithoutRipple
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.LoadState
 
 @Composable
 fun HomeContent(
     state: HomeState,
-    onAction: (HomeAction) -> Unit
+    onAction: (HomeAction) -> Unit,
+    pagingItems: LazyPagingItems<UiScreenshotModel>
 ) {
+    // 초기 로딩 중인지 확인
+    val isInitialLoading = pagingItems.loadState.refresh is LoadState.Loading
+
     // Debug logging
     LaunchedEffect(state.favoriteScreenshots) {
         Timber.d("HomeContent - State has ${state.favoriteScreenshots.size} favorite screenshots")
     }
 
-    // 스크린샷이 아예 없을 때와 필터링 후 없을 때를 구분
-    val hasAnyScreenshots = state.screenshots.isNotEmpty()
-    val filteredScreenshots = state.screenshots.filter {
-        state.selectedTag == "전체"
+    // 초기 로딩 중에는 빈 화면 표시
+    if (isInitialLoading && pagingItems.itemCount == 0) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
+            // Header만 표시
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_header_logo),
+                    contentDescription = "로고"
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_profile),
+                    contentDescription = "프로필 아이콘",
+                    modifier = Modifier.clickableWithoutRipple {
+                        onAction(HomeAction.NavigateToSettings)
+                    }
+                )
+            }
+        }
+        return
     }
 
-    if (!hasAnyScreenshots) {
-        // 스크린샷이 아예 없을 때는 헤더와 빈 상태만 표시
+    // 스크린샷이 없을 때 EmptyState 표시
+    if (pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -97,7 +122,7 @@ fun HomeContent(
             }
         }
     } else {
-        // 기존 레이아웃 (스크린샷이 있을 때)
+        // 스크린샷이 있을 때 LazyColumn + Paging
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -134,48 +159,78 @@ fun HomeContent(
                 )
             }
 
-            // 필터링 후 결과가 없을 때
-            if (filteredScreenshots.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp), // 적당한 높이 지정
-                        contentAlignment = Alignment.Center
-                    ) {
-                        UiEmptyState(
-                            title = "선택한 태그의 스크린샷이 없어요.",
-                            info = "다른 태그를 선택해보세요!",
-                            buttonText = "전체 보기",
-                            onClick = { onAction(HomeAction.SelectTag("전체")) }
+            // Paging된 스크린샷들을 2개씩 묶어서 표시
+            val screenshots = (0 until pagingItems.itemCount).mapNotNull { index ->
+                pagingItems[index]
+            }
+
+            items(count = screenshots.size / 2 + screenshots.size % 2) { rowIndex ->
+                val startIndex = rowIndex * 2
+                val endIndex = minOf(startIndex + 2, screenshots.size)
+                val rowItems = screenshots.subList(startIndex, endIndex)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    rowItems.forEach { screenshot ->
+                        ScreenshotItem(
+                            screenshot = screenshot,
+                            onScreenshotClick = {
+                                onAction(
+                                    HomeAction.OnScreenshotClick(
+                                        screenshot
+                                    )
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
                         )
                     }
+                    if (rowItems.size < 2) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
-            } else {
-                items(filteredScreenshots.chunked(2)) { rowItems ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        rowItems.forEach { screenshot ->
-                            ScreenshotItem(
-                                screenshot = screenshot,
-                                onScreenshotClick = {
-                                    onAction(
-                                        HomeAction.OnScreenshotClick(
-                                            screenshot
-                                        )
-                                    )
-                                },
-                                modifier = Modifier.weight(1f)
+            }
+
+            // 로딩 인디케이터 (Paging3가 자동 처리)
+            when (pagingItems.loadState.append) {
+                is LoadState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Primary
                             )
                         }
-                        if (rowItems.size < 2) {
-                            Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+                is LoadState.Error -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "더 불러오기 실패",
+                                color = Color.Red,
+                                modifier = Modifier.clickable {
+                                    pagingItems.retry()
+                                }
+                            )
                         }
                     }
+                }
+
+                else -> { /* 아무것도 안함 */
                 }
             }
         }

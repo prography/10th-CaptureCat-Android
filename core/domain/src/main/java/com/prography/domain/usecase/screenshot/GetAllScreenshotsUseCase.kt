@@ -11,4 +11,13 @@ class GetAllScreenshotsUseCase @Inject constructor(
     suspend operator fun invoke(hasTags: Boolean? = null): Flow<List<UiScreenshotModel>> {
         return repository.getScreenshots(hasTags = hasTags)
     }
+
+    // 페이징용 새 메서드
+    suspend fun getScreenshots(
+        page: Int = 0,
+        pageSize: Int = 20,
+        hasTags: Boolean? = null
+    ): List<UiScreenshotModel> {
+        return repository.getScreenshots(page = page, pageSize = pageSize, hasTags = hasTags)
+    }
 }
