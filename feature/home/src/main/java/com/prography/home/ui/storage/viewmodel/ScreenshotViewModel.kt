@@ -92,9 +92,23 @@ class ScreenshotViewModel @Inject constructor(
                 updateState { copy(showDeleteDialog = true) }
             }
 
-            ScreenshotAction.SelectAll -> {
-                // TODO: 현재 로드된 모든 아이템 선택 (최대 20개)
-                showToast("전체 선택은 현재 화면의 최대 20개까지만 가능합니다.")
+            is ScreenshotAction.SelectAll -> {
+                val allIds = action.allIds
+                val selectedIds = if (allIds.size <= 20) {
+                    allIds
+                } else {
+                    showToast("최대 20장까지 선택할 수 있어요.")
+                    allIds.take(20)
+                }
+
+                updateState {
+                    copy(
+                        selectedItems = selectedIds.toSet(),
+                        selectedCount = selectedIds.size,
+                        isSelectionMode = selectedIds.isNotEmpty(),
+                        isAllSelected = selectedIds.size == allIds.size
+                    )
+                }
             }
 
             ScreenshotAction.CancelSelection -> {

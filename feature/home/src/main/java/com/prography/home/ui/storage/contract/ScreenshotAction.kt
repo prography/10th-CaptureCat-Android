@@ -2,7 +2,7 @@ package com.prography.home.ui.storage.contract
 
 sealed interface ScreenshotAction {
     data class ToggleSelect(val id: String) : ScreenshotAction
-    object SelectAll : ScreenshotAction
+    data class SelectAll(val allIds: List<String>) : ScreenshotAction
     object CancelSelection : ScreenshotAction
     object DeleteSelected : ScreenshotAction
     object ConfirmDelete : ScreenshotAction

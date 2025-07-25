@@ -53,6 +53,7 @@ fun ScreenshotTopBar(
     selectedCount: Int,
     totalCount: Int,
     isAllSelected: Boolean,
+    allItemIds: List<String> = emptyList(),
     onAction: (ScreenshotAction) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -107,7 +108,9 @@ fun ScreenshotTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
                     val action =
-                        if (isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll
+                        if (isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll(
+                            allItemIds
+                        )
                     onAction(action)
                 }
             ) {
@@ -116,7 +119,9 @@ fun ScreenshotTopBar(
                     isChecked = isAllSelected,
                     onCheckedChange = {
                         val action =
-                            if (isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll
+                            if (isAllSelected) ScreenshotAction.CancelSelection else ScreenshotAction.SelectAll(
+                                allItemIds
+                            )
                         onAction(action)
                     }
                 )
@@ -142,6 +147,7 @@ fun ScreenshotTopBarPreview_Default() {
         selectedCount = 0,
         totalCount = 12,
         isAllSelected = true,
+        allItemIds = emptyList(),
         onAction = {}
     )
 }
@@ -154,6 +160,7 @@ fun ScreenshotTopBarPreview_Selected() {
         selectedCount = 3,
         totalCount = 12,
         isAllSelected = false,
+        allItemIds = emptyList(),
         onAction = {}
     )
 }

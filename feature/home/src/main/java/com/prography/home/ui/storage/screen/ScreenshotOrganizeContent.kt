@@ -138,10 +138,16 @@ fun ScreenshotOrganizeContent(
                             text = "전체 선택",
                             isChecked = state.isAllSelected,
                             onCheckedChange = {
-                                val action = if (state.isAllSelected)
+                                val action = if (state.isAllSelected) {
                                     ScreenshotAction.CancelSelection
-                                else
-                                    ScreenshotAction.SelectAll
+                                } else {
+                                    // 현재 로드된 모든 스크린샷 ID를 수집
+                                    val allIds =
+                                        (0 until pagingItems.itemCount).mapNotNull { index ->
+                                            pagingItems[index]?.id
+                                        }
+                                    ScreenshotAction.SelectAll(allIds)
+                                }
                                 onAction(action)
                             }
                         )
