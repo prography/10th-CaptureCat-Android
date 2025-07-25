@@ -165,7 +165,7 @@ fun AgreementText() {
     val annotatedText = buildAnnotatedString {
         append("가입하면 캡처캣의\n")
 
-        pushStringAnnotation(tag = "URL", annotation = "https://example.com/terms")
+        pushStringAnnotation(tag = "URL", annotation = "https://ujins.notion.site/1ff6b91b83f580519258d2256a319737")
         withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
             append("이용약관")
         }
@@ -173,7 +173,7 @@ fun AgreementText() {
 
         append(" 및 ")
 
-        pushStringAnnotation(tag = "URL", annotation = "https://example.com/privacy")
+        pushStringAnnotation(tag = "URL", annotation = "https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd")
         withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
             append("개인정보처리방침")
         }
