@@ -48,11 +48,28 @@ class SearchViewModel @Inject constructor(
                 .onSuccess { topTags ->
                     val tagsWithMiscategorized = topTags.toMutableList()
 
-                    // 태그가 있는 스크린샷이 있을 경우에만 미분류 칩을 표시하도록 한다.
-                    if (tagsWithMiscategorized.size > 0)
-                        tagsWithMiscategorized.add(TagWithCount("미분류", 0))
-
-                    updateState { copy(popularTags = tagsWithMiscategorized) }
+                    // 미분류 스크린샷이 있는지 확인
+                    if (tagsWithMiscategorized.isNotEmpty()) {
+                        runCatching { getUncategorizedScreenshotsUseCase() }
+                            .onSuccess { uncategorizedFlow ->
+                                uncategorizedFlow.collect { uncategorizedScreenshots ->
+                                    if (uncategorizedScreenshots.isNotEmpty()) {
+                                        tagsWithMiscategorized.add(
+                                            TagWithCount(
+                                                "미분류",
+                                                uncategorizedScreenshots.size
+                                            )
+                                        )
+                                    }
+                                    updateState { copy(popularTags = tagsWithMiscategorized) }
+                                }
+                            }
+                            .onFailure {
+                                updateState { copy(popularTags = tagsWithMiscategorized) }
+                            }
+                    } else {
+                        updateState { copy(popularTags = tagsWithMiscategorized) }
+                    }
                 }
                 .onFailure {
                     val screenshots = currentState.screenshots
