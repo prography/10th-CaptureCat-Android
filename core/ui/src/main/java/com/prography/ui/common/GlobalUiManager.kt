@@ -103,7 +103,7 @@ fun GlobalUiHandler() {
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 26.dp)
                         .background(OverlayDim, shape = RoundedCornerShape(6.dp))
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                        .padding(horizontal = 20.dp, vertical = 15.5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -129,7 +129,7 @@ fun GlobalUiHandler() {
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                color = Color.Black,
+                color = Primary,
                 modifier = Modifier.size(48.dp)
             )
         }
