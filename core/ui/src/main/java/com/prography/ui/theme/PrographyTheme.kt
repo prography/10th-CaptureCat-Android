@@ -15,7 +15,7 @@ fun PrographyTheme(
         darkColorScheme(
             primary = Purple80,
             secondary = Pink80,
-            background = DarkGray
+            background = White
         )
     } else {
         lightColorScheme(

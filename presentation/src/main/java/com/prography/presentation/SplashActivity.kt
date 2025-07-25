@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -25,6 +26,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.R
 import com.prography.ui.theme.PrographyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -34,18 +36,38 @@ import kotlinx.coroutines.delay
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // 배경이 항상 흰색이므로 상태바 아이콘을 검정색으로 설정
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                scrim = android.graphics.Color.TRANSPARENT,
+                darkScrim = android.graphics.Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                scrim = android.graphics.Color.WHITE,
+                darkScrim = android.graphics.Color.WHITE
+            )
+        )
+
         setContent {
             PrographyTheme {
-                SplashScreen()
+                SplashScreen(
+                    onNavigateToMain = {
+                        val intent = Intent(this@SplashActivity, MainActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        overridePendingTransition(0, 0)
+                        finish()
+                    }
+                )
             }
         }
     }
 
-    @Preview
     @Composable
     fun SplashScreen(
-
+        onNavigateToMain: () -> Unit
     ) {
 
         val alpha = remember {
@@ -57,13 +79,7 @@ class SplashActivity : ComponentActivity() {
                 animationSpec = tween(500)
             )
             delay(1000L)
-
-            Intent(this@SplashActivity, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }.let { intent ->
-                startActivity(intent)
-                overridePendingTransition(0, 0)
-            }
+            onNavigateToMain()
         }
 
         Box(
@@ -78,6 +94,16 @@ class SplashActivity : ComponentActivity() {
                     .align(Alignment.TopCenter)
                     .padding(top = (LocalConfiguration.current.screenHeightDp * 0.4f).dp)
                     .alpha(alpha.value),
+            )
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun SplashScreenPreview() {
+        PrographyTheme {
+            SplashScreen(
+                onNavigateToMain = {}
             )
         }
     }

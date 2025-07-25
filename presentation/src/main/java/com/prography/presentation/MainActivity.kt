@@ -10,25 +10,20 @@ import androidx.activity.enableEdgeToEdge
 import com.prography.ui.common.GlobalUiHandler
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.derivedStateOf
 import com.prography.navigation.NavigationHelper
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import timber.log.Timber
 import javax.inject.Inject
 import androidx.compose.runtime.LaunchedEffect
+import androidx.activity.SystemBarStyle
+import android.graphics.Color
+import androidx.compose.foundation.background
+import com.prography.ui.theme.PureWhite
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,14 +31,24 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigationHelper: NavigationHelper
-    var isReady = false
 
     private val viewModel: MainViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // 배경이 항상 흰색이므로 상태바 아이콘을 검정색으로 설정
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                scrim = Color.TRANSPARENT,
+                darkScrim = Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                scrim = Color.WHITE,
+                darkScrim = Color.WHITE
+            )
+        )
         viewModel.initChecking()
 
         setContent {
@@ -61,6 +66,7 @@ class MainActivity : ComponentActivity() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(PureWhite)
                         .navigationBarsPadding()
                 ) {
                     startDestination?.let {
