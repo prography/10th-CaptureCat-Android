@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.favorite.ui.FavoriteContent
+import com.prography.favorite.ui.contract.FavoriteAction
 import com.prography.favorite.ui.contract.FavoriteEffect
 import com.prography.favorite.ui.viewmodel.FavoriteViewModel
 import com.prography.navigation.NavigationHelper
@@ -19,6 +20,10 @@ fun FavoriteRoute(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.sendAction(FavoriteAction.LoadFavoriteScreenshots)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
