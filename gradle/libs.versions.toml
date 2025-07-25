@@ -67,7 +67,7 @@ androidPermission = "0.34.0"
 kakaoAPI = "2.21.4"
 
 # Project versions
-projectApplicationId = "com.android.prography"
+projectApplicationId = "com.prography.capturecat"
 projectVersionName = "1.0.0"
 projectVersionCode = "1"
 projectMinSdkVersion = "24"

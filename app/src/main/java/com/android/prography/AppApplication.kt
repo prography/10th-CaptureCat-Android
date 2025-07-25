@@ -1,7 +1,7 @@
-package com.android.prography.presentation.di
+package com.android.prography
 
 import android.app.Application
-import com.android.prography.BuildConfig
+import com.prography.capturecat.BuildConfig
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber

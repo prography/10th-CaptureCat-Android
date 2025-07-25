@@ -11,9 +11,9 @@ plugins {
 }
 
 android {
-    namespace = "com.android.prography"
+    namespace = "com.prography.capturecat"
     defaultConfig {
-        applicationId = "com.android.prography"
+        applicationId = "com.prography.capturecat"
     }
 }
 

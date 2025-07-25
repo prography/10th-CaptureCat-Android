@@ -13,7 +13,7 @@
         android:maxSdkVersion="32" />
 
     <application
-        android:name=".presentation.di.AppApplication"
+        android:name="com.android.prography.AppApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

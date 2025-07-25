@@ -80,7 +80,7 @@ private fun BuildType.configureReleaseBuildType(
     buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${properties.getProperty("GOOGLE_WEB_CLIENT_ID")}\"")
     buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
 
-    isMinifyEnabled = true
+    isMinifyEnabled = false
     proguardFiles(
         commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
