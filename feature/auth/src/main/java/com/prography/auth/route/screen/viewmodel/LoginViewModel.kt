@@ -49,7 +49,9 @@ class LoginViewModel @Inject constructor(
 
     fun handleGoogleLoginSuccess(idToken: String) {
         viewModelScope.launch {
+            showLoading()
             socialLoginUseCase("google", idToken).onSuccess { navigationResult ->
+                hideLoading()
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
@@ -63,6 +65,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }.onFailure {
+                hideLoading()
                 showToast("구글 로그인에 실패했습니다")
             }
         }
@@ -70,7 +73,9 @@ class LoginViewModel @Inject constructor(
 
     fun handleKakaoLoginSuccess(accessToken: String) {
         viewModelScope.launch {
+            showLoading()
             socialLoginUseCase("kakao", accessToken).onSuccess { navigationResult ->
+                hideLoading()
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
@@ -84,6 +89,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }.onFailure {
+                hideLoading()
                 showToast("카카오 로그인 중 오류가 발생했습니다")
             }
         }
