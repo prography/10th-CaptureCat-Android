@@ -24,9 +24,17 @@ class SocialLoginUseCase @Inject constructor(
                     LoginNavigationResult.NavigateToStartTag
                 }
 
-                // 기기 내 시작하기를 완료했지만, 서버에서는 튜토리얼이 완료되지 않음
-                hasSeenLocalStartTag && !loginResult.tutorialCompleted -> {
+                // 기기 내 시작하기를 완료함
+                hasSeenLocalStartTag -> {
+                    // 1. 서버에서 튜토리얼이 완료되지 않은 상태라면, 튜토리얼 완료 여부 서버로 값 보내기
+                    if (!loginResult.tutorialCompleted)
+                        completeTutorialUseCase()
+
+                    // 2. 동기화 여부 판단
+                    // 로컬 데이터가 있음 > 동기화 업로드 화면으로 이동
+                    // 로컬 데이터가 없음 > 홈 화면으로 이동
                     val localScreenshots = getAllLocalScreenshotsUseCase().first()
+
                     if (localScreenshots.isEmpty()) {
                         LoginNavigationResult.NavigateToHome
                     } else {
