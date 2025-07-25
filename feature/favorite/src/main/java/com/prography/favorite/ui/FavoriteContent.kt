@@ -25,6 +25,7 @@ import com.prography.favorite.ui.contract.FavoriteAction
 import com.prography.favorite.ui.contract.FavoriteState
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.ui.component.UiTagInfoChip
+import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.*
 
 @Composable
@@ -60,16 +61,6 @@ fun FavoriteContent(
         }
 
         when {
-            state.isLoading -> {
-                // Loading state
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("로딩 중...")
-                }
-            }
-
             !state.hasData -> {
                 // Empty state
                 Box(
@@ -121,6 +112,9 @@ fun FavoriteContent(
                                             )
                                         )
                                     },
+                                    onToggleFavorite = {
+                                        onAction(FavoriteAction.OnToggleFavorite(screenshot))
+                                    },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
@@ -140,6 +134,7 @@ fun FavoriteContent(
 fun FavoriteScreenshotItem(
     screenshot: UiScreenshotModel,
     onScreenshotClick: () -> Unit,
+    onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -177,6 +172,9 @@ fun FavoriteScreenshotItem(
                 .align(Alignment.BottomEnd)
                 .padding(8.dp)
                 .size(32.dp)
+                .clickableWithoutRipple {
+                    onToggleFavorite()
+                }
         )
     }
 }

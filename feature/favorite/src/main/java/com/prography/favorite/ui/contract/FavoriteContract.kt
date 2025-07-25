@@ -15,5 +15,6 @@ sealed class FavoriteEffect {
 sealed class FavoriteAction {
     object LoadFavoriteScreenshots : FavoriteAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : FavoriteAction()
+    data class OnToggleFavorite(val screenshot: UiScreenshotModel) : FavoriteAction()
     object OnNavigateUp : FavoriteAction()
 }

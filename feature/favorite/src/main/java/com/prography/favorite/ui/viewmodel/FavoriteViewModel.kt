@@ -6,6 +6,7 @@ import com.prography.favorite.ui.contract.FavoriteEffect
 import com.prography.favorite.ui.contract.FavoriteState
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
+import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
+    private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<FavoriteState, FavoriteEffect, FavoriteAction>(
     initialState = FavoriteState()
@@ -30,6 +32,7 @@ class FavoriteViewModel @Inject constructor(
         when (action) {
             FavoriteAction.LoadFavoriteScreenshots -> loadFavoriteScreenshots()
             is FavoriteAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
+            is FavoriteAction.OnToggleFavorite -> handleToggleFavorite(action.screenshot)
             FavoriteAction.OnNavigateUp -> {
                 navigationHelper.navigate(NavigationEvent.Up)
             }
@@ -51,11 +54,11 @@ class FavoriteViewModel @Inject constructor(
                     }
                 }.onFailure { exception ->
                     updateState { copy(isLoading = false) }
-                    emitEffect(FavoriteEffect.ShowError("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다."))
+                    showToast("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.")
                 }
             } catch (e: Exception) {
                 updateState { copy(isLoading = false) }
-                emitEffect(FavoriteEffect.ShowError("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다."))
+                showToast("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.")
             }
         }
     }
@@ -74,6 +77,18 @@ class FavoriteViewModel @Inject constructor(
                     )
                 )
             )
+        }
+    }
+
+    private fun handleToggleFavorite(screenshot: UiScreenshotModel) {
+        viewModelScope.launch {
+            try {
+                toggleBookmarkUseCase(screenshot.id, false)
+                // 성공 시 데이터 새로고침
+                loadFavoriteScreenshots()
+            } catch (e: Exception) {
+                showToast("즐겨찾기 해제 중 오류가 발생했습니다.")
+            }
         }
     }
 }
