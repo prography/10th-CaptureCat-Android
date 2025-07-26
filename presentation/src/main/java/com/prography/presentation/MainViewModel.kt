@@ -3,6 +3,7 @@ package com.prography.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
+import com.prography.domain.usecase.auth.ObserveAuthEventsUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.user.GetOnboardingShownUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
@@ -21,7 +22,7 @@ class MainViewModel @Inject constructor(
     private val getOnboardingShownUseCase: GetOnboardingShownUseCase,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
-    private val authRepository: com.prography.domain.repository.AuthRepository
+    private val observeAuthEventsUseCase: ObserveAuthEventsUseCase
 ) : ViewModel() {
 
     private val _startDestination = MutableStateFlow<AppRoute?>(null)
@@ -35,7 +36,7 @@ class MainViewModel @Inject constructor(
     init {
         // AuthRepository의 이벤트 구독
         viewModelScope.launch {
-            authRepository.observeAuthEvents().collect { event ->
+            observeAuthEventsUseCase().collect { event ->
                 when (event) {
                     is com.prography.domain.repository.AuthRepository.AuthEvent.RefreshTokenExpired -> {
                         Timber.d("Refresh token expired, should navigate to login")
