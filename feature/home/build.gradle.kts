@@ -12,7 +12,6 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.3.6")
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
-    implementation(project(":feature:imageDetail"))
 
     implementation(libs.android.permissions)
 }

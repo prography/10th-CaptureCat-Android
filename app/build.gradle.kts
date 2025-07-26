@@ -17,7 +17,7 @@ android {
     }
 }
 
-dependencies {
+dependencies {implementation(project(":core:data"))
     implementation(project(":presentation"))
 
     implementation(libs.timber)
