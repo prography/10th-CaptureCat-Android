@@ -453,7 +453,7 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to delete screenshot")
-                emitEffect(ImageDetailEffect.ShowError("스크린샷 삭제에 실패했습니다."))
+                showToast("스크린샷 삭제에 실패했습니다.")
                 updateState { copy(isLoading = false) }
             }
         }
