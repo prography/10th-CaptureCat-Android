@@ -69,7 +69,7 @@ kakaoAPI = "2.21.4"
 # Project versions
 projectApplicationId = "com.prography.capturecat"
 projectVersionName = "1.0.0"
-projectVersionCode = "1"
+projectVersionCode = "2"
 projectMinSdkVersion = "24"
 projectTargetSdkVersion = "35"
 projectCompileSdkVersion = "35"
