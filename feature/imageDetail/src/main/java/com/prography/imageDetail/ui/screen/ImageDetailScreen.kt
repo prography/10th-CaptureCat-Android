@@ -14,6 +14,7 @@ import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
 import com.prography.imageDetail.ui.viewmodel.ImageDetailViewModel
 import com.prography.ui.theme.PrographyTheme
+import com.prography.util.MixpanelUtil
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -22,13 +23,21 @@ fun ImageDetailScreen(
     currentIndex: Int = 0,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ImageDetailViewModel = hiltViewModel()
+    viewModel: ImageDetailViewModel = hiltViewModel(),
+    entryPoint: String = "Unknown"
 ) {
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
 
     // 스크린샷 초기화
     LaunchedEffect(screenshotIds, currentIndex) {
+        MixpanelUtil.track(
+            "view_image_detail",
+            mapOf(
+                "image_id" to (state.currentScreenshot?.id?.get(0) ?: 0),
+                "entry_point" to entryPoint
+            )
+        )
         viewModel.initializeWithIds(screenshotIds, currentIndex)
     }
 

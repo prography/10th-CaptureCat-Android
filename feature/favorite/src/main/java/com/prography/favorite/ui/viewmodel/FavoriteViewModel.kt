@@ -73,7 +73,8 @@ class FavoriteViewModel @Inject constructor(
                 NavigationEvent.To(
                     AppRoute.ImageDetail(
                         screenshotIds = screenshotIds,
-                        currentIndex = currentIndex
+                        currentIndex = currentIndex,
+                        entryPoint = "favorite_detail"
                     )
                 )
             )

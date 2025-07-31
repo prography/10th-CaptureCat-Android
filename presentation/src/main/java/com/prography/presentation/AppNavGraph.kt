@@ -83,7 +83,8 @@ fun AppNavGraph(
             ImageDetailRoute(
                 navigationHelper = navigationHelper,
                 screenshotIds = imageDetail.screenshotIds,
-                currentIndex = imageDetail.currentIndex
+                currentIndex = imageDetail.currentIndex,
+                entryPoint = imageDetail.entryPoint
             )
         }
         composable<AppRoute.Favorite> {

@@ -9,13 +9,15 @@ import com.prography.navigation.NavigationHelper
 fun ImageDetailRoute(
     navigationHelper: NavigationHelper,
     screenshotIds: List<String>,
-    currentIndex: Int
+    currentIndex: Int,
+    entryPoint: String
 ) {
     ImageDetailScreen(
         screenshotIds = screenshotIds,
         currentIndex = currentIndex,
         onNavigateBack = {
             navigationHelper.navigate(NavigationEvent.Up)
-        }
+        },
+        entryPoint = entryPoint
     )
 }

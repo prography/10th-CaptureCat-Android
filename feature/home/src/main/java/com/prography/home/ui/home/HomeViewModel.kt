@@ -89,7 +89,8 @@ class HomeViewModel @Inject constructor(
             NavigationEvent.To(
                 AppRoute.ImageDetail(
                     screenshotIds = listOf(clickedScreenshot.id), // 우선 현재 아이템만
-                    currentIndex = 0
+                    currentIndex = 0,
+                    entryPoint = "home_detail"
                 )
             )
         )

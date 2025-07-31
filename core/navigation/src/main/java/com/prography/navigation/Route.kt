@@ -22,7 +22,7 @@ sealed interface AppRoute : Route {
     @Serializable
     data class Organize(
         val screenshotIds: List<String> = emptyList(),
-        val entryPoint: String = "inbox"
+        val entryPoint: String = "unknown"
     ) : AppRoute
 
     @Serializable
@@ -31,7 +31,8 @@ sealed interface AppRoute : Route {
     @Serializable
     data class ImageDetail(
         val screenshotIds: List<String> = emptyList(),
-        val currentIndex: Int = 0
+        val currentIndex: Int = 0,
+        val entryPoint: String = "unknown"
     ) : AppRoute
 
     @Serializable

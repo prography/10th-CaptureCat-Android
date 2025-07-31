@@ -241,7 +241,8 @@ class SearchViewModel @Inject constructor(
                 NavigationEvent.To(
                     AppRoute.ImageDetail(
                         screenshotIds = currentResults.map { it.id },
-                        currentIndex = currentIndex
+                        currentIndex = currentIndex,
+                        entryPoint = "search_keyword"
                     )
                 )
             )
