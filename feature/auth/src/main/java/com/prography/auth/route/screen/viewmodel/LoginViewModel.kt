@@ -51,8 +51,19 @@ class LoginViewModel @Inject constructor(
     fun handleGoogleLoginSuccess(idToken: String) {
         viewModelScope.launch {
             showLoading()
-            socialLoginUseCase("google", idToken).onSuccess { navigationResult ->
+            socialLoginUseCase("google", idToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
+
+                // Mixpanel 사용자 식별
+                MixpanelUtil.identify(loginResult.email)
+                MixpanelUtil.setUserProfile(
+                    mapOf(
+                        "email" to loginResult.email,
+                        "name" to loginResult.nickname,
+                        "app_version" to "1.0.1",
+                        "platform" to "android"
+                    )
+                )
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "google"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
@@ -79,8 +90,19 @@ class LoginViewModel @Inject constructor(
     fun handleKakaoLoginSuccess(accessToken: String) {
         viewModelScope.launch {
             showLoading()
-            socialLoginUseCase("kakao", accessToken).onSuccess { navigationResult ->
+            socialLoginUseCase("kakao", accessToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
+
+                // Mixpanel 사용자 식별
+                MixpanelUtil.identify(loginResult.email)
+                MixpanelUtil.setUserProfile(
+                    mapOf(
+                        "email" to loginResult.email,
+                        "name" to loginResult.nickname,
+                        "app_version" to "1.0.1",
+                        "platform" to "android"
+                    )
+                )
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "kakao"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {

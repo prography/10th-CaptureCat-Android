@@ -14,11 +14,11 @@ class SocialLoginUseCase @Inject constructor(
     private val completeTutorialUseCase: CompleteTutorialUseCase,
     private val getAllLocalScreenshotsUseCase: GetAllLocalScreenshotsUseCase,
 ) {
-    suspend operator fun invoke(provider: String, idToken: String): Result<LoginNavigationResult> {
+    suspend operator fun invoke(provider: String, idToken: String): Result<Pair<LoginNavigationResult, LoginResult>> {
         return authRepository.socialLogin(provider, idToken).mapCatching { loginResult ->
             val hasSeenLocalStartTag = getStartTagScreenShownUseCase().first()
 
-            when {
+            val navigationResult = when {
                 // 기기 내 시작하기를 완료하지 않았고, 서버에서도 튜토리얼이 완료되지 않음
                 !hasSeenLocalStartTag && !loginResult.tutorialCompleted -> {
                     LoginNavigationResult.NavigateToStartTag
@@ -47,6 +47,7 @@ class SocialLoginUseCase @Inject constructor(
                     LoginNavigationResult.NavigateToHome
                 }
             }
+            navigationResult to loginResult
         }
     }
 }

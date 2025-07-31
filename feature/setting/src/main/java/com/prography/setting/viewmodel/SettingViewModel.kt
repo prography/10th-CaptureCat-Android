@@ -9,6 +9,7 @@ import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingEffect
 import com.prography.setting.contract.SettingState
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -102,6 +103,10 @@ class SettingViewModel @Inject constructor(
                 logoutUseCase.invoke()
             }.onSuccess {
                 Timber.d("User logout successful")
+
+                MixpanelUtil.track("logout")
+                MixpanelUtil.reset()
+
                 emitEffect(SettingEffect.ShowLogoutSuccess)
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to logout")
