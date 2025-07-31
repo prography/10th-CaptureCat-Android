@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import com.prography.navigation.NavigationHelper
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
+import com.prography.util.MixpanelUtil
 import com.prography.util.permission.ScreenshotPermissionGate
 
 @Composable
@@ -23,11 +24,17 @@ fun StartRoute(navigationHelper: NavigationHelper) {
             // 선택 완료 후 캡처 스크린샷 관리 화면
             ScreenshotPermissionGate(
                 onPermissionGranted = {
+                    MixpanelUtil.track("view_start_inbox")
                     StartChooseScreen(
                         maxSelectableImages = 10,
                         onFinishSelection = { selectedImages ->
                             navigationHelper.navigate(
-                                NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedImages.map { it.id }))
+                                NavigationEvent.To(
+                                    AppRoute.Organize(
+                                        screenshotIds = selectedImages.map { it.id },
+                                        entryPoint = "start_inbox"
+                                    )
+                                )
                             )
                         }
                     )

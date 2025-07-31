@@ -151,7 +151,12 @@ class ScreenshotViewModel @Inject constructor(
                 }
 
                 navigationHelper.navigate(
-                    NavigationEvent.To(AppRoute.Organize(screenshotIds = selectedIds))
+                    NavigationEvent.To(
+                        AppRoute.Organize(
+                            screenshotIds = selectedIds,
+                            entryPoint = "inbox"
+                        )
+                    )
                 )
             }
 

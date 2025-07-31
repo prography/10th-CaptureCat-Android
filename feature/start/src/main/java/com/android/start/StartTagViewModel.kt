@@ -5,6 +5,7 @@ import com.prography.domain.usecase.tag.AddRecentTagsUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
 import com.prography.domain.usecase.auth.CompleteTutorialUseCase
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -79,6 +80,12 @@ class StartTagViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 addRecentTagsUseCase(tags)
+                MixpanelUtil.track(
+                    "click_register_frequent_tag",
+                    mapOf(
+                        "selected_tags" to tags // tags는 List<String>
+                    )
+                )
                 Timber.d("Selected tags saved to recent tags: $tags")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to save selected tags")

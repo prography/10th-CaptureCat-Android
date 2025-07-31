@@ -24,7 +24,11 @@ import com.prography.ui.common.ToastType
 import com.prography.domain.model.TagModel
 import java.util.UUID
 import android.provider.MediaStore
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
@@ -35,6 +39,12 @@ class OrganizeViewModel @Inject constructor(
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
 ) {
+    private val _entryPoint = MutableStateFlow("inbox")
+    val entryPoint: StateFlow<String> = _entryPoint.asStateFlow()
+
+    fun setEntryPoint(point: String) {
+        _entryPoint.value = point
+    }
 
     init {
         loadRecentTags()
@@ -229,6 +239,16 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                MixpanelUtil.track(
+                    "click_save_image",
+                    mapOf(
+                        "entry_point" to entryPoint.value,
+                        "tagging_mode" to if (uiState.value.organizeMode == OrganizeMode.BATCH) "batch" else "single",
+                        "tag_count_total" to 5,
+                        "screenshot_count" to uiState.value.screenshots.size,
+                    )
+                )
+
                 hideLoading()
                 updateState { copy(showCompletionMessage = true) }
             }.onFailure {

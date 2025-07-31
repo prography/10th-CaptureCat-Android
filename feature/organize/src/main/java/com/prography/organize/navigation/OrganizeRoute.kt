@@ -13,7 +13,8 @@ import com.prography.organize.ui.OrganizeScreen
 @Composable
 fun OrganizeRoute(
     navigationHelper: NavigationHelper,
-    screenshotIds: List<String> = emptyList()
+    screenshotIds: List<String> = emptyList(),
+    entryPoint: String
 ) {
     val context = LocalContext.current
 
@@ -66,6 +67,7 @@ fun OrganizeRoute(
         onComplete = {
             // 메인 화면으로 돌아가기 (전체 스택 정리)
             navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
-        }
+        },
+        entryPoint = entryPoint
     )
 }

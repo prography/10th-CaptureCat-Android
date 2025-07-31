@@ -36,6 +36,7 @@ import com.prography.ui.theme.headline02Bold
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.subhead02Bold
+import com.prography.util.MixpanelUtil
 
 @Composable
 fun StartTagScreen(
@@ -53,6 +54,10 @@ fun StartTagScreen(
 
     BackHandler {
         showExitDialog = true
+    }
+
+    LaunchedEffect(Unit) {
+        MixpanelUtil.track("view_start")
     }
 
     Box(

@@ -21,7 +21,8 @@ sealed interface AppRoute : Route {
 
     @Serializable
     data class Organize(
-        val screenshotIds: List<String> = emptyList()
+        val screenshotIds: List<String> = emptyList(),
+        val entryPoint: String = "inbox"
     ) : AppRoute
 
     @Serializable

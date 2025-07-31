@@ -11,6 +11,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -52,15 +53,19 @@ class LoginViewModel @Inject constructor(
             showLoading()
             socialLoginUseCase("google", idToken).onSuccess { navigationResult ->
                 hideLoading()
+                MixpanelUtil.track("complete_login", mapOf("login_method" to "google"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
                     }
 
                     LoginNavigationResult.NavigateToHome -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
                     }
                     LoginNavigationResult.NavigateToUpload -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
                     }
                 }
@@ -76,15 +81,19 @@ class LoginViewModel @Inject constructor(
             showLoading()
             socialLoginUseCase("kakao", accessToken).onSuccess { navigationResult ->
                 hideLoading()
+                MixpanelUtil.track("complete_login", mapOf("login_method" to "kakao"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
                     }
 
                     LoginNavigationResult.NavigateToHome -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
                     }
                     LoginNavigationResult.NavigateToUpload -> {
+                        MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
                     }
                 }

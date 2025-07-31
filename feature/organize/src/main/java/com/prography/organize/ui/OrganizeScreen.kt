@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun OrganizeScreen(
+    entryPoint: String = "inbox",
     screenshots: List<OrganizeScreenshotItem>,
     currentIndex: Int = 0,
     onNavigateUp: () -> Unit,
@@ -29,6 +30,7 @@ fun OrganizeScreen(
     // Initialize screenshots when the screen is first composed
     LaunchedEffect(screenshots) {
         if (screenshots.isNotEmpty()) {
+            viewModel.setEntryPoint(entryPoint)
             viewModel.initializeScreenshots(screenshots, currentIndex)
         }
     }

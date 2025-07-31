@@ -74,7 +74,8 @@ fun AppNavGraph(
             val organize = backStackEntry.toRoute<AppRoute.Organize>()
             OrganizeRoute(
                 navigationHelper = navigationHelper,
-                screenshotIds = organize.screenshotIds
+                screenshotIds = organize.screenshotIds,
+                entryPoint = organize.entryPoint
             )
         }
         composable<AppRoute.ImageDetail> { backStackEntry ->
