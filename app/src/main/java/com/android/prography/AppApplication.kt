@@ -6,15 +6,19 @@ import com.kakao.sdk.common.KakaoSdk
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class AppApplication : Application() {
+
+    @Inject
+    lateinit var mixpanelUtil: MixpanelUtil
 
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
 
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
-        MixpanelUtil.initialize(this, BuildConfig.MIXPANEL_PROJECT_TOKEN)
+        mixpanelUtil.initialize(BuildConfig.MIXPANEL_PROJECT_TOKEN)
     }
 }
