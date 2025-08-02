@@ -361,15 +361,6 @@ class ImageDetailViewModel @Inject constructor(
             }
             return
         }
-
-
-        val newTagModel = TagModel(
-            id = UUID.randomUUID().toString(),
-            name = newTag
-        )
-        val updatedTags = currentScreenshot.tags + newTagModel
-        val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
-
         // 에러 메시지 초기화 및 로딩 상태 표시
         updateState {
             copy(
@@ -379,39 +370,47 @@ class ImageDetailViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            runCatching {
-                addTagsToScreenshotUseCase(
-                    currentScreenshot.id,
-                    listOf(newTag))
-            }.onSuccess {
-                Timber.d("Successfully added tag '$newTag' to screenshot: ${updatedScreenshot.id}")
-
-                // Update UI only after successful server response
-                screenshotCache[updatedScreenshot.id] = updatedScreenshot
-                updateState {
-                    val updatedScreenshots = screenshots.map { screenshot ->
-                        if (screenshot.id == currentScreenshot.id) updatedScreenshot else screenshot
-                    }
-                    copy(
-                        screenshots = updatedScreenshots,
-                        currentScreenshot = updatedScreenshot,
-                        newTagText = "",
-                        availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
-                        isLoading = false,
-                        tagErrorMessage = null
+            addTagsToScreenshotUseCase(
+                currentScreenshot.id,
+                listOf(newTag)
+            ).onSuccess { addedTags ->
+                val serverTag = addedTags.firstOrNull()
+                if (serverTag != null) {
+                    val newTagModel = TagModel(
+                        id = serverTag.id,
+                        name = serverTag.name
                     )
+                    val updatedTags = currentScreenshot.tags + newTagModel
+                    val updatedScreenshot = currentScreenshot.copy(tags = updatedTags)
+
+                    screenshotCache[updatedScreenshot.id] = updatedScreenshot
+                    updateState {
+                        val updatedScreenshots = screenshots.map { screenshot ->
+                            if (screenshot.id == currentScreenshot.id) updatedScreenshot else screenshot
+                        }
+                        copy(
+                            screenshots = updatedScreenshots,
+                            currentScreenshot = updatedScreenshot,
+                            newTagText = "",
+                            availableTags = if (!availableTags.contains(newTag)) availableTags + newTag else availableTags,
+                            isLoading = false,
+                            tagErrorMessage = null
+                        )
+                    }
+                } else {
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            tagErrorMessage = "태그 등록 실패"
+                        )
+                    }
                 }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to add tag (server or local)")
-
-                // 서버 에러 메시지 처리
-                val errorMessage = exception.message
-
-                // Local 모드일 때 fallback
                 updateState {
                     copy(
                         isLoading = false,
-                        tagErrorMessage = errorMessage
+                        tagErrorMessage = exception.message
                     )
                 }
             }

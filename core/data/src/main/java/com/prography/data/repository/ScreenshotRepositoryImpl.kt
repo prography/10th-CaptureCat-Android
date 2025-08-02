@@ -5,6 +5,7 @@ import com.prography.data.datasource.remote.PhotoRemoteDataSource
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
+import com.prography.domain.model.TagModel
 import com.prography.domain.repository.ScreenshotRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -180,24 +181,14 @@ class ScreenshotRepositoryImpl @Inject constructor(
     override suspend fun addTagsToScreenshot(
         screenshotId: String,
         tagNames: List<String>
-    ) {
+    ): Result<List<TagModel>> {
         val token = userPrefs.accessToken.first()
         return if (token.isNullOrBlank()) {
-            // 로컬 모드: 로컬 데이터소스를 사용하여 태그 추가
-            Timber.d("AddTagsToScreenshot - Local mode: adding tags $tagNames to screenshot $screenshotId")
-            localDataSource.addTagsToScreenshot(screenshotId, tagNames)
+            // 로컬 모드: UUID 사용
+            Result.success(tagNames.map { TagModel(java.util.UUID.randomUUID().toString(), it) })
         } else {
-            // 서버 모드: 서버에 태그 추가
-            Timber.d("AddTagsToScreenshot - Remote mode: adding tags $tagNames to screenshot $screenshotId")
-            remoteDataSource.addTagsToScreenshot(screenshotId, tagNames).fold(
-                onSuccess = {
-                    Timber.d("AddTag - Remote tag Add success")
-                },
-                onFailure = { exception ->
-                    Timber.e(exception, "AddTag - Remote tag Add failure")
-                    throw exception
-                }
-            )
+            // 서버 모드
+            remoteDataSource.addTagsToScreenshot(screenshotId, tagNames)
         }
     }
 

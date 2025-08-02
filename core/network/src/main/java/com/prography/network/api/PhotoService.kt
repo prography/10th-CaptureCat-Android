@@ -68,7 +68,7 @@ interface PhotoService {
     suspend fun addTagsToScreenshot(
         @Path("id") screenshotId: String,
         @Body body: AddTagsRequest
-    ): NetworkState<ApiResponse<Unit>>
+    ): NetworkState<ApiListResponse<TagResponse>>
 
     @POST("v1/user/tutorialComplete")
     suspend fun completeTutorial(): NetworkState<ApiResponse<String>>

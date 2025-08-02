@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.prography.domain.model.TagModel
 
 class PhotoRemoteDataSourceImpl @Inject constructor(
     private val photoService: PhotoService,
@@ -191,34 +192,32 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<Unit> {
-        return runCatching {
-            val requestBody = AddTagsRequest(tagNames = tagNames)
+    override suspend fun addTagsToScreenshot(
+        screenshotId: String,
+        tagNames: List<String>
+    ): Result<List<TagModel>> {
+        val networkState = photoService.addTagsToScreenshot(
+            screenshotId,
+            AddTagsRequest(tagNames)
+        )
 
-            val networkState = photoService.addTagsToScreenshot(
-                screenshotId = screenshotId,
-                body = requestBody
-            )
+        return when (networkState) {
+            is NetworkState.Success -> {
+                val tagModels = networkState.body.getDataOrNull()?.map { response ->
+                    TagModel(id = response.id.toString(), name = response.name)
+                } ?: emptyList()
+                Result.success(tagModels)
+            }
+            is NetworkState.Failure -> {
+                Result.failure(Exception(networkState.error ?: "태그 추가 실패"))
+            }
 
-            when (networkState) {
-                is NetworkState.Success -> {
-                    // : {"result":"SUCCESS"};
-                    Timber.d("Add Tags successful: imageId=$screenshotId, tags=$tagNames")
-                    Unit
-                }
-                is NetworkState.Failure -> {
-                    val errorMessage = networkState.error ?: "Unknown error"
-                    Timber.e("AddTags failed: $errorMessage")
-                    throw Exception(errorMessage)
-                }
-                is NetworkState.NetworkError -> {
-                    Timber.e("AddTags network error: ${networkState.error}")
-                    throw networkState.error
-                }
-                is NetworkState.UnknownError -> {
-                    Timber.e("AddTags unknown error: ${networkState.errorState}")
-                    throw networkState.t ?: Exception(networkState.errorState)
-                }
+            is NetworkState.NetworkError -> {
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Result.failure(networkState.t ?: Exception("알 수 없는 오류"))
             }
         }
     }
