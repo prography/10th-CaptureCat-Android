@@ -41,9 +41,13 @@ class AuthRepositoryImpl @Inject constructor(
         return _authEvents.asSharedFlow()
     }
 
-    override suspend fun socialLogin(provider: String, idToken: String): Result<LoginResult> {
+    override suspend fun socialLogin(
+        provider: String,
+        idToken: String,
+        accessToken: String?
+    ): Result<LoginResult> {
         return try {
-            val request = SocialLoginRequest(idToken)
+            val request = SocialLoginRequest(idToken, accessToken)
             val response = authService.socialLogin(provider, request)
 
             if (response.isSuccessful) {

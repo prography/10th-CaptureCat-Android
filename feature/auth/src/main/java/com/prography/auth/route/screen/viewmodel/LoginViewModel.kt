@@ -1,6 +1,7 @@
 package com.prography.auth.route.screen.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.kakao.sdk.user.UserApiClient
 import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginEffect
 import com.prography.auth.route.screen.contract.LoginState
@@ -15,7 +16,9 @@ import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -48,22 +51,15 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun handleGoogleLoginSuccess(idToken: String) {
+    fun handleGoogleLoginSuccess(idToken: String, userId: String) {
         viewModelScope.launch {
             showLoading()
             socialLoginUseCase("google", idToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
 
-                // Mixpanel 사용자 식별
-                MixpanelUtil.identify(loginResult.email)
-                MixpanelUtil.setUserProfile(
-                    mapOf(
-                        "email" to loginResult.email,
-                        "name" to loginResult.nickname,
-                        "app_version" to "1.0.1",
-                        "platform" to "android"
-                    )
-                )
+                // Mixpanel 사용자 식별 - Google User ID 사용
+                MixpanelUtil.identify(userId)
+
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "google"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
@@ -87,22 +83,25 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun handleKakaoLoginSuccess(accessToken: String) {
+    fun handleKakaoLoginSuccess(idToken: String, accessToken: String) {
         viewModelScope.launch {
             showLoading()
-            socialLoginUseCase("kakao", accessToken).onSuccess { (navigationResult, loginResult) ->
+
+            val user = getKakaoUserInfo()
+            if (user == null) {
+                hideLoading()
+                showToast("카카오 사용자 정보를 가져오는 데 실패했어요")
+                return@launch
+            }
+
+            val kakaoUserId = user.id.toString()
+            Timber.d("user ${user.id} ${user}")
+
+            socialLoginUseCase("kakao", idToken, accessToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
 
-                // Mixpanel 사용자 식별
-                MixpanelUtil.identify(loginResult.email)
-                MixpanelUtil.setUserProfile(
-                    mapOf(
-                        "email" to loginResult.email,
-                        "name" to loginResult.nickname,
-                        "app_version" to "1.0.1",
-                        "platform" to "android"
-                    )
-                )
+                MixpanelUtil.identify(kakaoUserId)
+
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "kakao"))
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
@@ -114,6 +113,7 @@ class LoginViewModel @Inject constructor(
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
                     }
+
                     LoginNavigationResult.NavigateToUpload -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
@@ -125,4 +125,15 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun getKakaoUserInfo(): com.kakao.sdk.user.model.User? =
+        suspendCancellableCoroutine { cont ->
+            UserApiClient.instance.me { user, error ->
+                if (error != null) {
+                    cont.resume(null) { _, _, _ -> }  // 실패 시 null 반환
+                } else {
+                    cont.resume(user) { _, _, _ -> }
+                }
+            }
+        }
 }

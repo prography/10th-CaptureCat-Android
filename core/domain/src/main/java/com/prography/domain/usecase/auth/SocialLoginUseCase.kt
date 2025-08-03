@@ -5,7 +5,6 @@ import com.prography.domain.repository.AuthRepository
 import com.prography.domain.usecase.screenshot.GetAllLocalScreenshotsUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SocialLoginUseCase @Inject constructor(
@@ -14,8 +13,12 @@ class SocialLoginUseCase @Inject constructor(
     private val completeTutorialUseCase: CompleteTutorialUseCase,
     private val getAllLocalScreenshotsUseCase: GetAllLocalScreenshotsUseCase,
 ) {
-    suspend operator fun invoke(provider: String, idToken: String): Result<Pair<LoginNavigationResult, LoginResult>> {
-        return authRepository.socialLogin(provider, idToken).mapCatching { loginResult ->
+    suspend operator fun invoke(
+        provider: String,
+        idToken: String,
+        accessToken: String? = null
+    ): Result<Pair<LoginNavigationResult, LoginResult>> {
+        return authRepository.socialLogin(provider, idToken, accessToken).mapCatching { loginResult ->
             val hasSeenLocalStartTag = getStartTagScreenShownUseCase().first()
 
             val navigationResult = when {

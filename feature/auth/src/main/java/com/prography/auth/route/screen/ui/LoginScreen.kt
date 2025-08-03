@@ -37,9 +37,9 @@ fun LoginScreen(
                 LoginEffect.StartKakaoLogin -> {
                     handleKakaoLogin(
                         context = context,
-                        onSuccess = { token ->
-                            Timber.d("Kakao login success. Token: $token")
-                            viewModel.handleKakaoLoginSuccess(token)
+                        onSuccess = { idToken, accessToken ->
+                            Timber.d("Kakao login success. idToken $idToken accessToken: $accessToken")
+                            viewModel.handleKakaoLoginSuccess(idToken, accessToken)
                         },
                         onFailure = { error ->
                             Timber.e("Kakao login failed: $error")
@@ -49,8 +49,8 @@ fun LoginScreen(
                 LoginEffect.StartGoogleLogin -> {
                     handleGoogleLogin(
                         context = context,
-                        onSuccess = { idToken ->
-                            viewModel.handleGoogleLoginSuccess(idToken)
+                        onSuccess = { idToken, userId ->
+                            viewModel.handleGoogleLoginSuccess(idToken, userId)
                         },
                         onFailure = { error ->
                             Timber.e("Login failed: $error")
@@ -69,7 +69,7 @@ fun LoginScreen(
 
 suspend fun handleKakaoLogin(
     context: Context,
-    onSuccess: (String) -> Unit,
+    onSuccess: (String, String) -> Unit,
     onFailure: (Throwable) -> Unit
 ) {
     try {
@@ -82,7 +82,7 @@ suspend fun handleKakaoLogin(
                     onFailure(error)
                 }
                 token?.idToken != null  -> {
-                    onSuccess(token.idToken!!)
+                    onSuccess(token.idToken!!, token.accessToken)
                 }
                 else -> {
                     onFailure(IllegalStateException("Kakao login failed: Token is null"))
@@ -99,7 +99,7 @@ suspend fun handleKakaoLogin(
                         UserApiClient.instance.loginWithKakaoAccount(context = context, callback =callback)
                     }
                 } else if (token?.idToken != null) {
-                    onSuccess(token.idToken!!)
+                    onSuccess(token.idToken!!, token.accessToken)
                 } else {
                     onFailure(IllegalStateException("Kakao login failed without error or token"))
                 }
@@ -114,18 +114,18 @@ suspend fun handleKakaoLogin(
 
 suspend fun handleGoogleLogin(
     context: Context,
-    onSuccess: (String) -> Unit,
+    onSuccess: (String, String) -> Unit,
     onFailure: (Throwable) -> Unit
 ) {
     try {
-        val idToken = getGoogleIdToken(context)
-        onSuccess(idToken)
+        val (idToken, userId) = getGoogleIdTokenAndUserId(context)
+        onSuccess(idToken, userId)
     } catch (e: Exception) {
         onFailure(e)
     }
 }
 
-private suspend fun getGoogleIdToken(context: Context): String {
+private suspend fun getGoogleIdTokenAndUserId(context: Context): Pair<String, String> {
     val credentialManager = CredentialManager.create(context)
 
     val request = GetCredentialRequest.Builder()
@@ -138,8 +138,11 @@ private suspend fun getGoogleIdToken(context: Context): String {
     if (credential is CustomCredential &&
         credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
     ) {
-        val idToken = GoogleIdTokenCredential.createFrom(credential.data).idToken
-        return requireNotNull(idToken) { "Google ID Token is null or blank." }
+        val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
+        val idToken =
+            requireNotNull(googleCredential.idToken) { "Google ID Token is null or blank." }
+        val userId = requireNotNull(googleCredential.id) { "Google User ID is null or blank." }
+        return idToken to userId
     } else {
         throw IllegalStateException("Expected GoogleIdTokenCredential but was ${credential::class.simpleName}")
     }

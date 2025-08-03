@@ -4,7 +4,11 @@ import com.prography.domain.model.LoginResult
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
-    suspend fun socialLogin(provider: String, idToken: String): Result<LoginResult>
+    suspend fun socialLogin(
+        provider: String,
+        idToken: String,
+        accessToken: String? = null
+    ): Result<LoginResult>
     suspend fun logout(): Result<Unit>
     suspend fun withdraw(): Result<Unit>
     fun isLoggedIn(): Boolean
