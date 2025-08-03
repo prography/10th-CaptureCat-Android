@@ -2,26 +2,73 @@ package com.prography.util
 
 import android.content.Context
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object MixpanelUtil {
-
+@Singleton
+class MixpanelUtil @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     private var mixpanel: MixpanelAPI? = null
 
-    fun initialize(context: Context, token: String) {
+    companion object {
+        private var instance: MixpanelUtil? = null
+
+        fun getInstance(): MixpanelUtil? = instance
+
+        internal fun setInstance(util: MixpanelUtil) {
+            instance = util
+        }
+
+        // Static 편의 메서드들
+        fun track(eventName: String, properties: Map<String, Any>? = null) {
+            getInstance()?.trackInternal(eventName, properties)
+        }
+
+        fun identify(userId: String) {
+            getInstance()?.identifyInternal(userId)
+        }
+
+        fun setUserProfile(properties: Map<String, Any>) {
+            getInstance()?.setUserProfileInternal(properties)
+        }
+
+        fun setSuperProperties(properties: Map<String, Any>) {
+            getInstance()?.setSuperPropertiesInternal(properties)
+        }
+
+        fun reset() {
+            getInstance()?.resetInternal()
+        }
+
+        fun flush() {
+            getInstance()?.flushInternal()
+        }
+
+        fun optOut() {
+            getInstance()?.optOutInternal()
+        }
+
+        fun optIn() {
+            getInstance()?.optInInternal()
+        }
+    }
+
+    fun initialize(token: String) {
         try {
             mixpanel = MixpanelAPI.getInstance(context, token, false)
+            setInstance(this) // Static 접근을 위한 인스턴스 설정
             Timber.d("🎯 Mixpanel initialized successfully")
         } catch (e: Exception) {
             Timber.e(e, "❌ Failed to initialize Mixpanel")
         }
     }
 
-    /**
-     * 이벤트 트래킹
-     */
-    fun track(eventName: String, properties: Map<String, Any>? = null) {
+    // Internal 메서드들 (실제 구현)
+    internal fun trackInternal(eventName: String, properties: Map<String, Any>? = null) {
         try {
             val jsonProps = properties?.let { mapToJsonObject(it) }
             mixpanel?.track(eventName, jsonProps)
@@ -31,10 +78,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 사용자 식별
-     */
-    fun identify(userId: String) {
+    internal fun identifyInternal(userId: String) {
         try {
             mixpanel?.identify(userId)
             Timber.d("👤 Mixpanel user identified: $userId")
@@ -43,10 +87,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 사용자 프로필 설정
-     */
-    fun setUserProfile(properties: Map<String, Any>) {
+    internal fun setUserProfileInternal(properties: Map<String, Any>) {
         try {
             val jsonProps = mapToJsonObject(properties)
             mixpanel?.people?.set(jsonProps)
@@ -56,10 +97,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * Super Properties 설정 (모든 이벤트에 자동 포함)
-     */
-    fun setSuperProperties(properties: Map<String, Any>) {
+    internal fun setSuperPropertiesInternal(properties: Map<String, Any>) {
         try {
             val jsonProps = mapToJsonObject(properties)
             mixpanel?.registerSuperProperties(jsonProps)
@@ -69,10 +107,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 로그아웃 시 리셋
-     */
-    fun reset() {
+    internal fun resetInternal() {
         try {
             mixpanel?.reset()
             Timber.d("🔄 Mixpanel reset")
@@ -81,10 +116,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 즉시 전송
-     */
-    fun flush() {
+    internal fun flushInternal() {
         try {
             mixpanel?.flush()
             Timber.d("🚀 Mixpanel events flushed")
@@ -93,10 +125,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 추적 중단
-     */
-    fun optOut() {
+    internal fun optOutInternal() {
         try {
             mixpanel?.optOutTracking()
             Timber.d("🚫 Mixpanel tracking opted out")
@@ -105,10 +134,7 @@ object MixpanelUtil {
         }
     }
 
-    /**
-     * 추적 재개
-     */
-    fun optIn() {
+    internal fun optInInternal() {
         try {
             mixpanel?.optInTracking()
             Timber.d("✅ Mixpanel tracking opted in")
