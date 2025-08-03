@@ -12,6 +12,17 @@ data class AuthResponse(
  * 단일 응답 객체 형식
  */
 @Serializable
+data class AddTagResponse<T>(
+    val result: String,
+    val data: List<T>? = null,
+    val error: ApiError? = null
+)
+
+
+/**
+ * 단일 응답 객체 형식
+ */
+@Serializable
 data class ApiResponse<T>(
     val result: String,
     val data: T? = null,

@@ -203,7 +203,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
         return when (networkState) {
             is NetworkState.Success -> {
-                val tagModels = networkState.body.getDataOrNull()?.map { response ->
+                val tagModels = networkState.body.data?.map { response ->
                     TagModel(id = response.id.toString(), name = response.name)
                 } ?: emptyList()
                 Result.success(tagModels)
