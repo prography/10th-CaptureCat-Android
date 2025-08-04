@@ -144,6 +144,7 @@ fun AppNavGraph(
             val imageDetail = backStackEntry.toRoute<AppRoute.ImageDetail>()
             ImageDetailRoute(
                 navigationHelper = navigationHelper,
+                navController = navController,
                 screenshotIds = imageDetail.screenshotIds,
                 currentIndex = imageDetail.currentIndex,
                 entryPoint = imageDetail.entryPoint

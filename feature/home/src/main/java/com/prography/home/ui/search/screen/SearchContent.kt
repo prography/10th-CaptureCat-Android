@@ -14,37 +14,73 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.search.contract.*
 import com.prography.ui.component.*
 import com.prography.ui.theme.*
+import com.prography.util.SearchRefreshManager
+import com.prography.util.SearchRefreshWrapper
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 
 @Composable
 fun SearchContent(
     state: SearchState,
     onAction: (SearchAction) -> Unit,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    // SearchRefreshManager를 통한 새로고침 처리
+    val searchRefreshManager: SearchRefreshManager =
+        hiltViewModel<SearchRefreshWrapper>().searchRefreshManager
+
+    var lastProcessedTime by remember { mutableLongStateOf(0L) }
+
+    Timber.d("🔍 SearchContent: Created with searchRefreshManager = $searchRefreshManager")
+
+    LaunchedEffect(Unit) {
+        Timber.d("🔍 SearchContent: Starting to collect refresh events")
+        searchRefreshManager.refreshEvent.collect {
+            val currentTime = System.currentTimeMillis()
+            // 1초 이내 중복 이벤트 방지
+            if (currentTime - lastProcessedTime > 1000) {
+                lastProcessedTime = currentTime
+                Timber.d("🔍 SearchContent: Received refresh event, selectedTags = ${state.selectedTags}")
+                if (state.selectedTags.isNotEmpty()) {
+                    Timber.d("🔍 SearchContent: Triggering RefreshSearchResults action")
+                    onAction(SearchAction.RefreshSearchResults)
+                }
+                Timber.d("🔍 SearchContent: Refreshed search results")
+            } else {
+                Timber.d("🔍 SearchContent: Ignoring duplicate refresh event")
+            }
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .navigationBarsPadding() // Add navigationBarsPadding here
+            .navigationBarsPadding()
     ) {
         if (state.selectedTags.isNotEmpty()) {
-            // 기존 SearchBar 숨기고 이걸로 대체
             SelectedTagsSearchHeader(
                 selectedTags = state.selectedTags,
                 onRemoveTag = { tag -> onAction(SearchAction.RemoveTag(tag)) },
@@ -64,10 +100,8 @@ fun SearchContent(
 
         when {
             state.popularTags.isEmpty() -> {
-                // 초기 Empty 상태
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     UiEmptyState(
@@ -79,7 +113,6 @@ fun SearchContent(
             }
 
             state.hasSearched && state.searchResults.isEmpty() -> {
-                // 검색했는데 결과 없을 때
                 UiEmptyState(
                     title = "검색 결과가 없어요.",
                     info = "스크린샷을 태그해 정리해보세요",
@@ -89,7 +122,6 @@ fun SearchContent(
             }
 
             else -> {
-                // 정상 결과 또는 인기 태그
                 SearchResultsContent(
                     state = state,
                     isSearchMode = isSearchMode,
@@ -107,8 +139,7 @@ fun SearchResultsContent(
     onAction: (SearchAction) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         if (isSearchMode) {
@@ -132,7 +163,6 @@ fun SearchResultsContent(
             }
 
             if (state.searchResults.isNotEmpty()) {
-                // 검색 결과를 2개씩 묶어서 표시
                 val chunkedResults = state.searchResults.chunked(2)
                 items(chunkedResults) { rowItems ->
                     Row(
@@ -145,16 +175,11 @@ fun SearchResultsContent(
                             SearchResultItem(
                                 screenshot = screenshot,
                                 onScreenshotClick = {
-                                    onAction(
-                                        SearchAction.OnScreenshotClick(
-                                            screenshot
-                                        )
-                                    )
+                                    onAction(SearchAction.OnScreenshotClick(screenshot))
                                 },
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        // 한 개만 있는 경우 빈 공간 추가
                         if (rowItems.size < 2) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
@@ -231,12 +256,10 @@ fun SelectedTagsSearchHeader(
             text = "취소",
             style = body02Regular,
             color = Text02,
-            modifier = Modifier
-                .clickable { onClearAll() }
+            modifier = Modifier.clickable { onClearAll() }
         )
     }
 }
-
 
 @Composable
 fun RelatedTagsSection(
@@ -250,9 +273,6 @@ fun RelatedTagsSection(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            // 이미 선택된 태그들은 제외하고 표시
-            // relatedTags는 현재 선택된 모든 태그를 가진 스크린샷들의 다른 태그들이어야 함
-            // 예: 선택된 태그 ["여행", "서울"] → 이 두 태그를 모두 가진 스크린샷들의 다른 태그들 ["카페", "한강", "맛집"]
             items(relatedTags.filter { !selectedTags.contains(it) }) { tag ->
                 UiTagShortcutChip(
                     text = tag,
@@ -273,12 +293,11 @@ fun PopularTagsSection(
             text = "태그 바로가기",
             style = subhead01Bold,
             color = Text02,
-            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp, start =16.dp)
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp, start = 16.dp)
         )
 
         LazyRow(
-            modifier = Modifier
-                .padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
@@ -291,7 +310,6 @@ fun PopularTagsSection(
         }
     }
 }
-
 
 @Composable
 fun SearchResultItem(
@@ -317,7 +335,6 @@ fun SearchResultItem(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Tags at bottom
         if (screenshot.tags.isNotEmpty()) {
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -334,33 +351,3 @@ fun SearchResultItem(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SearchContentPreview() {
-    val sampleState = SearchState(
-        popularTags = listOf(
-            TagWithCount("쇼핑", 15),
-            TagWithCount("여행", 8),
-            TagWithCount("음식", 6),
-            TagWithCount("가나다라마바사마바사아자타카하", 4)
-        )
-    )
-
-    PrographyTheme {
-        SearchContent(
-            state = sampleState,
-            onAction = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EmptySearchContentPreview() {
-    PrographyTheme {
-        SearchContent(
-            state = SearchState(),
-            onAction = {}
-        )
-    }
-}

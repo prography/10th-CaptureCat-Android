@@ -26,13 +26,24 @@ class ImageDetailViewModel @Inject constructor(
     private val updateScreenshotUseCase: UpdateScreenshotUseCase,
     private val deleteTagUseCase: DeleteTagUseCase,
     private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase,
-    private val toggleBookmarkUseCase: ToggleBookmarkUseCase
+    private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
+    private val searchRefreshManager: com.prography.util.SearchRefreshManager
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
 ) {
 
     private var screenshotIds: List<String> = emptyList()
     private val screenshotCache = mutableMapOf<String, UiScreenshotModel>()
+    private var hasDataChanges = false
+
+    fun hasDataChanged(): Boolean = hasDataChanges
+
+    private fun notifySearchRefresh() {
+        if (hasDataChanges) {
+            searchRefreshManager.triggerRefresh()
+            Timber.d("📱 ImageDetail: Triggered search refresh")
+        }
+    }
 
     fun initializeWithIds(screenshotIds: List<String>, currentIndex: Int = 0) {
         Timber.d("Initializing with ${screenshotIds.size} screenshot IDs, currentIndex: $currentIndex")
@@ -285,6 +296,8 @@ class ImageDetailViewModel @Inject constructor(
                         currentScreenshot = updatedScreenshot
                     )
                 }
+                hasDataChanges = true
+                notifySearchRefresh()
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to update favorite status")
                 emitEffect(ImageDetailEffect.ShowError("즐겨찾기 업데이트에 실패했습니다."))
@@ -346,6 +359,8 @@ class ImageDetailViewModel @Inject constructor(
                 emitEffect(ImageDetailEffect.ShowError("태그 삭제에 실패했습니다."))
             }
         }
+        hasDataChanges = true
+        notifySearchRefresh()
     }
 
     private fun addNewTag() {
@@ -415,6 +430,8 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }
         }
+        hasDataChanges = true
+        notifySearchRefresh()
     }
 
     private fun deleteCurrentScreenshot() {
@@ -456,6 +473,8 @@ class ImageDetailViewModel @Inject constructor(
                 updateState { copy(isLoading = false) }
             }
         }
+        hasDataChanges = true
+        notifySearchRefresh()
     }
 
     private fun getAvailableTags(): List<String> {

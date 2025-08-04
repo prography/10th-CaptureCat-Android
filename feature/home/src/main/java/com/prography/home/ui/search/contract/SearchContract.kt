@@ -25,6 +25,7 @@ sealed class SearchAction {
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : SearchAction()
     object OnSearchComplete : SearchAction()
     object NavigateToStorage : SearchAction()
+    object RefreshSearchResults : SearchAction()
 }
 
 // Define Effects

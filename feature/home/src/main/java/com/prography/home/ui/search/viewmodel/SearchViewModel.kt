@@ -39,6 +39,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
             is SearchAction.OnSearchComplete -> handleSearchComplete()
             is SearchAction.NavigateToStorage -> navigateToStorage()
+            is SearchAction.RefreshSearchResults -> handleRefreshSearchResults()
         }
     }
 
@@ -218,18 +219,49 @@ class SearchViewModel @Inject constructor(
         val query = currentState.searchQuery.trim()
         if (query.isEmpty()) return
 
-        // 태그를 selectedTags에 추가하고 서버에서 검색
-        val newTags = listOf(query) + currentState.selectedTags
-        updateState {
-            copy(
-                selectedTags = newTags,
-                searchQuery = ""
-            )
-        }
+        updateState { copy(isLoading = true) }
 
-        // 서버에서 검색 및 연관 태그 업데이트
-        searchBySelectedTags(newTags)
-        updateRelatedTags(newTags)
+        viewModelScope.launch {
+            try {
+                // 먼저 검색해서 결과가 있는지 확인
+                val searchResults = searchImagesByTagsUseCase(listOf(query))
+
+                if (searchResults.isNotEmpty()) {
+                    // 결과가 있으면 태그를 selectedTags에 추가
+                    val newTags = listOf(query) + currentState.selectedTags
+                    updateState {
+                        copy(
+                            selectedTags = newTags,
+                            searchResults = searchResults,
+                            hasSearched = true,
+                            isLoading = false
+                        )
+                    }
+
+                    // 연관 태그 업데이트
+                    updateRelatedTags(newTags)
+                } else {
+                    // 결과가 없으면 에러 상태로 설정
+                    updateState {
+                        copy(
+                            searchQuery = "",
+                            searchResults = emptyList(),
+                            hasSearched = true,
+                            isLoading = false
+                        )
+                    }
+                    emitEffect(SearchEffect.ShowError("'$query' 태그에 해당하는 스크린샷이 없습니다."))
+                }
+            } catch (exception: Exception) {
+                updateState {
+                    copy(
+                        searchQuery = "",
+                        isLoading = false
+                    )
+                }
+                emitEffect(SearchEffect.ShowError("검색 중 오류가 발생했습니다."))
+            }
+        }
     }
 
     private fun handleScreenshotClick(clickedScreenshot: com.prography.domain.model.UiScreenshotModel) {
@@ -268,5 +300,19 @@ class SearchViewModel @Inject constructor(
 
     private fun navigateToStorage() {
         emitEffect(SearchEffect.NavigateToStorage)
+    }
+
+    private fun handleRefreshSearchResults() {
+        val selectedTags = currentState.selectedTags
+        if (selectedTags.isNotEmpty()) {
+            timber.log.Timber.d("🔄 Refreshing search results with tags: $selectedTags")
+            // 미분류 태그인 경우 특별 처리
+            if (selectedTags.contains("미분류")) {
+                searchUncategorizedScreenshots()
+            } else {
+                searchBySelectedTags(selectedTags)
+                updateRelatedTags(selectedTags)
+            }
+        }
     }
 }
