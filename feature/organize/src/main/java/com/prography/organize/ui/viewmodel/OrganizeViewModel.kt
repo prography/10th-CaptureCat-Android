@@ -239,12 +239,13 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                val uniqueTags = screenshotsToSave.flatMap { it.tags }.distinctBy { it.name }
                 MixpanelUtil.track(
                     "click_save_image",
                     mapOf(
                         "entry_point" to entryPoint.value,
                         "tagging_mode" to if (uiState.value.organizeMode == OrganizeMode.BATCH) "batch" else "single",
-                        "tag_count_total" to 5,
+                        "tag_count_total" to uniqueTags.size,
                         "screenshot_count" to uiState.value.screenshots.size,
                     )
                 )
