@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.prography.ui.BaseComposeViewModel
+import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.model.UiScreenshotModel
@@ -27,8 +28,11 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
     private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
+    private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
+
+    private var hasCheckedLoginStatus = false
 
     val screenshotsPagingFlow: Flow<PagingData<UiScreenshotModel>> =
         Pager(
@@ -38,6 +42,17 @@ class HomeViewModel @Inject constructor(
                 ScreenshotPagingSource(getScreenshotsUseCase)
             }
         ).flow.cachedIn(viewModelScope)
+
+    fun checkLoginStatusOnFirstAccess() {
+        if (!hasCheckedLoginStatus) {
+            hasCheckedLoginStatus = true
+            val isLoggedIn = checkLoginStatusUseCase()
+            if (!isLoggedIn) {
+                // 게스트 모드라면 로그인 다이얼로그 표시
+                updateState { copy(showLoginDialog = true) }
+            }
+        }
+    }
 
     override fun handleAction(action: HomeAction) {
         when (action) {
@@ -56,6 +71,20 @@ class HomeViewModel @Inject constructor(
             }
             is HomeAction.OnScreenshotClick -> {
                 handleScreenshotClick(action.screenshot)
+            }
+            HomeAction.ShowLoginDialog -> {
+                updateState { copy(showLoginDialog = true) }
+            }
+
+            HomeAction.HideLoginDialog -> {
+                updateState { copy(showLoginDialog = false) }
+            }
+
+            HomeAction.NavigateToLogin -> {
+                updateState { copy(showLoginDialog = false) }
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Login)
+                )
             }
         }
     }

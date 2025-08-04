@@ -5,12 +5,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeEffect
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.prography.ui.component.UiCommonDialog
 
 @Composable
 fun HomeScreen(
@@ -21,6 +26,11 @@ fun HomeScreen(
     val effectFlow = viewModel.effect
 
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
+
+    // 처음 접근 시 로그인 상태 체크
+    LaunchedEffect(Unit) {
+        viewModel.checkLoginStatusOnFirstAccess()
+    }
 
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
@@ -49,4 +59,23 @@ fun HomeScreen(
         },
         pagingItems = pagingItems
     )
+
+    // 로그인 유도 다이얼로그
+    if (state.showLoginDialog) {
+        UiCommonDialog(
+            isVisible = true,
+            title = "로그인하기",
+            message = "현재 게스트 모드로 이용 중이에요.\n게스트 모드에서는 최대 10장까지만 저장할 수 있어요.\n로그인하시겠습니까?",
+            leftButtonText = "취소",
+            rightButtonText = "확인",
+            onDismiss = { viewModel.sendAction(HomeAction.HideLoginDialog) },
+            onConfirm = { viewModel.sendAction(HomeAction.NavigateToLogin) }
+        )
+    }
 }
+
+// Navigation Helper Wrapper for Hilt injection
+@dagger.hilt.android.lifecycle.HiltViewModel
+class NavigationHelperWrapper @javax.inject.Inject constructor(
+    val navigationHelper: NavigationHelper
+) : androidx.lifecycle.ViewModel()
