@@ -70,7 +70,7 @@ mixpanel = "8.2.0"
 # Project versions
 projectApplicationId = "com.prography.capturecat"
 projectVersionName = "1.0.0"
-projectVersionCode = "2"
+projectVersionCode = "3"
 projectMinSdkVersion = "24"
 projectTargetSdkVersion = "35"
 projectCompileSdkVersion = "35"
