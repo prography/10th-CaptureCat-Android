@@ -242,15 +242,14 @@ fun ChipSection(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        IconButton(onClick = onFavoriteToggle) {
-            Icon(
-                painter = painterResource(
-                    id = if (isFavorite) R.drawable.ic_favorite_check else R.drawable.ic_favorite_uncheck
-                ),
-                contentDescription = "즐겨찾기",
-                tint = Color.Unspecified
-            )
-        }
+        Icon(
+            painter = painterResource(
+                id = if (isFavorite) R.drawable.ic_favorite_check else R.drawable.ic_favorite_uncheck
+            ),
+            contentDescription = "즐겨찾기",
+            tint = Color.Unspecified,
+            modifier = Modifier.clickable { onFavoriteToggle() }
+        )
     }
 }
 
