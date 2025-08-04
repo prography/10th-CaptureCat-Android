@@ -29,6 +29,15 @@ sealed interface AppRoute : Route {
     data object Start : AppRoute
 
     @Serializable
+    data object StartTag : AppRoute
+
+    @Serializable
+    data object StartPermission : AppRoute
+
+    @Serializable
+    data object StartChoose : AppRoute
+
+    @Serializable
     data class ImageDetail(
         val screenshotIds: List<String> = emptyList(),
         val currentIndex: Int = 0,

@@ -9,38 +9,9 @@ import com.prography.util.permission.ScreenshotPermissionGate
 
 @Composable
 fun StartRoute(navigationHelper: NavigationHelper) {
-    var currentScreen by remember { mutableStateOf(ScreenState.TAG_SCREEN) }
-
-    when (currentScreen) {
-        ScreenState.TAG_SCREEN -> {
-            // 처음 보여지는 태그 선택 화면
-            StartTagScreen(
-                onFinishSelection = {
-                    currentScreen = ScreenState.CHOOSE_SCREEN // 화면 전환
-                }
-            )
-        }
-        ScreenState.CHOOSE_SCREEN -> {
-            // 선택 완료 후 캡처 스크린샷 관리 화면
-            ScreenshotPermissionGate(
-                onPermissionGranted = {
-                    MixpanelUtil.track("view_start_inbox")
-                    StartChooseScreen(
-                        maxSelectableImages = 10,
-                        onFinishSelection = { selectedImages ->
-                            navigationHelper.navigate(
-                                NavigationEvent.To(
-                                    AppRoute.Organize(
-                                        screenshotIds = selectedImages.map { it.id },
-                                        entryPoint = "start_inbox"
-                                    )
-                                )
-                            )
-                        }
-                    )
-                }
-            )
-        }
+    // StartRoute는 바로 StartTag로 리다이렉트
+    LaunchedEffect(Unit) {
+        navigationHelper.navigate(NavigationEvent.To(AppRoute.StartTag))
     }
 }
 

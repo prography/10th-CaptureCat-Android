@@ -4,6 +4,11 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +29,13 @@ import com.prography.setting.route.SettingRoute
 import com.prography.setting.route.WithdrawRoute
 import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.upload.UploadRoute
+import com.prography.util.MixpanelUtil
+import com.prography.util.permission.ScreenshotPermissionGate
 import kotlinx.coroutines.flow.collectLatest
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import com.prography.ui.component.UiBasicDialog
 
 @Composable
 fun AppNavGraph(
@@ -63,6 +74,57 @@ fun AppNavGraph(
         }
         composable<AppRoute.Start> {
             StartRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.StartTag> {
+            com.android.start.StartTagScreen(
+                onFinishSelection = { selectedTags ->
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.StartPermission))
+                },
+                onNavigateBack = {
+                    navigationHelper.navigate(NavigationEvent.Up)
+                }
+            )
+        }
+        composable<AppRoute.StartPermission> {
+            com.android.start.StartPermissionScreen(
+                onNext = {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.StartChoose))
+                }
+            )
+        }
+        composable<AppRoute.StartChoose> {
+            val context = LocalContext.current
+
+            ScreenshotPermissionGate(
+                onPermissionGranted = {
+                    MixpanelUtil.track("view_start_inbox")
+                    com.android.start.StartChooseScreen(
+                        maxSelectableImages = 10,
+                        onFinishSelection = { selectedImages ->
+                            navigationHelper.navigate(
+                                NavigationEvent.To(
+                                    AppRoute.Organize(
+                                        screenshotIds = selectedImages.map { it.id },
+                                        entryPoint = "start_inbox"
+                                    )
+                                )
+                            )
+                        }
+                    )
+                },
+                onPermissionDenied = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                },
+                onNavigateToSettings = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                }
+            )
         }
         composable<AppRoute.Upload> {
             UploadRoute()

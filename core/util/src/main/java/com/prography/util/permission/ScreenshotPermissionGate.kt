@@ -17,12 +17,19 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import android.Manifest
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.prography.ui.component.UiBasicDialog
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScreenshotPermissionGate(
     onPermissionGranted: @Composable () -> Unit,
-    onPermissionJustGranted: (() -> Unit)? = null
+    onPermissionJustGranted: (() -> Unit)? = null,
+    onPermissionDenied: (() -> Unit)? = null,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val permission = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> Manifest.permission.READ_MEDIA_IMAGES
@@ -31,6 +38,7 @@ fun ScreenshotPermissionGate(
     }
 
     val permissionState = rememberPermissionState(permission = permission)
+    var showRationaleDialog by remember { mutableStateOf(true) }
 
     // 권한이 허용되었을 때 콜백 호출 (단순하게)
     LaunchedEffect(permissionState.status.isGranted) {
@@ -45,25 +53,39 @@ fun ScreenshotPermissionGate(
         }
 
         permissionState.status.shouldShowRationale -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("스크린샷을 불러오려면 권한이 필요합니다.")
-                Button(onClick = {
+            UiBasicDialog(
+                isVisible = showRationaleDialog,
+                title = "사진 접근 불가!",
+                info = "스크린샷을 불러오기 위해 사진 접근 권한이 필요합니다.",
+                confirmButtonText = "권한 요청",
+                onConfirm = {
+                    showRationaleDialog = false
                     permissionState.launchPermissionRequest()
-                }) {
-                    Text("권한 요청")
                 }
-            }
+            )
         }
 
         else -> {
-            Log.d("PermissionGate", "Auto requesting permission")
-            // 최초 진입일 때는 자동 요청
-            SideEffect {
+            // permission denied (첫 요청 또는 영구 거부)
+
+            // 최초 진입이면 자동 요청 시도
+            LaunchedEffect(Unit) {
                 permissionState.launchPermissionRequest()
+            }
+
+            // 영구 거부 상태 처리
+            if (!permissionState.status.isGranted && !permissionState.status.shouldShowRationale) {
+                if (onPermissionDenied != null) {
+                    onPermissionDenied()
+                } else {
+                    UiBasicDialog(
+                        isVisible = true,
+                        title = "사진 접근 불가!",
+                        info = "설정에서 사진 접근 권한을 허용해주세요.",
+                        confirmButtonText = "설정으로",
+                        onConfirm = onNavigateToSettings
+                    )
+                }
             }
         }
     }
