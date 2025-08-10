@@ -111,18 +111,6 @@ fun UploadingContent(
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // 퍼센트 진행률 표시
-                LinearProgressIndicator(
-                    progress = { percent / 100f },
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    color = Primary
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Box(
                     modifier = Modifier
                         .background(

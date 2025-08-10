@@ -6,6 +6,7 @@ import com.prography.domain.repository.AuthRepository
 import com.prography.domain.repository.UserPreferenceRepository
 import com.prography.network.api.AuthService
 import com.prography.network.entity.SocialLoginRequest
+import com.prography.network.entity.WithdrawRequest
 import com.prography.network.interceptor.TokenManager
 import timber.log.Timber
 import javax.inject.Inject
@@ -111,23 +112,40 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun withdraw(): Result<Unit> {
+    override suspend fun withdraw(reason: String): Result<Unit> {
         return try {
             val accessToken = tokenManager.getAccessToken()
             if (accessToken.isNullOrBlank()) {
+                Timber.e("WITHDRAW: Access token is null or blank")
                 return Result.failure(Exception("액세스 토큰이 없습니다"))
             }
 
-            val response = authService.withdraw("Bearer $accessToken")
+            val withdrawRequest = WithdrawRequest(reason = reason)
+            Timber.d("WITHDRAW: Sending request with reason: $reason")
+
+            val response = authService.withdraw("Bearer $accessToken", withdrawRequest)
+
+            Timber.d("WITHDRAW: Response code: ${response.code()}")
+            Timber.d("WITHDRAW: Response body: ${response.body()}")
+            Timber.d("WITHDRAW: Response error: ${response.errorBody()?.string()}")
 
             if (response.isSuccessful) {
-                tokenManager.clearTokens()
-                userPreferenceRepository.setNickname("")
-                Result.success(Unit)
+                val responseBody = response.body()
+                if (responseBody?.result == "SUCCESS") {
+                    Timber.d("WITHDRAW: Success - ${responseBody.data}")
+                    tokenManager.clearTokens()
+                    userPreferenceRepository.setNickname("")
+                    Result.success(Unit)
+                } else {
+                    Timber.e("WITHDRAW: Server returned error - ${responseBody?.result}")
+                    Result.failure(Exception("서버에서 탈퇴 처리에 실패했습니다"))
+                }
             } else {
-                Result.failure(Exception("회원탈퇴에 실패했습니다"))
+                Timber.e("WITHDRAW: HTTP error - ${response.code()}: ${response.message()}")
+                Result.failure(Exception("회원탈퇴에 실패했습니다 (${response.code()})"))
             }
         } catch (e: Exception) {
+            Timber.e(e, "WITHDRAW: Exception occurred")
             Result.failure(e)
         }
     }
