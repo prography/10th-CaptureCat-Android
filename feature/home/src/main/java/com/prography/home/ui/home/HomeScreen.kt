@@ -41,6 +41,11 @@ fun HomeScreen(
                 is HomeEffect.NavigateToStorage -> {
                     onNavigateToStorage()
                 }
+                is HomeEffect.OpenErrorReportChat -> {
+                    // TODO: 실제 채팅 서비스 연결 구현
+                    // 예: 카카오톡 채널, 구글 폼, 이메일 등
+                    println("Open Error Report Chat")
+                }
             }
         }
     }
