@@ -86,6 +86,13 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.Login)
                 )
             }
+            HomeAction.OnErrorReportClick -> {
+                handleErrorReportClick()
+            }
+
+            HomeAction.DismissErrorReportBanner -> {
+                dismissErrorReportBanner()
+            }
         }
     }
 
@@ -123,5 +130,15 @@ class HomeViewModel @Inject constructor(
                 )
             )
         )
+    }
+
+    private fun handleErrorReportClick() {
+        // 채팅으로 오류 제보 - 외부 링크나 채팅앱으로 연결
+        // TODO: 실제 채팅 서비스 연결 (예: 카카오톡 채널, 구글 폼 등)
+        emitEffect(HomeEffect.OpenErrorReportChat)
+    }
+
+    private fun dismissErrorReportBanner() {
+        updateState { copy(showErrorReportBanner = false) }
     }
 }

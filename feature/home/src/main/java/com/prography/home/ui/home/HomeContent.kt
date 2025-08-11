@@ -33,6 +33,7 @@ import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
+import com.prography.home.ui.home.component.ErrorReportBanner
 
 @Composable
 fun HomeContent(
@@ -148,6 +149,13 @@ fun HomeContent(
                         modifier = Modifier.clickableWithoutRipple {
                             onAction(HomeAction.NavigateToSettings)
                         }
+                    )
+                }
+            }
+            item {
+                if (state.showErrorReportBanner) {
+                    ErrorReportBanner(
+                        onReportClick = { onAction(HomeAction.OnErrorReportClick) }
                     )
                 }
             }
