@@ -1,10 +1,10 @@
-package com.prography.setting.route
+package com.prography.home.ui.mypage.route
 
 import androidx.compose.runtime.Composable
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
-import com.prography.setting.ui.withdraw.WithdrawScreen
+import com.prography.home.ui.mypage.ui.withdraw.WithdrawScreen
 
 @Composable
 fun WithdrawRoute(

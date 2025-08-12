@@ -1,4 +1,4 @@
-package com.prography.setting.contract
+package com.prography.home.ui.mypage.contract
 
 data class SettingState(
     val isLoggedIn: Boolean = false,
@@ -10,20 +10,13 @@ data class SettingState(
 )
 
 sealed class SettingEffect {
-    object NavigateUp : SettingEffect()
-    object NavigateToLogin : SettingEffect()
-    object NavigateToWithdraw : SettingEffect()
-    object ShowLogoutSuccess : SettingEffect()
-    object ShowWithdrawSuccess : SettingEffect()
     data class OpenExternalLink(val url: String) : SettingEffect()
 }
 
 sealed class SettingAction {
-    object OnNavigateUp : SettingAction()
     object OnLogin : SettingAction()
     object OnLogout : SettingAction()
     object OnNavigateToWithdraw : SettingAction()
-    data class OnConfirmWithdraw(val reason: String) : SettingAction()
     data class OnExternalLink(val url: String) : SettingAction()
 
     object OnClickLogout : SettingAction()

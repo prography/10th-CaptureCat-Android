@@ -1,4 +1,4 @@
-package com.prography.setting.ui.withdraw
+package com.prography.home.ui.mypage.ui.withdraw
 
 data class WithdrawState(
     val selectedReason: String? = null,

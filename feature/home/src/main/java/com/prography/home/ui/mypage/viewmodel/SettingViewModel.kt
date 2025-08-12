@@ -1,13 +1,16 @@
-package com.prography.setting.viewmodel
+package com.prography.home.ui.mypage.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
 import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
 import com.prography.domain.usecase.user.GetNicknameUseCase
-import com.prography.setting.contract.SettingAction
-import com.prography.setting.contract.SettingEffect
-import com.prography.setting.contract.SettingState
+import com.prography.home.ui.mypage.contract.SettingAction
+import com.prography.home.ui.mypage.contract.SettingEffect
+import com.prography.home.ui.mypage.contract.SettingState
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +23,11 @@ class SettingViewModel @Inject constructor(
     private val getAuthTokenUseCase: GetAuthTokenUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getNicknameUseCase: GetNicknameUseCase,
-    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase
+    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase,
+    private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
     initialState = SettingState()
 ) {
-
     init {
         loadUserInfo()
     }
@@ -32,13 +35,10 @@ class SettingViewModel @Inject constructor(
     override fun handleAction(action: SettingAction) {
         when (action) {
             SettingAction.OnLogin -> {
-                emitEffect(SettingEffect.NavigateToLogin)
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Login)
+                )
             }
-
-            SettingAction.OnNavigateUp -> {
-                emitEffect(SettingEffect.NavigateUp)
-            }
-
             SettingAction.OnLogout -> {
                 updateState { copy(showLogoutDialog = false) }
                 logout()
@@ -46,11 +46,9 @@ class SettingViewModel @Inject constructor(
 
             SettingAction.OnNavigateToWithdraw -> {
                 updateState { copy(showWithdrawDialog = false) }
-                emitEffect(SettingEffect.NavigateToWithdraw)
-            }
-
-            is SettingAction.OnConfirmWithdraw -> {
-                withdrawUser(action.reason)
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.SettingRoute.Withdraw)
+                )
             }
 
             is SettingAction.OnExternalLink -> {
@@ -107,24 +105,11 @@ class SettingViewModel @Inject constructor(
                 MixpanelUtil.track("logout")
                 MixpanelUtil.reset()
 
-                emitEffect(SettingEffect.ShowLogoutSuccess)
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Main, popUpTo = true)
+                )
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to logout")
-            }.also {
-                updateState { copy(isLoading = false) }
-            }
-        }
-    }
-
-    private fun withdrawUser(reason: String) {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-
-            runCatching {
-                // TODO: 회원탈퇴 UseCase 구현 후 호출
-                Timber.d("User withdrawal requested with reason: $reason")
-            }.onFailure { exception ->
-                Timber.e(exception, "Failed to withdraw user")
             }.also {
                 updateState { copy(isLoading = false) }
             }

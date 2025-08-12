@@ -56,11 +56,6 @@ class HomeViewModel @Inject constructor(
 
     override fun handleAction(action: HomeAction) {
         when (action) {
-            HomeAction.NavigateToSettings -> {
-                navigationHelper.navigate(
-                    NavigationEvent.To(AppRoute.SettingRoute.Setting)
-                )
-            }
             HomeAction.NavigateToFavorite -> {
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Favorite)
@@ -68,6 +63,11 @@ class HomeViewModel @Inject constructor(
             }
             HomeAction.NavigateToStorage -> {
                 emitEffect(HomeEffect.NavigateToStorage)
+            }
+            HomeAction.NavigateToSearch -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Search)
+                )
             }
             is HomeAction.OnScreenshotClick -> {
                 handleScreenshotClick(action.screenshot)

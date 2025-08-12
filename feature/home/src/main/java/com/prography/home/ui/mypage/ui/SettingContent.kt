@@ -1,4 +1,4 @@
-package com.prography.setting.ui
+package com.prography.home.ui.mypage.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prography.setting.contract.SettingAction
-import com.prography.setting.contract.SettingState
+import com.prography.home.ui.mypage.contract.SettingAction
+import com.prography.home.ui.mypage.contract.SettingState
 import com.prography.ui.component.SelectableCard
 import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UiPrimaryButton
@@ -44,25 +44,14 @@ fun SettingContent(
             .background(Color.White)
             .statusBarsPadding()
     ) {
-        // Top Bar
-        Row(
+        Text(
+            text = stringResource(id = UiString.setting_title),
+            style = headline02Bold,
+            color = Text01,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
-                contentDescription = stringResource(id = UiString.setting_title),
-                modifier = Modifier.clickable { onAction(SettingAction.OnNavigateUp) }
-            )
-            Text(
-                text = stringResource(id = UiString.setting_title),
-                style = headline02Bold,
-                color = Text01
-            )
-        }
-
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        )
         if (state.isLoggedIn) {
             MemberSettingContent(
                 nickname = state.nickname ?: "사용자",

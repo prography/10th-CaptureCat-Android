@@ -25,8 +25,8 @@ import com.prography.navigation.NavigationHelper
 import com.prography.onboarding.navigation.InitOnboardingRoute
 import com.prography.onboarding.navigation.OnboardingRoute
 import com.prography.organize.navigation.OrganizeRoute
-import com.prography.setting.route.SettingRoute
-import com.prography.setting.route.WithdrawRoute
+import com.prography.home.ui.mypage.route.SettingRoute
+import com.prography.home.ui.mypage.route.WithdrawRoute
 import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.upload.UploadRoute
 import com.prography.util.MixpanelUtil
@@ -132,6 +132,14 @@ fun AppNavGraph(
         composable<AppRoute.Main> {
             MainRoute(navigationHelper = navigationHelper)
         }
+        composable<AppRoute.Search> {
+            com.prography.home.ui.search.screen.SearchScreen(
+                onNavigateToStorage = {
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
+                },
+                navController = navController
+            )
+        }
         composable<AppRoute.Organize> { backStackEntry ->
             val organize = backStackEntry.toRoute<AppRoute.Organize>()
             OrganizeRoute(
@@ -154,7 +162,7 @@ fun AppNavGraph(
             FavoriteRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.SettingRoute.Setting> {
-            SettingRoute(navigationHelper = navigationHelper)
+            SettingRoute()
         }
         composable<AppRoute.SettingRoute.Withdraw> {
             WithdrawRoute(navigationHelper = navigationHelper)

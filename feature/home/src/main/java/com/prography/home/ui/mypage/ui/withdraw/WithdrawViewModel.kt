@@ -1,4 +1,4 @@
-package com.prography.setting.ui.withdraw
+package com.prography.home.ui.mypage.ui.withdraw
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

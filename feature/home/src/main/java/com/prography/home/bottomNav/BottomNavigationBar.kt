@@ -50,7 +50,7 @@ fun BottomNavigationBar(
     val items = listOf(
         BottomNavItem.Storage,
         BottomNavItem.Home,
-        BottomNavItem.Search
+        BottomNavItem.MyPage
     )
 
     // 감싸는 Box 또는 Column에 padding 추가
