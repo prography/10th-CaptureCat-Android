@@ -11,6 +11,7 @@
 > 우리는 하루에도 수많은 정보를 캡처하지만, 갤러리 속에서 금세 잊히곤 합니다.
 > 캡처캣은 스크린샷을 단순한 이미지가 아닌, 다시 활용 가능한 정보로 바꿔주는 조력자입니다.
 
+<br>
 
 - **운7기𝙘𝙝𝙞𝙡𝙡** Team Blog: https://10th7.tistory.com/
 - iOS Download: 앱스토어에서 **캡처캣**을 검색하세요 ([다운](https://apps.apple.com/kr/app/%EC%BA%A1%EC%B2%98%EC%BA%A3-capturecat-%EB%82%98%EB%A7%8C%EC%9D%98-%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7-%EC%A1%B0%EB%A0%A5%EC%9E%90/id6749074137))
