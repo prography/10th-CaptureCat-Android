@@ -123,7 +123,7 @@ class AuthRepositoryImpl @Inject constructor(
             val withdrawRequest = WithdrawRequest(reason = reason)
             Timber.d("WITHDRAW: Sending request with reason: $reason")
 
-            val response = authService.withdraw("Bearer $accessToken", withdrawRequest)
+            val response = authService.withdraw(withdrawRequest)
 
             Timber.d("WITHDRAW: Response code: ${response.code()}")
             Timber.d("WITHDRAW: Response body: ${response.body()}")
