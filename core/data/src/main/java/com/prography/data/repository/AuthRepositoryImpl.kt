@@ -19,8 +19,7 @@ import kotlinx.coroutines.launch
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val tokenManager: TokenManager,
-    private val photoRemoteDataSource: PhotoRemoteDataSource,
-    private val userPreferenceRepository: UserPreferenceRepository
+    private val photoRemoteDataSource: PhotoRemoteDataSource
 ) : AuthRepository {
 
     private val _authEvents = MutableSharedFlow<AuthRepository.AuthEvent>()
@@ -65,9 +64,6 @@ class AuthRepositoryImpl @Inject constructor(
                     val refreshToken = refreshHeader.removePrefix("Bearer ")
 
                     tokenManager.saveTokens(accessToken, refreshToken)
-
-                    // 닉네임 저장
-                    userPreferenceRepository.setNickname(responseBody.nickname)
 
                     Result.success(
                         LoginResult(
@@ -134,7 +130,6 @@ class AuthRepositoryImpl @Inject constructor(
                 if (responseBody?.result == "SUCCESS") {
                     Timber.d("WITHDRAW: Success - ${responseBody.data}")
                     tokenManager.clearTokens()
-                    userPreferenceRepository.setNickname("")
                     Result.success(Unit)
                 } else {
                     Timber.e("WITHDRAW: Server returned error - ${responseBody?.result}")

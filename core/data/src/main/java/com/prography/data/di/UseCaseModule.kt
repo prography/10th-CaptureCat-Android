@@ -13,7 +13,6 @@ import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.usecase.screenshot.GetRelatedTagsUseCase
-import com.prography.domain.usecase.user.GetNicknameUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,11 +71,6 @@ object UseCaseModule {
     fun provideGetRelatedTagsUseCase(
         repository: ScreenshotRepository
     ): GetRelatedTagsUseCase = GetRelatedTagsUseCase(repository)
-
-    @Provides
-    fun provideGetNicknameUseCase(
-        repository: UserPreferenceRepository
-    ): GetNicknameUseCase = GetNicknameUseCase(repository)
 
     @Provides
     fun provideDeleteAllScreenshotsUseCase(

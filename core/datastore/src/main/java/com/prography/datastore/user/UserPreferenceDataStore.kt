@@ -37,13 +37,6 @@ class UserPreferenceDataStore(private val context: Context) {
         dataStore.edit { it[UserPreferenceKeys.IS_START_TAG_SCREEN_SHOWN] = shown }
     }
 
-    val nickname: Flow<String?> =
-        dataStore.data.map { it[UserPreferenceKeys.NICKNAME] }
-
-    suspend fun saveNickname(nickname: String) {
-        dataStore.edit { it[UserPreferenceKeys.NICKNAME] = nickname }
-    }
-
     val accessToken: Flow<String?> =
         dataStore.data.map { it[UserPreferenceKeys.ACCESS_TOKEN] }
 
