@@ -29,12 +29,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.prography.domain.usecase.storage.SaveOrganizedIdsUseCase
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
     private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase,
     private val getRecentTagsUseCase: GetRecentTagsUseCase,
     private val addRecentTagUseCase: AddRecentTagUseCase,
+    private val saveOrganizedIdsUseCase: SaveOrganizedIdsUseCase,
     @ApplicationContext private val context: Context
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
@@ -239,6 +241,10 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                // 정리 완료된 스크린샷 ID를 로컬에 저장
+                runCatching { saveOrganizedIdsUseCase(screenshotsToSave.map { it.id }) }
+                    .onFailure { Timber.e(it, "Failed to persist organized ids") }
+
                 val uniqueTags = screenshotsToSave.flatMap { it.tags }.distinctBy { it.name }
                 MixpanelUtil.track(
                     "click_save_image",

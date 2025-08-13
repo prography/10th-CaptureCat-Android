@@ -130,7 +130,7 @@ fun AppNavGraph(
             UploadRoute()
         }
         composable<AppRoute.Main> {
-            MainRoute(navigationHelper = navigationHelper)
+            MainRoute()
         }
         composable<AppRoute.Search> {
             com.prography.home.ui.search.screen.SearchScreen(

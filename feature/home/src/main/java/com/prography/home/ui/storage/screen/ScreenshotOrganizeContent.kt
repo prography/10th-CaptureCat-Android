@@ -61,6 +61,11 @@ fun ScreenshotOrganizeContent(
     val context = LocalContext.current
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
 
+    // ViewModel에서 refreshVersion이 증가할 때 Paging3 새로고침
+    LaunchedEffect(state.refreshVersion) {
+        pagingItems.refresh()
+    }
+
     // 전체 스크린샷 개수를 별도로 가져오기
     var totalScreenshotCount by remember { mutableStateOf(0) }
 
@@ -167,15 +172,20 @@ fun ScreenshotOrganizeContent(
                     val screenshot = pagingItems[index]
                     if (screenshot != null) {
                         val isSelected = state.selectedItems.contains(screenshot.id)
+                        val isOrganized = state.organizedScreenshotIds.contains(screenshot.id)
 
                         Box(
                             modifier = Modifier
                                 .border(
                                     width = 2.dp,
-                                    color = if (isSelected) Primary else Gray04
+                                    color = when {
+                                        isSelected -> Primary // 선택된 상태: 파란색
+                                        isOrganized -> Color(0xFF4CAF50) // 정리 완료: 초록색
+                                        else -> Gray04 // 기본 상태: 회색
+                                    }
                                 )
                                 .fillMaxWidth()
-                                .height(180.dp)
+                                .aspectRatio(45f / 76f)
                                 .clickable {
                                     onAction(ScreenshotAction.ToggleSelect(screenshot.id))
                                 }
@@ -200,6 +210,27 @@ fun ScreenshotOrganizeContent(
                                     .padding(4.dp),
                                 tint = Color.Unspecified
                             )
+
+                            // 정리 완료 아이콘 (우상단)
+                            if (isOrganized && !isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(4.dp)
+                                        .size(24.dp)
+                                        .background(
+                                            color = Color(0xFF4CAF50),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "✓",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -336,7 +367,8 @@ fun ScreenshotOrganizeContentPreview() {
             uri = android.net.Uri.parse("file:///fake_path_to_file_$index.jpg"),
             dateGroup = "",
             isSelected = index % 2 == 0,
-            fileName = "screenshot_$index.jpg"
+            fileName = "screenshot_$index.jpg",
+            isOrganized = index % 3 == 0 // Add dummy isOrganized field
         )
     }
 

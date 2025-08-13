@@ -10,6 +10,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
+import com.prography.domain.usecase.storage.GetOrganizedIdsUseCase
+import com.prography.domain.usecase.storage.SaveOrganizedIdsUseCase
 import com.prography.home.ui.storage.contract.*
 import com.prography.home.ui.storage.source.ScreenshotOrganizePagingSource
 import com.prography.navigation.AppRoute
@@ -30,7 +32,9 @@ import javax.inject.Inject
 class ScreenshotViewModel @Inject constructor(
     private val app: Application,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
-    private val navigationHelper: NavigationHelper
+    private val navigationHelper: NavigationHelper,
+    private val getOrganizedIdsUseCase: GetOrganizedIdsUseCase,
+    private val saveOrganizedIdsUseCase: SaveOrganizedIdsUseCase
 ) : BaseComposeViewModel<ScreenshotState, ScreenshotEffect, ScreenshotAction>(
     initialState = ScreenshotState()
 ) {
@@ -53,11 +57,15 @@ class ScreenshotViewModel @Inject constructor(
 
     private fun loadInitialData() {
         viewModelScope.launch(Dispatchers.IO) {
+            // 로컬 저장된 organized ids 불러오기
+            val stored = runCatching { getOrganizedIdsUseCase() }.getOrDefault(emptySet())
             updateState {
                 copy(
                     currentPage = 0,
                     hasMoreData = true,
-                    isLoggedIn = checkLoginStatusUseCase()
+                    isLoggedIn = checkLoginStatusUseCase(),
+                    organizedScreenshotIds = stored,
+                    refreshVersion = refreshVersion + 1
                 )
             }
         }
@@ -170,7 +178,6 @@ class ScreenshotViewModel @Inject constructor(
                     )
                 }
             }
-
             ScreenshotAction.RefreshScreenshots -> {
                 refreshScreenshots()
             }
