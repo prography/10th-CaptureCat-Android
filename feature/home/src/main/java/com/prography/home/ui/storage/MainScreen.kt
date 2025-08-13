@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
+import androidx.navigation.NavBackStackEntry
 import com.prography.home.bottomNav.BottomNavItem
 import com.prography.home.bottomNav.BottomNavigationBar
 import com.prography.home.bottomNav.MainNavigationHost
@@ -29,7 +31,7 @@ import com.prography.navigation.NavigationHelper
 import com.prography.ui.theme.Divider
 
 @Composable
-fun MainScreen(navigationHelper: NavigationHelper) {
+fun MainScreen() {
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
