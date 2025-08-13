@@ -13,7 +13,7 @@ import com.prography.database.util.Converters
     entities = [
         ScreenshotEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

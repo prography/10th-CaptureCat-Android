@@ -3,9 +3,11 @@ package com.prography.data.di
 import com.prography.data.local.repository.UserPreferenceRepositoryImpl
 import com.prography.data.repository.AuthRepositoryImpl
 import com.prography.data.repository.OrganizedRepositoryImpl
+import com.prography.data.repository.UserRepositoryImpl
 import com.prography.domain.repository.AuthRepository
 import com.prography.domain.repository.OrganizedRepository
 import com.prography.domain.repository.UserPreferenceRepository
+import com.prography.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindOrganizedRepository(
         impl: OrganizedRepositoryImpl
     ): OrganizedRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 }
