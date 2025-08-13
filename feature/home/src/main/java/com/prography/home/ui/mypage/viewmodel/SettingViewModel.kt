@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
 import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
-import com.prography.domain.usecase.user.GetNicknameUseCase
+import com.prography.domain.usecase.user.GetUserInfoUseCase
 import com.prography.home.ui.mypage.contract.SettingAction
 import com.prography.home.ui.mypage.contract.SettingEffect
 import com.prography.home.ui.mypage.contract.SettingState
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val getAuthTokenUseCase: GetAuthTokenUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val getNicknameUseCase: GetNicknameUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
     private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
@@ -86,9 +86,13 @@ class SettingViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getNicknameUseCase().collect { nickname ->
-                Timber.d("Nickname updated: $nickname")
-                updateState { copy(nickname = nickname) }
+            if (currentState.isLoggedIn) {
+                getUserInfoUseCase()
+                    .onSuccess { info ->
+                        Timber.d("User info loaded: $info")
+                        updateState { copy(nickname = info.nickname) }
+                    }
+                    .onFailure { e -> Timber.e(e, "Failed to load user info") }
             }
         }
     }
