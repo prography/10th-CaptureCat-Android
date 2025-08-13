@@ -254,6 +254,7 @@ class OrganizeViewModel @Inject constructor(
                 updateState { copy(showCompletionMessage = true) }
             }.onFailure {
                 hideLoading()
+                showToast("스크린샷 업로드에 실패했습니다.")
             }
         }
     }
