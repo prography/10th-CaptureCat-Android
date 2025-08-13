@@ -124,7 +124,7 @@ fun AppNavGraph(
             UploadRoute()
         }
         composable<AppRoute.Main> {
-            MainRoute(navigationHelper = navigationHelper)
+            MainRoute()
         }
         composable<AppRoute.Organize> { backStackEntry ->
             val organize = backStackEntry.toRoute<AppRoute.Organize>()

@@ -3,6 +3,7 @@ package com.prography.datastore.di
 import android.content.Context
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.datastore.tag.TagDataStore
+import com.prography.datastore.organized.OrganizedDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,4 +26,10 @@ object DataStoreModule {
     fun provideTagDataStore(
         @ApplicationContext context: Context
     ): TagDataStore = TagDataStore(context)
+
+    @Provides
+    @Singleton
+    fun provideOrganizedDataStore(
+        @ApplicationContext context: Context
+    ): OrganizedDataStore = OrganizedDataStore(context)
 }
