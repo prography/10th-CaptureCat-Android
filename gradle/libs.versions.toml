@@ -2,6 +2,7 @@
 agp = "8.7.3"
 appauth = "0.11.1"
 credentialsPlayServicesAuth = "1.5.0"
+firebaseBom = "34.1.0"
 javaxInject = "1"
 kotlin = "2.1.20"
 serialization= "1.8.0"
@@ -59,7 +60,6 @@ navigationComposeJvmstubs = "2.9.0"
 navigationRuntimeAndroid = "2.9.0"
 jetbrainsKotlinJvm = "2.1.20"
 desugar_jdk_libs = "2.0.4"
-firebase-bom = "33.15.0"
 
 lifecycleRuntimeKtx = "2.8.3"
 androidPermission = "0.34.0"
@@ -69,8 +69,8 @@ mixpanel = "8.2.0"
 
 # Project versions
 projectApplicationId = "com.prography.capturecat"
-projectVersionName = "1.0.0"
-projectVersionCode = "3"
+projectVersionName = "1.0.2"
+projectVersionCode = "4"
 projectMinSdkVersion = "24"
 projectTargetSdkVersion = "35"
 projectCompileSdkVersion = "35"
@@ -78,6 +78,7 @@ googleid = "1.1.1"
 firebaseAuthKtx = "23.2.1"
 
 playServicesAuth = "21.3.0"
+firebaseConfigKtx = "23.0.0"
 
 [libraries]
 
@@ -96,6 +97,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
+firebase-config = { module = "com.google.firebase:firebase-config" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -183,10 +186,11 @@ android-tools-common = { group = "com.android.tools", name = "common", version.r
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
 
 [bundles]
 compose = [
