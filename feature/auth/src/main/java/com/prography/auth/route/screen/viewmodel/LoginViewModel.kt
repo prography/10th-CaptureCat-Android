@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
                 when (navigationResult) {
                     LoginNavigationResult.NavigateToStartTag -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
-                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Start))
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
                     }
 
                     LoginNavigationResult.NavigateToHome -> {
@@ -73,7 +73,7 @@ class LoginViewModel @Inject constructor(
                     }
                     LoginNavigationResult.NavigateToUpload -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
-                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload))
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
                     }
                 }
             }.onFailure {
