@@ -40,8 +40,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import androidx.core.net.toUri
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import timber.log.Timber
 import com.prography.ui.component.UiBasicDialog
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -99,8 +105,11 @@ class SplashActivity : ComponentActivity() {
         val alpha = remember {
             Animatable(0f)
         }
-        val ctx = androidx.compose.ui.platform.LocalContext.current
+        val ctx = LocalContext.current
         var showUpdateDialog by remember { mutableStateOf(false) }
+        var showMaintenanceDialog by remember { mutableStateOf(false) }
+        var maintenanceMessage by remember { mutableStateOf("") }
+
         LaunchedEffect(key1 = Unit) {
             // Remote Config 초기화 및 fetch
             val remoteConfig = FirebaseRemoteConfig.getInstance()
@@ -109,20 +118,67 @@ class SplashActivity : ComponentActivity() {
                 .build()
             remoteConfig.setConfigSettingsAsync(settings)
             // 기본값(없을 때)을 안전하게 지정
-            remoteConfig.setDefaultsAsync(mapOf("android_min_supported_version" to "1.0.0"))
+            remoteConfig.setDefaultsAsync(
+                mapOf(
+                    "android_min_supported_version" to "1.0.0",
+                    "maintenance_end_time" to "2030-01-01T00:00:00+09:00", // 과거 시간
+                    "android_force_update" to false
+                )
+            )
 
             runCatching {
                 remoteConfig.fetchAndActivate().await()
             }.onFailure { /* 무시하고 정상 흐름 진행 */ }
 
-            val minSupported = remoteConfig.getString("android_min_supported_version")
-            val pInfo = ctx.packageManager.getPackageInfo(ctx.packageName, 0)
-            val currentVersion = pInfo.versionName ?: "0.0.0"
+            // 1. 서버 점검 시간 여부 확인
+            val maintenanceStartTimeStr = remoteConfig.getString("maintenance_start_time")
+            val maintenanceEndTimeStr = remoteConfig.getString("maintenance_end_time")
 
-            Timber.d("minSupported ${minSupported} pInfo ${currentVersion}")
-            if (compareVersionNames(currentVersion, minSupported)) {
-                showUpdateDialog = true
+            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.KOREA)
+            val displayFormat = SimpleDateFormat("MM.dd(E) H:mm", Locale.KOREA)
+
+            val maintenanceStart = format.parse(maintenanceStartTimeStr)
+            val maintenanceEnd = format.parse(maintenanceEndTimeStr)
+
+            val now = Date()
+
+            if (now.after(maintenanceStart) && now.before(maintenanceEnd)) {
+                val startStr = maintenanceStart?.let { displayFormat.format(it) } ?: ""
+                val endStr = maintenanceEnd?.let { displayFormat.format(it) } ?: ""
+
+                maintenanceMessage = """
+        $startStr ~  $endStr
+        
+        보다 안정적인 서비스 제공을 위해 서비스 개편이 진행될 예정입니다. 캡처캣을 이용해주셔서 감사합니다.
+    """.trimIndent()
+
+                showMaintenanceDialog = true
                 return@LaunchedEffect
+            }
+
+
+            val forceUpdate = remoteConfig.getBoolean("Android_force_update")
+
+            // 2. 인앱 업데이트 가능 여부 확인 & 디버그 모드 아닐때만 확인
+            if (!BuildConfig.DEBUG && forceUpdate) {
+                val appUpdateManager = AppUpdateManagerFactory.create(ctx)
+                val updateInfo = appUpdateManager.appUpdateInfo.await()
+
+                if (updateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                    updateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                ) {
+                    showUpdateDialog = true
+                    return@LaunchedEffect
+                }
+            } else {
+                // 3. 최소 버전 업데이트 확인
+                val pInfo = ctx.packageManager.getPackageInfo(ctx.packageName, 0)
+                val currentVersion = pInfo.versionName ?: "0.0.0"
+                val minSupported = remoteConfig.getString("Android_min_supported_version")
+                if (compareVersionNames(currentVersion, minSupported)) {
+                    showUpdateDialog = true
+                    return@LaunchedEffect
+                }
             }
 
             // 업데이트 필요 없으면 기존 애니메이션 후 메인으로 이동
@@ -152,12 +208,29 @@ class SplashActivity : ComponentActivity() {
         if (showUpdateDialog) {
             UiBasicDialog(
                 isVisible = true,
-                title = "새로운 버전 업데이트",
-                info = "캡처캣이 사용성을 개선했어요.\n지금 바로 업데이트하고 편하게 사용해보세요!",
-                confirmButtonText = "업데이트하기",
+                title = "캡처캣 새 버전 출시!",
+                info = "더 나은 서비스 이용을 위해\n" +
+                        "업데이트가 꼭 필요해요.",
+                confirmButtonText = "업데이트 하기",
                 onConfirm = onForceUpdate
             )
         }
+
+        if (showMaintenanceDialog) {
+            UiBasicDialog(
+                isVisible = true,
+                title = "서비스 점검",
+                info = maintenanceMessage,
+                confirmButtonText = "",
+                onConfirm = { finish() } // 앱 종료
+            )
+        }
+    }
+
+    private suspend fun getStoreVersion(): String {
+        // TODO: 실제로는 스토어 스크래핑 또는 전용 API로 가져와야 함
+        // 지금은 Remote Config의 값을 임시로 사용
+        return FirebaseRemoteConfig.getInstance().getString("android_min_supported_version")
     }
 
     private fun compareVersionNames(current: String, minimum: String): Boolean {
