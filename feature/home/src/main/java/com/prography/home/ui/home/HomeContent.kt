@@ -67,7 +67,7 @@ fun HomeContent(
                 contentDescription = "로고"
             )
             Image(
-                painter = painterResource(id = R.drawable.ic_search_bar_icon),
+                painter = painterResource(id = R.drawable.ic_profile),
                 contentDescription = "검색",
                 modifier = Modifier.clickableWithoutRipple {
                     onAction(HomeAction.NavigateToSettings)
