@@ -19,7 +19,7 @@ sealed class HomeAction {
 sealed class HomeEffect {
     data class ShowError(val message: String) : HomeEffect()
     object NavigateToStorage : HomeEffect()
-    object OpenErrorReportChat : HomeEffect() // 오류 제보 채팅 열기
+    data class OpenExternalLink(val url: String) : HomeEffect()
 }
 
 // Define UI State
