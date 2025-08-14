@@ -11,11 +11,15 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.prography.ui.component.UiCommonDialog
+import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
@@ -24,6 +28,7 @@ fun HomeScreen(
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
+    val context = LocalContext.current
 
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
 
@@ -41,10 +46,13 @@ fun HomeScreen(
                 is HomeEffect.NavigateToStorage -> {
                     onNavigateToStorage()
                 }
-                is HomeEffect.OpenErrorReportChat -> {
-                    // TODO: 실제 채팅 서비스 연결 구현
-                    // 예: 카카오톡 채널, 구글 폼, 이메일 등
-                    println("Open Error Report Chat")
+                is HomeEffect.OpenExternalLink -> {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+
+                    }
                 }
             }
         }
