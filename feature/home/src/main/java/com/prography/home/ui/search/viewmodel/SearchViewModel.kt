@@ -12,6 +12,7 @@ import com.prography.home.ui.search.contract.*
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -107,6 +108,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun addTag(tag: String) {
+        MixpanelUtil.track("click_search", mapOf("click_tag_chip" to 1))
         val currentTags = currentState.selectedTags
         if (!currentTags.contains(tag)) {
             val newTags = listOf(tag) + currentTags
@@ -216,6 +218,8 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun handleSearchComplete() {
+        MixpanelUtil.track("click_search", mapOf("click_input" to 1))
+
         val query = currentState.searchQuery.trim()
         if (query.isEmpty()) return
 
