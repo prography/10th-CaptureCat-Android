@@ -58,7 +58,7 @@ fun HomeContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
+                .padding(vertical = 12.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -67,7 +67,7 @@ fun HomeContent(
                 contentDescription = "로고"
             )
             Image(
-                painter = painterResource(id = R.drawable.ic_tab_search_unchecked),
+                painter = painterResource(id = R.drawable.ic_search_bar_icon),
                 contentDescription = "검색",
                 modifier = Modifier.clickableWithoutRipple {
                     onAction(HomeAction.NavigateToSearch)
@@ -112,8 +112,7 @@ fun HomeContent(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .weight(1f)
                 ) {
                     // 즐겨찾기 카드 덱
                     item {
@@ -136,7 +135,7 @@ fun HomeContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             rowItems.forEach { screenshot ->
@@ -225,8 +224,8 @@ fun ScreenshotItem(
             modifier = Modifier.fillMaxSize()
         )
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 12.dp, bottom = 9.dp)
