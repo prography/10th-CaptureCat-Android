@@ -31,4 +31,5 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.firebase.config)
     implementation(libs.google.firebase.analytics)
+    implementation(libs.app.update.ktx)
 }

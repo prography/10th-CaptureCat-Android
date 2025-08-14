@@ -49,7 +49,7 @@ fun UiBasicDialog(
                             style = headline02Bold,
                             color = Text01,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
                         )
                     }
                     Text(
@@ -60,14 +60,16 @@ fun UiBasicDialog(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    if (confirmButtonText.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    UiLabelAddButton (
-                        text = confirmButtonText,
-                        onClick = onConfirm,
-                        modifier = Modifier.fillMaxWidth(),
-                        size = ButtonSize.LARGE
-                    )
+                        UiLabelAddButton (
+                            text = confirmButtonText,
+                            onClick = onConfirm,
+                            modifier = Modifier.fillMaxWidth(),
+                            size = ButtonSize.LARGE
+                        )
+                    }
                 }
             }
         }
@@ -79,8 +81,21 @@ fun UiBasicDialog(
 fun UiBasicDialogPreview() {
     UiBasicDialog(
         isVisible = true,
+        title = "기본 다이어로그입니다",
         info = "이것은 기본 다이얼로그입니다.\n확인 버튼을 눌러 닫을 수 있습니다.",
         confirmButtonText = "확인",
+        onConfirm = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UiBasicNotButtonDialogPreview() {
+    UiBasicDialog(
+        isVisible = true,
+        title = "기본 다이어로그입니다",
+        info = "이것은 기본 다이얼로그입니다.\n확인 버튼을 눌러 닫을 수 있습니다.",
+        confirmButtonText = "",
         onConfirm = {}
     )
 }
