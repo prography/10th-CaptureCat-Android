@@ -40,6 +40,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.OnSearchComplete -> handleSearchComplete()
             is SearchAction.NavigateToStorage -> navigateToStorage()
             is SearchAction.RefreshSearchResults -> handleRefreshSearchResults()
+            is SearchAction.OnNavigateUp -> navigationHelper.navigate(NavigationEvent.Up)
         }
     }
 

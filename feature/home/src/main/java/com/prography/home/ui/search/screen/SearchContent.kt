@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,6 +81,25 @@ fun SearchContent(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
+                contentDescription = "뒤로가기",
+                modifier = Modifier.clickable { onAction(SearchAction.OnNavigateUp) }
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "검색",
+                style = headline02Bold,
+                color = Text01
+            )
+        }
+
         if (state.selectedTags.isNotEmpty()) {
             SelectedTagsSearchHeader(
                 selectedTags = state.selectedTags,

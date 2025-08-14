@@ -26,6 +26,7 @@ sealed class SearchAction {
     object OnSearchComplete : SearchAction()
     object NavigateToStorage : SearchAction()
     object RefreshSearchResults : SearchAction()
+    object OnNavigateUp : SearchAction()
 }
 
 // Define Effects
