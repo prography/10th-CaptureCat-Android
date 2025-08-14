@@ -25,4 +25,10 @@ dependencies {
     implementation(project(":feature:imageDetail"))
 
     implementation(libs.splashscreen)
+    // Firebase Remote Config
+    implementation(platform(libs.firebase.bom))
+    // Coroutines Task await
+    implementation(libs.coroutines)
+    implementation(libs.firebase.config)
+    implementation(libs.google.firebase.analytics)
 }
