@@ -30,7 +30,7 @@ fun ErrorReportBanner(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+            .padding(top = 4.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(
                 color = Color(0x24FF6600)
@@ -64,7 +64,7 @@ fun ErrorReportBanner(
 
             Image(
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_report),
-                contentDescription = "닫기",
+                contentDescription = "이미지",
                 modifier = Modifier.size(76.dp, 70.dp)
             )
         }
