@@ -1,3 +1,5 @@
+// SearchContent.kt
+
 package com.prography.home.ui.search.screen
 
 import androidx.compose.foundation.Image
@@ -12,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,12 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
@@ -36,10 +37,9 @@ import com.prography.ui.component.*
 import com.prography.ui.theme.*
 import com.prography.util.SearchRefreshManager
 import com.prography.util.SearchRefreshWrapper
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
+import com.prography.ui.R as UiR
 
 @Composable
 fun SearchContent(
@@ -48,29 +48,18 @@ fun SearchContent(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    // SearchRefreshManager를 통한 새로고침 처리
     val searchRefreshManager: SearchRefreshManager =
         hiltViewModel<SearchRefreshWrapper>().searchRefreshManager
-
     var lastProcessedTime by remember { mutableLongStateOf(0L) }
 
-    Timber.d("🔍 SearchContent: Created with searchRefreshManager = $searchRefreshManager")
-
     LaunchedEffect(Unit) {
-        Timber.d("🔍 SearchContent: Starting to collect refresh events")
         searchRefreshManager.refreshEvent.collect {
             val currentTime = System.currentTimeMillis()
-            // 1초 이내 중복 이벤트 방지
             if (currentTime - lastProcessedTime > 1000) {
                 lastProcessedTime = currentTime
-                Timber.d("🔍 SearchContent: Received refresh event, selectedTags = ${state.selectedTags}")
                 if (state.selectedTags.isNotEmpty()) {
-                    Timber.d("🔍 SearchContent: Triggering RefreshSearchResults action")
                     onAction(SearchAction.RefreshSearchResults)
                 }
-                Timber.d("🔍 SearchContent: Refreshed search results")
-            } else {
-                Timber.d("🔍 SearchContent: Ignoring duplicate refresh event")
             }
         }
     }
@@ -88,13 +77,13 @@ fun SearchContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
-                contentDescription = "뒤로가기",
+                painter = painterResource(id = UiR.drawable.ic_arrow_backward),
+                contentDescription = stringResource(UiR.string.back_button),
                 modifier = Modifier.clickable { onAction(SearchAction.OnNavigateUp) }
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "검색",
+                text = stringResource(id = UiR.string.search_title),
                 style = headline02Bold,
                 color = Text01
             )
@@ -111,7 +100,7 @@ fun SearchContent(
                 value = state.searchQuery,
                 onValueChange = { onAction(SearchAction.UpdateSearchQuery(it)) },
                 onSearchComplete = { onAction(SearchAction.OnSearchComplete) },
-                placeholder = "태그 이름으로 검색해 보세요",
+                placeholder = stringResource(UiR.string.search_placeholder),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
             )
         }
@@ -120,13 +109,10 @@ fun SearchContent(
 
         when {
             state.popularTags.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     UiEmptyState(
-                        title = "아직 태그가 없어요.",
-                        info = "스크린샷을 태그해 정리해보세요!",
+                        title = stringResource(id = UiR.string.empty_popular_tag_title),
+                        info = stringResource(id = UiR.string.empty_popular_tag_info),
                         onClick = { onAction(SearchAction.NavigateToStorage) }
                     )
                 }
@@ -134,8 +120,8 @@ fun SearchContent(
 
             state.hasSearched && state.searchResults.isEmpty() -> {
                 UiEmptyState(
-                    title = "검색 결과가 없어요.",
-                    info = "스크린샷을 태그해 정리해보세요",
+                    title = stringResource(id = UiR.string.empty_search_result_title),
+                    info = stringResource(id = UiR.string.empty_search_result_info),
                     buttonText = "",
                     onClick = { onAction(SearchAction.NavigateToStorage) }
                 )
@@ -259,7 +245,7 @@ fun SelectedTagsSearchHeader(
                         )
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "태그 제거",
+                            contentDescription = stringResource(UiR.string.remove_tag),
                             tint = Primary,
                             modifier = Modifier
                                 .size(14.sp.value.dp)
@@ -273,7 +259,7 @@ fun SelectedTagsSearchHeader(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "취소",
+            text = stringResource(UiR.string.cancel),
             style = body02Regular,
             color = Text02,
             modifier = Modifier.clickable { onClearAll() }
@@ -310,7 +296,7 @@ fun PopularTagsSection(
 ) {
     Column {
         Text(
-            text = "태그 바로가기",
+            text = stringResource(id = UiR.string.tag_shortcut),
             style = subhead01Bold,
             color = Text02,
             modifier = Modifier.padding(top = 12.dp, bottom = 8.dp, start = 16.dp)
@@ -370,4 +356,3 @@ fun SearchResultItem(
         }
     }
 }
-
