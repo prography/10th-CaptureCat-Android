@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,13 +80,16 @@ fun StartTagScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "자주 캡처하는 이미지가 있으신가요?",
+                    text = stringResource(com.prography.ui.R.string.start_tag_question),
                     style = headline02Bold,
                     color = Text01
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "관심 주제를 선택(${state.maxSelectableTags}개 이하)해주시면\n캡처 시 미리 태그로 만들어드려요.",
+                    text = stringResource(
+                        com.prography.ui.R.string.start_tag_info,
+                        state.maxSelectableTags
+                    ),
                     style = body02Regular,
                     color = Text03
                 )
@@ -123,7 +127,11 @@ fun StartTagScreen(
             }
 
             UiPrimaryButton(
-                text = "선택 완료 (${state.selectedTags.size}/${state.maxSelectableTags})",
+                text = stringResource(
+                    com.prography.ui.R.string.start_tag_complete,
+                    state.selectedTags.size,
+                    state.maxSelectableTags
+                ),
                 onClick = {
                     viewModel.sendAction(StartTagAction.SaveSelectedTags(state.selectedTags))
                     onFinishSelection(state.selectedTags)
@@ -136,10 +144,10 @@ fun StartTagScreen(
 
     UiCommonDialog(
         isVisible = showExitDialog,
-        title = "앱을 종료하시겠습니까?",
-        message = "지금 종료하면 캐치가 미리 태그를 만들어줄 수 없어요.",
-        leftButtonText = "계속",
-        rightButtonText = "종료",
+        title = stringResource(com.prography.ui.R.string.common_exit_dialog_title),
+        message = stringResource(com.prography.ui.R.string.start_tag_exit_dialog_message),
+        leftButtonText = stringResource(com.prography.ui.R.string.common_continue),
+        rightButtonText = stringResource(com.prography.ui.R.string.common_exit),
         onDismiss = { showExitDialog = false },
         onConfirm = {
             showExitDialog = false

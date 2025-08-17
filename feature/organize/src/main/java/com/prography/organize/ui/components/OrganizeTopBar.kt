@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun OrganizeTopBar(
             // 뒤로가기 버튼
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_backward),
-                contentDescription = "뒤로가기",
+                contentDescription = stringResource(com.prography.ui.R.string.common_back),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onNavigateUp() }
@@ -66,7 +67,7 @@ fun OrganizeTopBar(
 
         // 완료 버튼
         UiButtonText(
-            text = "저장",
+            text = stringResource(com.prography.ui.R.string.common_save),
             onClick = { onComplete()},
             modifier = Modifier
                 .align(Alignment.CenterEnd)

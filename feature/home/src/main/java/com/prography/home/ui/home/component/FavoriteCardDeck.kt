@@ -34,6 +34,7 @@ import com.prography.domain.model.UiScreenshotModel
 import com.prography.ui.component.UiTagInfoChip
 import com.prography.ui.R
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import timber.log.Timber
 import androidx.compose.runtime.LaunchedEffect
 
@@ -128,7 +129,7 @@ fun FavoriteCardDeck(
                     }
                     Image(
                         painter = painterResource(id = R.drawable.ic_favorite_all_see),
-                        contentDescription = "즐겨찾기 이동",
+                        contentDescription = stringResource(com.prography.ui.R.string.cd_favorite_navigation),
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .clickable { onFavoriteClick() }

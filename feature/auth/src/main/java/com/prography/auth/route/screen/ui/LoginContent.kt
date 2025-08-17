@@ -45,7 +45,7 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
     ) {
         // 상단 오른쪽 "나중에 하기"
         UnderlinedClickableText(
-            text = "나중에 하기",
+            text = stringResource(R.string.common_later),
             onClick = { onAction(LoginAction.ClickSkip) },
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -114,7 +114,7 @@ fun KakaoLoginButton(onClick: () -> Unit) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_kakao_login),
-                contentDescription = "카카오 로그인 아이콘",
+                contentDescription = stringResource(R.string.cd_kakao_login_icon),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(18.dp)
             )
@@ -145,7 +145,7 @@ fun GoogleLoginButton(onClick: () -> Unit) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_google_login),
-                contentDescription = "Google 로그인 아이콘",
+                contentDescription = stringResource(R.string.cd_google_login_icon),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(18.dp)
             )
@@ -162,24 +162,43 @@ fun GoogleLoginButton(onClick: () -> Unit) {
 fun AgreementText() {
     val context = LocalContext.current
 
+    val termsText = stringResource(R.string.login_terms)
+    val privacyText = stringResource(R.string.login_privacy)
+
     val annotatedText = buildAnnotatedString {
-        append("가입하면 캡처캣의\n")
+        val agreementText = stringResource(R.string.login_agreement, termsText, privacyText)
 
-        pushStringAnnotation(tag = "URL", annotation = "https://ujins.notion.site/1ff6b91b83f580519258d2256a319737")
-        withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
-            append("이용약관")
+        // Split the text to find where to apply annotations
+        val parts = agreementText.split(termsText, privacyText, ignoreCase = true)
+
+        if (parts.size >= 3) {
+            append(parts[0])
+
+            pushStringAnnotation(
+                tag = "URL",
+                annotation = "https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"
+            )
+            withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
+                append(termsText)
+            }
+            pop()
+
+            append(parts[1])
+
+            pushStringAnnotation(
+                tag = "URL",
+                annotation = "https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd"
+            )
+            withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
+                append(privacyText)
+            }
+            pop()
+
+            append(parts[2])
+        } else {
+            // Fallback if string formatting doesn't work as expected
+            append(agreementText)
         }
-        pop()
-
-        append(" 및 ")
-
-        pushStringAnnotation(tag = "URL", annotation = "https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd")
-        withStyle(SpanStyle(color = Color.Gray, textDecoration = TextDecoration.Underline)) {
-            append("개인정보처리방침")
-        }
-        pop()
-
-        append("에 동의하게 됩니다.")
     }
 
     ClickableText(

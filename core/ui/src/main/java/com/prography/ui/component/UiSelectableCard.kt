@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.R
 import com.prography.ui.theme.Gray01
 import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Gray07
@@ -69,7 +71,7 @@ fun SelectableCard(
 @Composable
 fun Preview_SelectedSelectableCard() {
     SelectableCard(
-        text = "캡쳐캣을 사용하기 어려움.",
+        text = stringResource(R.string.ui_difficult_to_use),
         selected = true,
         onClick = {}
     )
@@ -79,7 +81,7 @@ fun Preview_SelectedSelectableCard() {
 @Composable
 fun Preview_UnselectedSelectableCard() {
     SelectableCard(
-        text = "캡쳐캣을 사용하기 어려움.",
+        text = stringResource(R.string.ui_difficult_to_use),
         selected = false,
         onClick = {}
     )

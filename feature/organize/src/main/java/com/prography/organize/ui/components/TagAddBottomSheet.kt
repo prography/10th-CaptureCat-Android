@@ -41,6 +41,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.prography.ui.component.TagInputField
 import com.prography.ui.component.UiPrimaryButton
@@ -93,7 +94,7 @@ fun TagAddBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "태그 추가",
+                        text = stringResource(com.prography.ui.R.string.image_detail_tag_add),
                         style = headline03Bold,
                         color = Text01
                     )
@@ -101,7 +102,7 @@ fun TagAddBottomSheet(
                     IconButton(onClick = { onDismiss() }) {
                         Icon(
                             painter = painterResource(id = com.prography.ui.R.drawable.ic_bottom_close), // 아이콘 리소스 맞게 수정
-                            contentDescription = "닫기",
+                            contentDescription = stringResource(com.prography.ui.R.string.common_close),
                             tint = Text01,
                             modifier = Modifier.size(24.dp)
                         )
@@ -114,11 +115,11 @@ fun TagAddBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester)
-                        .padding(top = 20.dp, bottom = 32.dp , start = 16.dp, end = 16.dp)
+                        .padding(top = 20.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
                 )
 
                 UiBottomInputButton(
-                    text = "완료",
+                    text = stringResource(com.prography.ui.R.string.common_complete),
                     enabled = text.isNotBlank(),
                     onClick = {
                         if (text.isNotBlank()) onAdd(text)

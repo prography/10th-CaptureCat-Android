@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
@@ -55,13 +56,16 @@ fun StartChooseScreen(
             item(span = { GridItemSpan(3) }) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = "시작하기 전에\n${state.totalCount}장의 스크린샷이 있어요",
+                        text = stringResource(
+                            com.prography.ui.R.string.start_choose_title,
+                            state.totalCount
+                        ),
                         style = headline02Bold,
                         color = Text01
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "나중에도 저장할 수 있으니 먼저 필요한 이미지만 골라보세요.",
+                        text = stringResource(com.prography.ui.R.string.start_choose_info),
                         style = body02Regular,
                         color = Text03
                     )
@@ -112,7 +116,11 @@ fun StartChooseScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             UiPrimaryButton(
-                text = "정리하기 (${state.selectedScreenshots.size}/$maxSelectableImages)",
+                text = stringResource(
+                    com.prography.ui.R.string.start_choose_organize_count,
+                    state.selectedScreenshots.size,
+                    maxSelectableImages
+                ),
                 state = if (state.selectedScreenshots.isNotEmpty()) ButtonState.Enabled else ButtonState.Disabled,
                 onClick = { onFinishSelection(state.selectedScreenshots) },
                 modifier = Modifier.fillMaxWidth()

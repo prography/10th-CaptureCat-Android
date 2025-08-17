@@ -20,6 +20,149 @@
 
     <string name="organize_count_message">%d장의 스크린샷이 있어요</string>
 
+    <!-- 공통 -->
+    <string name="common_next">다음</string>
+    <string name="common_complete">완료</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_delete">삭제</string>
+    <string name="common_skip">건너뛰기</string>
+    <string name="common_later">나중에 하기</string>
+    <string name="common_logo">로고</string>
+    <string name="common_search">검색</string>
+    <string name="common_close">닫기</string>
+    <string name="common_back">뒤로가기</string>
+    <string name="common_all_select">전체 선택</string>
+    <string name="common_selected_delete">선택 삭제</string>
+    <string name="common_start">시작하기</string>
+    <string name="common_save">저장</string>
+    <string name="common_add">추가</string>
+    <string name="common_continue">계속</string>
+    <string name="common_exit">종료</string>
+    <string name="common_stop">그만두기</string>
+    <string name="common_screenshot">스크린샷</string>
+    <string name="common_image">이미지</string>
+
+    <!-- 삭제 확인 다이얼로그 -->
+    <string name="delete_confirm_title">삭제할까요?</string>
+    <string name="delete_confirm_message">%d개의 항목을 삭제하시겠습니까?\n삭제된 항목은 복구할 수 없습니다.</string>
+
+    <!-- 접근성 및 콘텐츠 설명 -->
+    <string name="cd_tag_delete">태그 삭제</string>
+    <string name="cd_kakao_login_icon">카카오 로그인 아이콘</string>
+    <string name="cd_google_login_icon">Google 로그인 아이콘</string>
+    <string name="cd_favorite_navigation">즐겨찾기 이동</string>
+    <string name="cd_capture_cat_logo">캡처캣 로고</string>
+
+    <!-- HomeScreen -->
+    <string name="login_title">로그인하기</string>
+    <string name="login_message">현재 게스트 모드로 이용 중이에요.\n게스트 모드에서는 최대 10장까지만 저장할 수 있어요.\n로그인하시겠습니까?</string>
+    <!-- HomeContent -->
+    <string name="home_no_screenshot_title">아직 스크린샷이 없어요.</string>
+    <string name="home_no_screenshot_info">임시보관함에서 스크린샷을 저장할 수 있어요!</string>
+    <string name="home_go_to_storage">임시보관함 가기</string>
+    <string name="home_loading_failed">더 불러오기 실패</string>
+
+    <!-- FavoriteContent -->
+    <string name="favorite_title">즐겨찾기</string>
+    <string name="favorite_empty_title">즐겨찾기한 스크린샷이 없어요</string>
+    <string name="favorite_empty_info">마음에 드는 스크린샷을 즐겨찾기해보세요!</string>
+    <string name="favorite_icon">즐겨찾기</string>
+
+    <!-- ImageDetailContent -->
+    <string name="image_detail_tag_edit">태그편집</string>
+    <string name="image_detail_tag_add">태그 추가</string>
+    <string name="image_detail_tag_input_placeholder">추가할 태그를 입력해주세요</string>
+    <string name="image_detail_added_tags">추가한 태그</string>
+    <string name="image_detail_tag_max_info">태그는 최대 4개까지 지정할 수 있어요</string>
+    <string name="image_detail_screenshot">스크린샷</string>
+
+    <!-- InitOnboardingContent -->
+    <string name="init_onboarding_save_title">스크린샷만 쏙\n골라서 저장해요</string>
+    <string name="init_onboarding_organize_title">여러 장을 한 번에\n태그로 정리해요</string>
+    <string name="init_onboarding_start_title">태그로 쉽게 찾고\n바로 활용해요</string>
+
+    <!-- LoginContent -->
+    <string name="login_agreement">가입하면 캡처캣의\n%1$s 및 %2$s에 동의하게 됩니다.</string>
+    <string name="login_terms">이용약관</string>
+    <string name="login_privacy">개인정보처리방침</string>
+
+    <!-- OrganizeContent -->
+    <string name="organize_mode_batch">한번에</string>
+    <string name="organize_mode_single">한장씩</string>
+    <string name="organize_screenshot">스크린샷</string>
+    <string name="organize_recent_tags">최근 추가한 태그</string>
+    <string name="organize_completion_title">%d장 정리 완료!</string>
+    <string name="organize_completion_info">즐겨찾기한 스크린샷은\n홈에서 더 자주 만날 수 있어요.</string>
+    <string name="organize_delete_confirmation">삭제할래요</string>
+
+    <!-- ScreenshotOrganizeContent -->
+    <string name="storage_title">임시보관함</string>
+    <string name="storage_count_info">%d개의 스크린샷이 있어요</string>
+    <string name="storage_login_required">로그인 후 이용하기</string>
+    <string name="storage_delete_select_message">삭제할 이미지를 선택해주세요.</string>
+    <string name="storage_selection_count">%d/20</string>
+
+    <!-- StartChooseScreen -->
+    <string name="start_choose_title">시작하기 전에\n%d장의 스크린샷이 있어요</string>
+    <string name="start_choose_info">나중에도 저장할 수 있으니 먼저 필요한 이미지만 골라보세요.</string>
+    <string name="start_choose_organize_count">정리하기 (%d/%d)</string>
+
+    <!-- StartTagScreen -->
+    <string name="start_tag_question">자주 캡처하는 이미지가 있으신가요?</string>
+    <string name="start_tag_info">관심 주제를 선택(%d개 이하)해주시면\n캡처 시 미리 태그로 만들어드려요.</string>
+    <string name="start_tag_complete">선택 완료 (%d/%d)</string>
+    <string name="start_tag_exit_dialog_message">지금 종료하면 캐치가 미리 태그를 만들어줄 수 없어요.</string>
+
+    <!-- StartPermissionScreen -->
+    <string name="start_permission_title">사진 접근 허용으로 스크린샷만 쏙!</string>
+    <string name="start_permission_info">모든 사진에 대한 접근 허용을 해도 캡처캣은\n스크린샷만 불러와요</string>
+
+    <!-- UploadingScreen -->
+    <string name="upload_syncing_title">모든 스크린샷을\n동기화 하고 있어요</string>
+    <string name="upload_syncing_progress">%d%% 완료</string>
+    <string name="upload_syncing_tip">Tip. 즐겨찾기로 하면 홈에서\n더 자주 볼 수 있어요.</string>
+    <string name="upload_cancel_dialog_title">여기서 그만둘까요?</string>
+    <string name="upload_cancel_dialog_message">지금 나가면 스크린샷을 다시 불러올 수 없어요.</string>
+
+    <!-- UploadedScreen -->
+    <string name="upload_complete_title">모든 스크린샷 동기화 완료!</string>
+    <string name="upload_complete_info">이제 모든 기기에서 저장한\n스크린샷을 관리할 수 있어요.</string>
+
+    <!-- ErrorReportBanner -->
+    <string name="error_report_title">채팅으로 오류 제보하기</string>
+    <string name="error_report_info">보내주신 내용은 모두 확인하고 답변드려요</string>
+
+    <!-- WithdrawScreen -->
+    <string name="withdraw_reason_title">회원 탈퇴 이유를 알려주세요.</string>
+    <string name="withdraw_reason_info">그동안 캡처캣을 이용해주셔서 감사합니다.\n더 나은 서비스를 위해 탈퇴 이유를 알려주세요.</string>
+    <string name="withdraw_complete_info">그동안 이용해주셔서 감사합니다.\n30일 이내 재가입하면 모든 데이터를 복구할 수 있어요.</string>
+    <string name="withdraw_reason_1">캡쳐캣 사용이 불편해요</string>
+    <string name="withdraw_reason_2">스크린샷을 찾기 어려워요</string>
+    <string name="withdraw_reason_3">스크린샷 관리가 필요하지 않아요</string>
+    <string name="withdraw_reason_4">비슷한 서비스를 이미 사용하고 있어요</string>
+    <string name="withdraw_dialog_title">회원탈퇴 완료</string>
+    <string name="withdraw_dialog_info">그동안 이용해주셔서 감사합니다.\n다음에도 이용해주세요!</string>
+
+    <!-- SplashActivity -->
+    <string name="app_update_title">캡처캣 새 버전 출시!</string>
+    <string name="app_update_info">더 나은 서비스 이용을 위해\n최신 버전으로 업데이트 해주세요.</string>
+    <string name="app_update_button">업데이트 하기</string>
+    <string name="maintenance_title">서비스 점검</string>
+    <string name="app_exit">종료</string>
+
+    <!-- 권한 관련 -->
+    <string name="permission_request">권한 요청</string>
+    <string name="permission_photo_title">사진 접근 불가!</string>
+    <string name="permission_photo_info">스크린샷을 불러오기 위해 사진 접근 권한이 필요합니다.</string>
+    <string name="permission_setting">설정으로</string>
+    <string name="permission_setting_info">설정에서 사진 접근 권한을 허용해주세요.</string>
+    <string name="permission_denied_title">사진 접근 불가!</string>
+
+    <!-- UI 컴포넌트 -->
+    <string name="ui_difficult_to_use">캡쳐캣을 사용하기 어려움.</string>
+    <string name="ui_search_placeholder">태그 이름으로 검색해 보세요</string>
+
     <!-- 설정 화면 타이틀 -->
     <string name="setting_title">설정</string>
 
@@ -73,4 +216,12 @@
 
     <!-- Tag chip -->
     <string name="remove_tag">태그 제거</string>
+
+    <!-- 태그 관련 에러 메시지 -->
+    <string name="tag_error_already_exists">이미 등록된 태그입니다.</string>
+    <string name="tag_error_registration_failed">태그 등록 실패</string>
+    <string name="tag_error_duplicate">동일한 태그가 이미 존재합니다.</string>
+
+    <!-- 공통 다이얼로그 -->
+    <string name="common_exit_dialog_title">앱을 종료하시겠습니까?</string>
 </resources>

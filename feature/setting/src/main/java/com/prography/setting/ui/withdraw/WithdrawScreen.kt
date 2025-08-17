@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,18 +58,17 @@ fun WithdrawScreen(
     }
 
     val reasons = listOf(
-        "캡쳐캣 사용이 불편해요",
-        "스크린샷을 찾기 어려워요",
-        "스크린샷 관리가 필요하지 않아요",
-        "비슷한 서비스를 이미 사용하고 있어요"
+        stringResource(com.prography.ui.R.string.withdraw_reason_1),
+        stringResource(com.prography.ui.R.string.withdraw_reason_2),
+        stringResource(com.prography.ui.R.string.withdraw_reason_3),
+        stringResource(com.prography.ui.R.string.withdraw_reason_4)
     )
 
     UiBasicDialog(
         isVisible = state.showWithdrawDialog,
-        title = "회원탈퇴 완료",
-        info = "그동안 이용해주셔서 감사합니다.\n" +
-                "다음에도 이용해주세요!",
-        confirmButtonText = "확인",
+        title = stringResource(com.prography.ui.R.string.withdraw_dialog_title),
+        info = stringResource(com.prography.ui.R.string.withdraw_dialog_info),
+        confirmButtonText = stringResource(com.prography.ui.R.string.common_confirm),
         onConfirm = { viewModel.sendAction(WithdrawAction.ConfirmWithdraw) }
     )
 
@@ -80,7 +80,7 @@ fun WithdrawScreen(
     ) {
         Icon(
             painter = painterResource(com.prography.ui.R.drawable.ic_arrow_backward),
-            contentDescription = "Back",
+            contentDescription = stringResource(com.prography.ui.R.string.common_back),
             modifier = Modifier
                 .padding(bottom = 12.dp)
                 .clickableWithoutRipple {
@@ -88,13 +88,12 @@ fun WithdrawScreen(
                 }
         )
         Text(
-            text = "회원 탈퇴 이유를 알려주세요.",
+            text = stringResource(com.prography.ui.R.string.withdraw_reason_title),
             style = headline02Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "그동안 캡처캣을 이용해주셔서 감사합니다.\n" +
-                    "계정을 삭제하면 저장된 이미지와 정보가 모두 사라집니다.",
+            text = stringResource(com.prography.ui.R.string.withdraw_reason_info),
             style = body02Regular,
             color = Text03
         )
@@ -113,7 +112,7 @@ fun WithdrawScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         UiPrimaryButton(
-            text = "계속",
+            text = stringResource(com.prography.ui.R.string.common_continue),
             fontSize = 14.sp,
             onClick = { viewModel.sendAction(WithdrawAction.ClickContinue) },
             state = if (state.selectedReason != null) ButtonState.Enabled else ButtonState.Disabled,
@@ -121,7 +120,7 @@ fun WithdrawScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         UiLabelAddButton(
-            text = "취소",
+            text = stringResource(com.prography.ui.R.string.common_cancel),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp),

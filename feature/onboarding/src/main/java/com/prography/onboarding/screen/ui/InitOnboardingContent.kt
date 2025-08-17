@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,21 +74,21 @@ fun OnboardingPager(
     val pages = listOf(
         OnboardingPage(
             imageRes = com.prography.ui.R.drawable.img_onboarding_save,
-            title = "스크린샷만 쏙\n골라서 저장해요",
+            title = stringResource(com.prography.ui.R.string.init_onboarding_save_title),
             description = "",
-            buttonText = "다음"
+            buttonText = stringResource(com.prography.ui.R.string.common_next)
         ),
         OnboardingPage(
             imageRes = com.prography.ui.R.drawable.img_onboarding_organize,
-            title = "여러 장을 한 번에\n태그로 정리해요",
+            title = stringResource(com.prography.ui.R.string.init_onboarding_organize_title),
             description = "",
-            buttonText = "다음"
+            buttonText = stringResource(com.prography.ui.R.string.common_next)
         ),
         OnboardingPage(
             imageRes = com.prography.ui.R.drawable.img_onboarding_start,
-            title = "태그로 쉽게 찾고\n바로 활용해요",
+            title = stringResource(com.prography.ui.R.string.init_onboarding_start_title),
             description = "",
-            buttonText = "시작하기"
+            buttonText = stringResource(com.prography.ui.R.string.common_start)
         )
     )
 
@@ -152,7 +153,7 @@ fun OnboardingPager(
 
         // Skip (top right)
         Text(
-            text = "건너뛰기",
+            text = stringResource(com.prography.ui.R.string.common_skip),
             style = body02Regular,
             color = Text03,
             modifier = Modifier

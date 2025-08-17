@@ -20,6 +20,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -180,7 +181,7 @@ fun ImageDetailHeader(date: String, onBack: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_white_back),
-            contentDescription = "뒤로가기",
+            contentDescription = stringResource(R.string.common_back),
             tint = PureWhite,
             modifier = Modifier.clickableWithoutRipple(enabled = true, onClick = onBack)
         )
@@ -203,7 +204,7 @@ fun ScreenshotPager(state: ImageDetailState, pagerState: PagerState) {
         if (screenshot != null) {
             AsyncImage(
                 model = screenshot.uri,
-                contentDescription = "스크린샷",
+                contentDescription = stringResource(R.string.image_detail_screenshot),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
@@ -246,7 +247,7 @@ fun ChipSection(
             painter = painterResource(
                 id = if (isFavorite) R.drawable.ic_favorite_check else R.drawable.ic_favorite_uncheck
             ),
-            contentDescription = "즐겨찾기",
+            contentDescription = stringResource(R.string.favorite_icon),
             tint = Color.Unspecified,
             modifier = Modifier.clickable { onFavoriteToggle() }
         )
@@ -276,13 +277,13 @@ fun BottomActionBar(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_tag_edit),
-                    contentDescription = "태그편집",
+                    contentDescription = stringResource(R.string.image_detail_tag_edit),
                     tint = PureWhite,
                     modifier = Modifier.clickableWithoutRipple(enabled = true, onClick = onEditTagClick)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "태그편집",
+                    text = stringResource(R.string.image_detail_tag_edit),
                     color = PureWhite,
                     style = caption02Regular
                 )
@@ -299,13 +300,13 @@ fun BottomActionBar(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "삭제",
+                    contentDescription = stringResource(R.string.common_delete),
                     tint = PureWhite,
                     modifier = Modifier.clickableWithoutRipple(enabled = true, onClick = onDeleteClick)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "삭제",
+                    text = stringResource(R.string.common_delete),
                     color = PureWhite,
                     style = caption02Regular
                 )
@@ -345,13 +346,13 @@ private fun TagEditBottomSheetContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "태그 추가",
+                text = stringResource(R.string.image_detail_tag_add),
                 style = headline03Bold,
                 color = Text01
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_close),
-                contentDescription = "닫기",
+                contentDescription = stringResource(R.string.common_close),
                 tint = Text01,
                 modifier = Modifier
                     .size(24.dp)
@@ -367,7 +368,7 @@ private fun TagEditBottomSheetContent(
                     onAction(ImageDetailAction.OnNewTagTextChange(it))
                 }
             },
-            placeholder = "추가할 태그를 입력해주세요",
+            placeholder = stringResource(R.string.image_detail_tag_input_placeholder),
             errorMessage = state.tagErrorMessage,
             onClear = { onAction(ImageDetailAction.OnNewTagTextChange("")) },
             modifier = Modifier
@@ -394,12 +395,12 @@ private fun TagEditBottomSheetContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "추가한 태그",
+                        text = stringResource(R.string.image_detail_added_tags),
                         style = subhead01Bold,
                         color = Text01
                     )
                     Text(
-                        text = "태그는 최대 4개까지 지정할 수 있어요",
+                        text = stringResource(R.string.image_detail_tag_max_info),
                         style = caption02Regular,
                         color = Text03
                     )
@@ -424,7 +425,7 @@ private fun TagEditBottomSheetContent(
 
         if (imeVisible) {
             UiBottomInputButton(
-                text = "완료",
+                text = stringResource(R.string.common_complete),
                 enabled = state.newTagText.isNotBlank(),
                 onClick = {
                     if (state.newTagText.isNotBlank()) {
