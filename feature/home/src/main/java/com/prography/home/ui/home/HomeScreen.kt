@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeEffect
@@ -77,10 +78,10 @@ fun HomeScreen(
     if (state.showLoginDialog) {
         UiCommonDialog(
             isVisible = true,
-            title = "로그인하기",
-            message = "현재 게스트 모드로 이용 중이에요.\n게스트 모드에서는 최대 10장까지만 저장할 수 있어요.\n로그인하시겠습니까?",
-            leftButtonText = "취소",
-            rightButtonText = "확인",
+            title = stringResource(com.prography.ui.R.string.login_title),
+            message = stringResource(com.prography.ui.R.string.login_message),
+            leftButtonText = stringResource(com.prography.ui.R.string.common_cancel),
+            rightButtonText = stringResource(com.prography.ui.R.string.common_confirm),
             onDismiss = { viewModel.sendAction(HomeAction.HideLoginDialog) },
             onConfirm = { viewModel.sendAction(HomeAction.NavigateToLogin) }
         )

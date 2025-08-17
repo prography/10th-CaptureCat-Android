@@ -30,6 +30,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -160,7 +161,7 @@ fun OrganizeImageCard(
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(screenshot.uri),
-                    contentDescription = "스크린샷",
+                    contentDescription = stringResource(com.prography.ui.R.string.common_screenshot),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -214,12 +215,12 @@ fun OrganizeImageCard(
                     ) {
                         Icon(
                             painter = painterResource(id = com.prography.ui.R.drawable.ic_organize_delete),
-                            contentDescription = "삭제",
+                            contentDescription = stringResource(com.prography.ui.R.string.common_delete),
                             tint = Color.Unspecified
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "삭제할래요",
+                            text = stringResource(com.prography.ui.R.string.organize_delete_confirmation),
                             style = TextStyle(
                                 color = Color.White,
                                 fontSize = 20.sp,

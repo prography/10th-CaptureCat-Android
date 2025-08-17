@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,7 +147,8 @@ fun OrganizeStackedCards(
     val screenshot = screenshots.firstOrNull() ?: return
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(top = 18.dp)
     ) {
         // 뒤 배경용 그라디언트 카드
@@ -192,7 +194,7 @@ fun OrganizeStackedCards(
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = screenshot.uri,
-                    contentDescription = "스크린샷",
+                    contentDescription = stringResource(com.prography.ui.R.string.organize_screenshot),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -241,7 +243,7 @@ fun OrganizeModeToggle(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "한번에",
+                text = stringResource(com.prography.ui.R.string.organize_mode_batch),
                 style = if (currentMode == OrganizeMode.BATCH) subhead02Bold else body02Regular,
                 color = if (currentMode == OrganizeMode.BATCH) Text01 else Color.Gray
             )
@@ -272,7 +274,7 @@ fun OrganizeModeToggle(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "한장씩",
+                text = stringResource(com.prography.ui.R.string.organize_mode_single),
                 style = if (currentMode == OrganizeMode.SINGLE) subhead02Bold else body02Regular,
                 color = if (currentMode == OrganizeMode.SINGLE) Text01 else Color.Gray
             )

@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -72,7 +73,7 @@ fun UiSearchBar(
             if (showBorder) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search_bar_icon),
-                    contentDescription = "검색",
+                    contentDescription = stringResource(R.string.common_search),
                     tint = Gray05,
                     modifier = Modifier.size(16.dp)
                 )
@@ -105,7 +106,7 @@ fun UiSearchBar(
         if (showCompleteButton) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "취소",
+                text = stringResource(R.string.common_cancel),
                 style = body02Regular,
                 color = Text02,
                 modifier = Modifier.clickableWithoutRipple { handleCancel() }
@@ -127,13 +128,13 @@ fun UiSearchBarPreview() {
             UiSearchBar(
                 value = searchText,
                 onValueChange = { searchText = it },
-                placeholder = "태그 이름으로 검색해 보세요"
+                placeholder = stringResource(R.string.ui_search_placeholder)
             )
 
             UiSearchBar(
                 value = "검색어 입력됨",
                 onValueChange = {},
-                placeholder = "태그 이름으로 검색해 보세요"
+                placeholder = stringResource(R.string.ui_search_placeholder)
             )
         }
     }

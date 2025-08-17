@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,14 +56,14 @@ private fun UploadedContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "모든 스크린샷 동기화 완료!",
+                    text = stringResource(com.prography.ui.R.string.upload_complete_title),
                     style = headline01Bold,
                     color = Text01,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "이제 모든 기기에서 저장한\n스크린샷을 관리할 수 있어요.",
+                    stringResource(com.prography.ui.R.string.upload_complete_info),
                     style = body01Regular,
                     color = Text03,
                     textAlign = TextAlign.Center
@@ -77,7 +78,7 @@ private fun UploadedContent(
             // 아래 버튼
             UiPrimaryButton (
                 onClick = onContinue,
-                text = "다음",
+                text = stringResource(com.prography.ui.R.string.common_next),
                 modifier = Modifier
                     .fillMaxWidth()
             )

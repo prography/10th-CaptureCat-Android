@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,12 +50,12 @@ fun FavoriteContent(
         ) {
             Icon(
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
-                contentDescription = "뒤로가기",
+                contentDescription = stringResource(com.prography.ui.R.string.common_back),
                 modifier = Modifier.clickable { onAction(FavoriteAction.OnNavigateUp) }
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "즐겨찾기",
+                text = stringResource(com.prography.ui.R.string.favorite_title),
                 style = headline02Bold,
                 color = Text01
             )
@@ -71,14 +72,14 @@ fun FavoriteContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "즐겨찾기한 스크린샷이 없어요",
+                            text = stringResource(com.prography.ui.R.string.favorite_empty_title),
                             style = headline02Bold,
                             color = Text02,
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "마음에 드는 스크린샷을 즐겨찾기해보세요!",
+                            text = stringResource(com.prography.ui.R.string.favorite_empty_info),
                             style = body01Regular,
                             color = Text03,
                             textAlign = TextAlign.Center
@@ -166,7 +167,7 @@ fun FavoriteScreenshotItem(
         // 즐겨찾기 아이콘 (우상단)
         Icon(
             painter = painterResource(id = com.prography.ui.R.drawable.ic_favorite_checked),
-            contentDescription = "즐겨찾기",
+            contentDescription = stringResource(com.prography.ui.R.string.favorite_icon),
             tint = Color.Unspecified,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

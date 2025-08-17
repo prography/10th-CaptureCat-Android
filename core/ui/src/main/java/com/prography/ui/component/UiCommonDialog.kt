@@ -18,10 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.prography.ui.R
+import com.prography.ui.theme.*
 import com.prography.ui.theme.Gray02
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.PureWhite
@@ -111,8 +115,8 @@ fun UiCommonDialogPreview() {
         isVisible = true,
         title = "삭제할까요?",
         message = "5개의 항목을 삭제하시겠습니까?\n삭제된 항목은 복구할 수 없습니다.",
-        leftButtonText = "취소",
-        rightButtonText = "삭제",
+        leftButtonText = stringResource(R.string.common_cancel),
+        rightButtonText = stringResource(R.string.common_delete),
         onDismiss = {},
         onConfirm = {}
     )

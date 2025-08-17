@@ -87,7 +87,7 @@ fun ScreenshotTopBar(
                     enabled = selectedCount > 0
                 ) {
                     Text(
-                        text = "다음",
+                        text = stringResource(R.string.common_next),
                         color = if (selectedCount > 0) Text01 else Text03,
                         style = body01Regular
                     )
@@ -115,7 +115,7 @@ fun ScreenshotTopBar(
                 }
             ) {
                 UiCheckBox(
-                    text = "전체 선택",
+                    text = stringResource(R.string.common_all_select),
                     isChecked = isAllSelected,
                     onCheckedChange = {
                         val action =
@@ -127,7 +127,7 @@ fun ScreenshotTopBar(
                 )
             }
             Text(
-                text = "선택 삭제",
+                text = stringResource(R.string.common_selected_delete),
                 style = body02Regular,
                 color = Text03,
                 modifier = Modifier.clickable {

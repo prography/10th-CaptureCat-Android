@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.prography.ui.R
 import com.prography.ui.theme.*
 
 @Composable
@@ -20,7 +22,7 @@ fun UiBasicDialog(
     isVisible: Boolean,
     title: String = "",
     info: String,
-    confirmButtonText: String = "확인",
+    confirmButtonText: String = stringResource(R.string.common_confirm),
     onConfirm: () -> Unit
 ) {
     if (isVisible) {
@@ -49,7 +51,9 @@ fun UiBasicDialog(
                             style = headline02Bold,
                             color = Text01,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 6.dp)
                         )
                     }
                     Text(
@@ -83,7 +87,6 @@ fun UiBasicDialogPreview() {
         isVisible = true,
         title = "기본 다이어로그입니다",
         info = "이것은 기본 다이얼로그입니다.\n확인 버튼을 눌러 닫을 수 있습니다.",
-        confirmButtonText = "확인",
         onConfirm = {}
     )
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,19 +44,21 @@ fun ErrorReportBanner(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier.weight(1f).padding(vertical = 18.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 18.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Column {
                     Text(
-                        text = "채팅으로 오류 제보하기",
+                        text = stringResource(com.prography.ui.R.string.error_report_title),
                         style = subhead01Bold,
                         color = Primary
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "보내주신 내용은 모두 확인하고 답변드려요",
+                        text = stringResource(com.prography.ui.R.string.error_report_info),
                         style = caption02Regular,
                         color = Text02
                     )
@@ -64,7 +67,7 @@ fun ErrorReportBanner(
 
             Image(
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_report),
-                contentDescription = "이미지",
+                contentDescription = stringResource(com.prography.ui.R.string.common_image),
                 modifier = Modifier.size(76.dp, 70.dp)
             )
         }

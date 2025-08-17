@@ -1,0 +1,229 @@
+<resources>
+    <string name="app_name">CaptureCat</string>
+
+    <string name="onboarding_title">Before We Start</string>
+    <string name="onboarding_info">When you log in, you can manage from all devices,\nand even if you delete from gallery, it\'s safely stored in CaptureCat.</string>
+    <string name="onboarding_next">Later</string>
+    <string name="onboarding_login">Login</string>
+
+    <string name="login_kakao">Login with Kakao</string>
+    <string name="login_google">Login with Google</string>
+
+    <string name="tab_storage">Drafts</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_search">Search</string>
+    <string name="tab_mypage">My</string>
+
+    <string name="home_guide">First time using CaptureCat? Check out how to\nuse it productively!</string>
+    <string name="home_guide_show">View Usage Guide</string>
+    <string name="home_empty_screenshot_info">No saved screenshots\nSave and manage your screenshots!</string>
+    <string name="home_screenshot_save">Save Screenshots</string>
+
+    <string name="organize_count_message">You have %d screenshots</string>
+
+    <!-- Common -->
+    <string name="common_next">Next</string>
+    <string name="common_complete">Complete</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_skip">Skip</string>
+    <string name="common_later">Later</string>
+    <string name="common_logo">Logo</string>
+    <string name="common_search">Search</string>
+    <string name="common_close">Close</string>
+    <string name="common_back">Back</string>
+    <string name="common_all_select">Select All</string>
+    <string name="common_selected_delete">Delete Selected</string>
+    <string name="common_start">Get Started</string>
+    <string name="common_save">Save</string>
+    <string name="common_add">Add</string>
+    <string name="common_continue">Continue</string>
+    <string name="common_exit">Exit</string>
+    <string name="common_stop">Stop</string>
+    <string name="common_screenshot">Screenshot</string>
+    <string name="common_image">Image</string>
+
+    <!-- Delete Confirmation Dialog -->
+    <string name="delete_confirm_title">Delete?</string>
+    <string name="delete_confirm_message">Do you want to delete %d item(s)?\nDeleted items cannot be recovered.</string>
+
+    <!-- Accessibility and Content Descriptions -->
+    <string name="cd_tag_delete">Delete Tag</string>
+    <string name="cd_kakao_login_icon">Kakao Login Icon</string>
+    <string name="cd_google_login_icon">Google Login Icon</string>
+    <string name="cd_favorite_navigation">Navigate to Favorites</string>
+    <string name="cd_capture_cat_logo">CaptureCat Logo</string>
+
+    <!-- HomeScreen -->
+    <string name="login_title">Login</string>
+    <string name="login_message">You\'re currently using guest mode.\nGuest mode allows saving up to 10 screenshots only.\nWould you like to login?</string>
+
+    <!-- HomeContent -->
+    <string name="home_no_screenshot_title">No screenshots yet.</string>
+    <string name="home_no_screenshot_info">You can save screenshots from temporary storage!</string>
+    <string name="home_go_to_storage">Go to Temporary Storage</string>
+    <string name="home_loading_failed">Failed to load more</string>
+
+    <!-- FavoriteContent -->
+    <string name="favorite_title">Favorites</string>
+    <string name="favorite_empty_title">No favorite screenshots</string>
+    <string name="favorite_empty_info">Add screenshots to your favorites!</string>
+    <string name="favorite_icon">Favorite</string>
+
+    <!-- ImageDetailContent -->
+    <string name="image_detail_tag_edit">Edit Tags</string>
+    <string name="image_detail_tag_add">Add Tags</string>
+    <string name="image_detail_tag_input_placeholder">Enter tags to add</string>
+    <string name="image_detail_added_tags">Added Tags</string>
+    <string name="image_detail_tag_max_info">You can specify up to 4 tags</string>
+    <string name="image_detail_screenshot">Screenshot</string>
+
+    <!-- InitOnboardingContent -->
+    <string name="init_onboarding_save_title">Select and save\nonly screenshots</string>
+    <string name="init_onboarding_organize_title">Organize multiple\nscreenshots with tags</string>
+    <string name="init_onboarding_start_title">Find easily with tags\nand use right away</string>
+
+    <!-- LoginContent -->
+    <string name="login_agreement">By signing up, you agree to CaptureCat\'s\n%1$s and %2$s.</string>
+    <string name="login_terms">Terms of Service</string>
+    <string name="login_privacy">Privacy Policy</string>
+
+    <!-- OrganizeContent -->
+    <string name="organize_mode_batch">All at once</string>
+    <string name="organize_mode_single">One by one</string>
+    <string name="organize_screenshot">Screenshot</string>
+    <string name="organize_recent_tags">Recently added tags</string>
+    <string name="organize_completion_title">%d screenshots organized!</string>
+    <string name="organize_completion_info">Favorite screenshots can be\nseen more often on the home screen.</string>
+    <string name="organize_delete_confirmation">Delete this</string>
+
+    <!-- ScreenshotOrganizeContent -->
+    <string name="storage_title">Drafts</string>
+    <string name="storage_count_info">You have %d screenshots</string>
+    <string name="storage_login_required">Login to Continue</string>
+    <string name="storage_delete_select_message">Please select images to delete.</string>
+    <string name="storage_selection_count">%d/20</string>
+
+    <!-- StartChooseScreen -->
+    <string name="start_choose_title">Before we start\nYou have %d screenshots</string>
+    <string name="start_choose_info">You can save them later, so please select only the images you need first.</string>
+    <string name="start_choose_organize_count">Organize (%d/%d)</string>
+
+    <!-- StartTagScreen -->
+    <string name="start_tag_question">Do you have images you capture frequently?</string>
+    <string name="start_tag_info">Select topics of interest (%d or fewer) and\nwe\'ll create them as tags when you capture.</string>
+    <string name="start_tag_complete">Selection Complete (%d/%d)</string>
+    <string name="start_tag_exit_dialog_message">If you exit now, CaptureCat won\'t be able to create tags in advance.</string>
+
+    <!-- StartPermissionScreen -->
+    <string name="start_permission_title">Photo access permission for screenshots only!</string>
+    <string name="start_permission_info">Even if you allow access to all photos,\nCaptureCat only loads screenshots</string>
+
+    <!-- UploadingScreen -->
+    <string name="upload_syncing_title">Synchronizing\nall screenshots</string>
+    <string name="upload_syncing_progress">%d%% Complete</string>
+    <string name="upload_syncing_tip">Tip. Favorite screenshots can be\nseen more often on the home screen.</string>
+    <string name="upload_cancel_dialog_title">Stop here?</string>
+    <string name="upload_cancel_dialog_message">If you leave now, you won\'t be able to reload screenshots.</string>
+
+    <!-- UploadedScreen -->
+    <string name="upload_complete_title">All screenshots synchronized!</string>
+    <string name="upload_complete_info">Now you can manage saved\nscreenshots from all devices.</string>
+
+    <!-- ErrorReportBanner -->
+    <string name="error_report_title">Report bugs via chat</string>
+    <string name="error_report_info">If you don\'t have KakaoTalk, please contact us at capturecat77@gmail.com</string>
+
+    <!-- WithdrawScreen -->
+    <string name="withdraw_reason_title">Please tell us why you\'re leaving.</string>
+    <string name="withdraw_reason_info">Thank you for using CaptureCat.\nPlease tell us your reason for withdrawal to help us improve our service.</string>
+    <string name="withdraw_complete_info">Thank you for using our service.\nIf you rejoin within 30 days, all your data can be recovered.</string>
+    <string name="withdraw_reason_1">CaptureCat is difficult to use.</string>
+    <string name="withdraw_reason_2">It\'s hard to find screenshots.</string>
+    <string name="withdraw_reason_3">Don\'t need screenshot management.</string>
+    <string name="withdraw_reason_4">Already using a similar service.</string>
+    <string name="withdraw_dialog_title">Withdrawal Complete</string>
+    <string name="withdraw_dialog_info">Thank you for using our service.\nWe hope to see you again!</string>
+
+    <!-- SplashActivity -->
+    <string name="app_update_title">New CaptureCat version released!</string>
+    <string name="app_update_info">For better service experience,\nplease update to the latest version.</string>
+    <string name="app_update_button">Update</string>
+    <string name="maintenance_title">Service Maintenance</string>
+    <string name="app_exit">Exit</string>
+
+    <!-- Permission Related -->
+    <string name="permission_request">Request Permission</string>
+    <string name="permission_photo_title">Photo Access Unavailable!</string>
+    <string name="permission_photo_info">Photo access permission is required to load screenshots.</string>
+    <string name="permission_setting">Go to Settings</string>
+    <string name="permission_setting_info">Please allow photo access permission in settings.</string>
+    <string name="permission_denied_title">Photo Access Unavailable!</string>
+
+    <!-- UI Components -->
+    <string name="ui_difficult_to_use">CaptureCat is difficult to use.</string>
+    <string name="ui_search_placeholder">Search by tag name</string>
+
+    <!-- Tag Related Error Messages -->
+    <string name="tag_error_already_exists">This tag already exists.</string>
+    <string name="tag_error_registration_failed">Failed to register tag</string>
+    <string name="tag_error_duplicate">A tag with the same name already exists.</string>
+
+    <!-- Settings Screen Title -->
+    <string name="setting_title">Settings</string>
+
+    <!-- Guest Mode -->
+    <string name="setting_guest_mode_message">You\'re currently using guest mode</string>
+    <string name="setting_login_button">Login</string>
+
+    <!-- Service Info and Help -->
+    <string name="setting_service_info">Service Information</string>
+    <string name="setting_privacy_policy">Privacy Policy</string>
+    <string name="setting_terms_of_service">Terms of Service</string>
+    <string name="setting_version_info">Version Information</string>
+    <string name="setting_help">Help</string>
+    <string name="setting_screenshot_reset">Reset</string>
+
+    <!-- Member Mode -->
+    <string name="setting_member_nickname">%1$s</string>
+
+    <!-- Logout -->
+    <string name="setting_logout">Logout</string>
+    <string name="setting_logout_dialog_title">If you logout</string>
+    <string name="setting_logout_dialog_message">You might not be able to manage screenshots.\nDo you still want to logout?</string>
+
+    <!-- Withdrawal -->
+    <string name="setting_withdraw">Delete Account</string>
+    <string name="setting_withdraw_dialog_title">If you delete your account</string>
+    <string name="setting_withdraw_dialog_message">All your data accumulated in CaptureCat will be deleted.\nDo you still want to delete your account?</string>
+
+    <!-- Reset -->
+    <string name="setting_reset_dialog_title">If you reset</string>
+    <string name="setting_reset_dialog_message">All your data accumulated in CaptureCat will be deleted.\nDo you still want to logout?</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="setting_cancel">Cancel</string>
+    <string name="setting_ok">OK</string>
+
+    <!-- SearchContent -->
+    <string name="search_title">Search</string>
+    <string name="back_button">Back</string>
+    <string name="search_placeholder">Search by tag name</string>
+    <string name="empty_popular_tag_title">No tags yet.</string>
+    <string name="empty_popular_tag_info">Try organizing screenshots with tags!</string>
+    <string name="empty_search_result_title">No search results.</string>
+    <string name="empty_search_result_info">Try organizing screenshots with tags</string>
+
+    <!-- SelectedTagsSearchHeader -->
+    <string name="cancel">Cancel</string>
+
+    <!-- PopularTagsSection -->
+    <string name="tag_shortcut">Tag Shortcuts</string>
+
+    <!-- Tag chip -->
+    <string name="remove_tag">Remove Tag</string>
+
+    <!-- Common Dialog -->
+    <string name="common_exit_dialog_title">Exit the app?</string>
+</resources>

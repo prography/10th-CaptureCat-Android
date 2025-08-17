@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,10 +49,10 @@ fun UploadingScreen(viewModel: UploadViewModel) {
     )
 
     UiCommonDialog(
-        title = "여기서 그만둘까요?",
-        message = "지금 나가면 스크린샷을 다시 불러올 수 없어요.",
-        leftButtonText = "계속",
-        rightButtonText = "그만두기",
+        title = stringResource(com.prography.ui.R.string.upload_cancel_dialog_title),
+        message = stringResource(com.prography.ui.R.string.upload_cancel_dialog_message),
+        leftButtonText = stringResource(com.prography.ui.R.string.common_continue),
+        rightButtonText = stringResource(com.prography.ui.R.string.common_stop),
         onDismiss = { viewModel.sendAction(UploadAction.DismissCancelDialog) },
         onConfirm = { viewModel.sendAction(UploadAction.ConfirmCancelUpload) },
         isVisible = state.showConfirmDialog
@@ -66,7 +67,9 @@ fun UploadingContent(
 ) {
     val percent = if (state.totalCount == 0) 0 else (state.uploadedCount * 100) / state.totalCount
 
-    Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .statusBarsPadding()) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -74,8 +77,8 @@ fun UploadingContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_backward), // ← 아이콘 교체
-                contentDescription = "뒤로가기",
+                painter = painterResource(id = R.drawable.ic_arrow_backward), 
+                contentDescription = stringResource(com.prography.ui.R.string.common_back),
                 modifier = Modifier
                     .size(32.dp)
                     .clickableWithoutRipple { onAction(UploadAction.CancelUpload) }
@@ -98,14 +101,14 @@ fun UploadingContent(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "모든 스크린샷을\n동기화 하고 있어요",
+                    text = stringResource(com.prography.ui.R.string.upload_syncing_title),
                     style = headline01Bold,
                     color = Text01,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    "Tip. 즐겨찾기로 하면 홈에서\n더 자주 볼 수 있어요.",
+                    text = stringResource(com.prography.ui.R.string.upload_syncing_tip),
                     style = body01Regular,
                     color = Text03,
                     textAlign = TextAlign.Center
@@ -120,7 +123,10 @@ fun UploadingContent(
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
                     Text(
-                        text = "$percent% 완료",
+                        text = stringResource(
+                            com.prography.ui.R.string.upload_syncing_progress,
+                            percent
+                        ),
                         color = Primary,
                         style = subhead02Bold
                     )

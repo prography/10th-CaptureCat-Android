@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -46,10 +47,10 @@ fun DeleteConfirmDialog(
 ) {
     UiCommonDialog(
         isVisible = isVisible,
-        title = "삭제할까요?",
-        message = "${selectedCount}개의 항목을 삭제하시겠습니까?\n삭제된 항목은 복구할 수 없습니다.",
-        leftButtonText = "취소",
-        rightButtonText = "삭제",
+        title = stringResource(R.string.delete_confirm_title),
+        message = stringResource(R.string.delete_confirm_message, selectedCount),
+        leftButtonText = stringResource(R.string.common_cancel),
+        rightButtonText = stringResource(R.string.common_delete),
         onDismiss = onDismiss,
         onConfirm = onConfirm
     )

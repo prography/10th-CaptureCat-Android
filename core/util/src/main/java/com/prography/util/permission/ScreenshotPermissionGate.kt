@@ -21,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.prography.ui.R
 import com.prography.ui.component.UiBasicDialog
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -55,9 +57,9 @@ fun ScreenshotPermissionGate(
         permissionState.status.shouldShowRationale -> {
             UiBasicDialog(
                 isVisible = showRationaleDialog,
-                title = "사진 접근 불가!",
-                info = "스크린샷을 불러오기 위해 사진 접근 권한이 필요합니다.",
-                confirmButtonText = "권한 요청",
+                title = stringResource(R.string.permission_photo_title),
+                info = stringResource(R.string.permission_photo_info),
+                confirmButtonText = stringResource(R.string.permission_request),
                 onConfirm = {
                     showRationaleDialog = false
                     permissionState.launchPermissionRequest()
@@ -80,9 +82,9 @@ fun ScreenshotPermissionGate(
                 } else {
                     UiBasicDialog(
                         isVisible = true,
-                        title = "사진 접근 불가!",
-                        info = "설정에서 사진 접근 권한을 허용해주세요.",
-                        confirmButtonText = "설정으로",
+                        title = stringResource(R.string.permission_denied_title),
+                        info = stringResource(R.string.permission_setting_info),
+                        confirmButtonText = stringResource(R.string.permission_setting),
                         onConfirm = onNavigateToSettings
                     )
                 }

@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.prography.ui.R
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body01Regular
@@ -21,7 +23,7 @@ import com.prography.ui.theme.headline02Bold
 fun UiEmptyState(
     title: String,
     info: String,
-    buttonText: String = "임시보관함 가기",
+    buttonText: String = stringResource(R.string.home_go_to_storage),
     onClick: () -> Unit
 ) {
     Box(

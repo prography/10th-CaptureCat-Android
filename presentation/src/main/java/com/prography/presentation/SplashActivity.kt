@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -197,7 +198,7 @@ class SplashActivity : ComponentActivity() {
         ) {
             Image(
                 painter = painterResource(id = com.prography.ui.R.drawable.ic_splash_logo),
-                contentDescription = "캡처캣 로고",
+                contentDescription = stringResource(R.string.cd_capture_cat_logo),
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = (LocalConfiguration.current.screenHeightDp * 0.4f).dp)
@@ -208,10 +209,9 @@ class SplashActivity : ComponentActivity() {
         if (showUpdateDialog) {
             UiBasicDialog(
                 isVisible = true,
-                title = "캡처캣 새 버전 출시!",
-                info = "더 나은 서비스 이용을 위해\n" +
-                        "업데이트가 꼭 필요해요.",
-                confirmButtonText = "업데이트 하기",
+                title = stringResource(R.string.app_update_title),
+                info = stringResource(R.string.app_update_info),
+                confirmButtonText = stringResource(R.string.app_update_button),
                 onConfirm = onForceUpdate
             )
         }
@@ -219,7 +219,7 @@ class SplashActivity : ComponentActivity() {
         if (showMaintenanceDialog) {
             UiBasicDialog(
                 isVisible = true,
-                title = "서비스 점검",
+                title = stringResource(R.string.maintenance_title),
                 info = maintenanceMessage,
                 confirmButtonText = "",
                 onConfirm = { finish() } // 앱 종료

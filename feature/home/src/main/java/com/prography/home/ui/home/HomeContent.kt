@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,11 +65,11 @@ fun HomeContent(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_header_logo),
-                contentDescription = "로고"
+                contentDescription = stringResource(R.string.common_logo)
             )
             Image(
                 painter = painterResource(id = R.drawable.ic_search_bar_icon),
-                contentDescription = "검색",
+                contentDescription = stringResource(R.string.common_search),
                 modifier = Modifier.clickableWithoutRipple {
                     onAction(HomeAction.NavigateToSearch)
                 }
@@ -99,9 +100,9 @@ fun HomeContent(
                     contentAlignment = Alignment.Center
                 ) {
                     UiEmptyState(
-                        title = "아직 스크린샷이 없어요.",
-                        info = "임시보관함에서 스크린샷을 저장할 수 있어요!",
-                        buttonText = "임시보관함 가기",
+                        title = stringResource(R.string.home_no_screenshot_title),
+                        info = stringResource(R.string.home_no_screenshot_info),
+                        buttonText = stringResource(R.string.home_go_to_storage),
                         onClick = { onAction(HomeAction.NavigateToStorage) }
                     )
                 }
@@ -183,7 +184,7 @@ fun HomeContent(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "더 불러오기 실패",
+                                        text = stringResource(R.string.home_loading_failed),
                                         color = Color.Red,
                                         modifier = Modifier.clickable { pagingItems.retry() }
                                     )

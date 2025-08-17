@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -97,19 +98,19 @@ fun ScreenshotOrganizeContent(
             ) {
                 Column {
                     Text(
-                        text = "임시보관함",
+                        text = stringResource(R.string.storage_title),
                         style = headline02Bold,
                         color = Text01
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${totalScreenshotCount}개의 스크린샷이 있어요",
+                        text = stringResource(R.string.storage_count_info, totalScreenshotCount),
                         style = body02Regular,
                         color = Text01
                     )
                 }
                 UiButtonText(
-                    text = "다음",
+                    text = stringResource(R.string.common_next),
                     onClick = { onAction(ScreenshotAction.OrganizeSelected) },
                     enabled = state.selectedCount > 0
                 )
@@ -140,7 +141,7 @@ fun ScreenshotOrganizeContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         UiCheckBox(
-                            text = "전체 선택",
+                            text = stringResource(R.string.common_all_select),
                             isChecked = state.isAllSelected,
                             onCheckedChange = {
                                 val action = if (state.isAllSelected) {
@@ -157,7 +158,7 @@ fun ScreenshotOrganizeContent(
                             }
                         )
                         Text(
-                            text = "선택 삭제",
+                            text = stringResource(R.string.common_selected_delete),
                             style = body02Regular,
                             color = Text03,
                             modifier = Modifier.clickable {
@@ -262,7 +263,7 @@ fun ScreenshotOrganizeContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "더 불러오기 실패",
+                                text = stringResource(R.string.home_loading_failed),
                                 color = Color.Red,
                                 modifier = Modifier.clickable {
                                     pagingItems.retry()
@@ -282,7 +283,7 @@ fun ScreenshotOrganizeContent(
                     contentAlignment = Alignment.Center
                 ) {
                     UiLabelAddButton(
-                        text = "로그인 후 이용하기",
+                        text = stringResource(R.string.storage_login_required),
                         size = ButtonSize.LARGE,
                         onClick = { onAction(ScreenshotAction.NavigateToLogin) },
                         modifier = Modifier.padding(horizontal = 32.dp)
@@ -301,7 +302,10 @@ fun ScreenshotOrganizeContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "${state.selectedCount}/20",
+                        text = stringResource(
+                            R.string.storage_selection_count,
+                            state.selectedCount
+                        ),
                         color = PureWhite,
                         style = subhead02Bold
                     )
@@ -334,8 +338,8 @@ fun ScreenshotOrganizeContent(
 
     UiBasicDialog(
         isVisible = state.showDeleteDialog && state.selectedCount == 0,
-        info = "삭제할 이미지를 선택해주세요.",
-        confirmButtonText = "확인",
+        info = stringResource(R.string.storage_delete_select_message),
+        confirmButtonText = stringResource(R.string.common_confirm),
         onConfirm = { onAction(ScreenshotAction.DismissDeleteDialog) }
     )
 }

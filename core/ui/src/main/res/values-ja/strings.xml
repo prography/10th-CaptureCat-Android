@@ -1,0 +1,229 @@
+<resources>
+    <string name="app_name">CaptureCat</string>
+
+    <string name="onboarding_title">始める前に</string>
+    <string name="onboarding_info">ログインすれば全てのデバイスで管理でき、\nギャラリーから削除してもCaptureCatで安全に保管されます。</string>
+    <string name="onboarding_next">後で</string>
+    <string name="onboarding_login">ログイン</string>
+
+    <string name="login_kakao">カカオでログイン</string>
+    <string name="login_google">Googleでログイン</string>
+
+    <string name="tab_storage">一時保管庫</string>
+    <string name="tab_home">ホーム</string>
+    <string name="tab_search">検索</string>
+    <string name="tab_mypage">マイページ</string>
+
+    <string name="home_guide">CaptureCatは初めてですか？生産性の高い\n使い方をチェックしてみてください！</string>
+    <string name="home_guide_show">使い方を見る</string>
+    <string name="home_empty_screenshot_info">保存されたスクリーンショットがありません\nスクリーンショットを保存・管理してみましょう！</string>
+    <string name="home_screenshot_save">スクリーンショットを保存</string>
+
+    <string name="organize_count_message">%d枚のスクリーンショットがあります</string>
+
+    <!-- Common -->
+    <string name="common_next">次へ</string>
+    <string name="common_complete">完了</string>
+    <string name="common_cancel">キャンセル</string>
+    <string name="common_confirm">確認</string>
+    <string name="common_delete">削除</string>
+    <string name="common_skip">スキップ</string>
+    <string name="common_later">後で</string>
+    <string name="common_logo">ロゴ</string>
+    <string name="common_search">検索</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_back">戻る</string>
+    <string name="common_all_select">全て選択</string>
+    <string name="common_selected_delete">選択削除</string>
+    <string name="common_start">始める</string>
+    <string name="common_save">保存</string>
+    <string name="common_add">追加</string>
+    <string name="common_continue">続行</string>
+    <string name="common_exit">終了</string>
+    <string name="common_stop">停止</string>
+    <string name="common_screenshot">スクリーンショット</string>
+    <string name="common_image">画像</string>
+
+    <!-- Delete Confirmation Dialog -->
+    <string name="delete_confirm_title">削除しますか？</string>
+    <string name="delete_confirm_message">%d個のアイテムを削除しますか？\n削除されたアイテムは復元できません。</string>
+
+    <!-- Accessibility and Content Descriptions -->
+    <string name="cd_tag_delete">タグを削除</string>
+    <string name="cd_kakao_login_icon">カカオログインアイコン</string>
+    <string name="cd_google_login_icon">Googleログインアイコン</string>
+    <string name="cd_favorite_navigation">お気に入りへ移動</string>
+    <string name="cd_capture_cat_logo">CaptureCatロゴ</string>
+
+    <!-- HomeScreen -->
+    <string name="login_title">ログイン</string>
+    <string name="login_message">現在ゲストモードでご利用中です。\nゲストモードでは最大10枚まで保存できます。\nログインしますか？</string>
+
+    <!-- HomeContent -->
+    <string name="home_no_screenshot_title">まだスクリーンショットがありません。</string>
+    <string name="home_no_screenshot_info">一時保管庫からスクリーンショットを保存できます！</string>
+    <string name="home_go_to_storage">一時保管庫へ</string>
+    <string name="home_loading_failed">読み込みに失敗しました</string>
+
+    <!-- FavoriteContent -->
+    <string name="favorite_title">お気に入り</string>
+    <string name="favorite_empty_title">お気に入りのスクリーンショットがありません</string>
+    <string name="favorite_empty_info">スクリーンショットをお気に入りに追加してください！</string>
+    <string name="favorite_icon">お気に入り</string>
+
+    <!-- ImageDetailContent -->
+    <string name="image_detail_tag_edit">タグ編集</string>
+    <string name="image_detail_tag_add">タグ追加</string>
+    <string name="image_detail_tag_input_placeholder">追加するタグを入力してください</string>
+    <string name="image_detail_added_tags">追加されたタグ</string>
+    <string name="image_detail_tag_max_info">最大4つまでタグを指定できます</string>
+    <string name="image_detail_screenshot">スクリーンショット</string>
+
+    <!-- InitOnboardingContent -->
+    <string name="init_onboarding_save_title">スクリーンショットだけを\n選んで保存</string>
+    <string name="init_onboarding_organize_title">複数のスクリーンショットを\nタグで一度に整理</string>
+    <string name="init_onboarding_start_title">タグで���単に見つけて\nすぐに活用</string>
+
+    <!-- LoginContent -->
+    <string name="login_agreement">サインアップすることで、CaptureCatの\n%1$sと%2$sに同意したことになります。</string>
+    <string name="login_terms">利用規約</string>
+    <string name="login_privacy">プライバシーポリシー</string>
+
+    <!-- OrganizeContent -->
+    <string name="organize_mode_batch">一度に</string>
+    <string name="organize_mode_single">一枚ずつ</string>
+    <string name="organize_screenshot">スクリーンショット</string>
+    <string name="organize_recent_tags">最近追加したタグ</string>
+    <string name="organize_completion_title">%d枚整理完了！</string>
+    <string name="organize_completion_info">お気に入りのスクリーンショットは\nホーム画面でより頻繁に見ることができます。</string>
+    <string name="organize_delete_confirmation">削除する</string>
+
+    <!-- ScreenshotOrganizeContent -->
+    <string name="storage_title">一時保管庫</string>
+    <string name="storage_count_info">%d個のスクリーンショットがあります</string>
+    <string name="storage_login_required">ログインして続行</string>
+    <string name="storage_delete_select_message">削除する画像を選択してください。</string>
+    <string name="storage_selection_count">%d/20</string>
+
+    <!-- StartChooseScreen -->
+    <string name="start_choose_title">始める前に\n%d枚のスクリーンショットがあります</string>
+    <string name="start_choose_info">後で保存することもできますので、まずは必要な画像だけを選んでください。</string>
+    <string name="start_choose_organize_count">整理する (%d/%d)</string>
+
+    <!-- StartTagScreen -->
+    <string name="start_tag_question">頻繁にキャプチャする画像はありますか？</string>
+    <string name="start_tag_info">関心のあるトピックを選択（%d個以下）していただくと、\nキャプチャ時にタグとして事前に作成いたします。</string>
+    <string name="start_tag_complete">選択完了 (%d/%d)</string>
+    <string name="start_tag_exit_dialog_message">今終了すると、CaptureCatがタグを事前に作成できなくなります。</string>
+
+    <!-- StartPermissionScreen -->
+    <string name="start_permission_title">スクリーンショット専用写真アクセス許可！</string>
+    <string name="start_permission_info">全ての写真へのアクセスを許可しても、\nCaptureCatはスクリーンショットのみを読み込みます</string>
+
+    <!-- UploadingScreen -->
+    <string name="upload_syncing_title">全てのスクリーンショットを\n同期しています</string>
+    <string name="upload_syncing_progress">%d%% 完了</string>
+    <string name="upload_syncing_tip">ヒント：お気に入りのスクリーンショットは\nホーム画面でより頻繁に見ることができます。</string>
+    <string name="upload_cancel_dialog_title">ここで終了しますか？</string>
+    <string name="upload_cancel_dialog_message">今出ると、スクリーンショットを再読み込みできません。</string>
+
+    <!-- UploadedScreen -->
+    <string name="upload_complete_title">全てのスクリーンショット同期完了！</string>
+    <string name="upload_complete_info">これで全てのデバイスから保存した\nスクリーンショットを管理できます。</string>
+
+    <!-- ErrorReportBanner -->
+    <string name="error_report_title">チャットでバグを報告</string>
+    <string name="error_report_info">KakaoTalk をお持ちでない場合は、capturecat77@gmail.com までご連絡ください。</string>
+
+    <!-- WithdrawScreen -->
+    <string name="withdraw_reason_title">退会される理由を教えてください。</string>
+    <string name="withdraw_reason_info">CaptureCatをご利用いただきありがとうございました.\nサービス向上のため、退会理由をお聞かせください。</string>
+    <string name="withdraw_complete_info">ご利用いただきありがとうございました.\n30日以内に再加入すれば、全てのデータを復旧できます。</string>
+    <string name="withdraw_reason_1">CaptureCatが使いにくいです。</string>
+    <string name="withdraw_reason_2">スクリーンショットが見つけにくいです。</string>
+    <string name="withdraw_reason_3">スクリーンショット管理が不要です。</string>
+    <string name="withdraw_reason_4">類似のサービスを既に使用しています。</string>
+    <string name="withdraw_dialog_title">退会完了</string>
+    <string name="withdraw_dialog_info">ご利用いただきありがとうございました.\nまたお会いできることを楽しみにしています！</string>
+
+    <!-- SplashActivity -->
+    <string name="app_update_title">新しいCaptureCatバージョンがリリースされました！</string>
+    <string name="app_update_info">より良いサービス体験のため、\n最新バージョンにアップデートしてください。</string>
+    <string name="app_update_button">アップデート</string>
+    <string name="maintenance_title">サービスメンテナンス</string>
+    <string name="app_exit">終了</string>
+
+    <!-- Permission Related -->
+    <string name="permission_request">権限を要求</string>
+    <string name="permission_photo_title">写真アクセスできません！</string>
+    <string name="permission_photo_info">スクリーンショットを読み込むために写真アクセス権限が必要です。</string>
+    <string name="permission_setting">設定へ</string>
+    <string name="permission_setting_info">設定で写真アクセス権限を許可してください。</string>
+    <string name="permission_denied_title">写真アクセスできません！</string>
+
+    <!-- UI Components -->
+    <string name="ui_difficult_to_use">CaptureCatが使いにくいです。</string>
+    <string name="ui_search_placeholder">タグ名で検索</string>
+
+    <!-- Tag Related Error Messages -->
+    <string name="tag_error_already_exists">このタグは既に存在します。</string>
+    <string name="tag_error_registration_failed">タグ登録に失敗しました</string>
+    <string name="tag_error_duplicate">同じ名前のタグが既に存在します。</string>
+
+    <!-- Settings Screen Title -->
+    <string name="setting_title">設定</string>
+
+    <!-- Guest Mode -->
+    <string name="setting_guest_mode_message">現在ゲストモードでご利用中です</string>
+    <string name="setting_login_button">ログイン</string>
+
+    <!-- Service Info and Help -->
+    <string name="setting_service_info">サービス情報</string>
+    <string name="setting_privacy_policy">プライバシーポリシー</string>
+    <string name="setting_terms_of_service">利用規約</string>
+    <string name="setting_version_info">バージョン情報</string>
+    <string name="setting_help">ヘルプ</string>
+    <string name="setting_screenshot_reset">初期化</string>
+
+    <!-- Member Mode -->
+    <string name="setting_member_nickname">%1$sさん</string>
+
+    <!-- Logout -->
+    <string name="setting_logout">ログアウト</string>
+    <string name="setting_logout_dialog_title">ログアウトすると</string>
+    <string name="setting_logout_dialog_message">スクリーンショットを管理できなくなる可能性があります.\nそれでもログアウトしますか？</string>
+
+    <!-- Withdrawal -->
+    <string name="setting_withdraw">アカウント削除</string>
+    <string name="setting_withdraw_dialog_title">アカウント削除すると</string>
+    <string name="setting_withdraw_dialog_message">CaptureCatに蓄積されたユーザーの全てのデータが削除されます.\nそれでもアカウント削除しますか？</string>
+
+    <!-- Reset -->
+    <string name="setting_reset_dialog_title">初期化すると</string>
+    <string name="setting_reset_dialog_message">CaptureCatに蓄積されたユーザーの全てのデータが削除されます.\nそれでもログアウトしますか？</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="setting_cancel">キャンセル</string>
+    <string name="setting_ok">OK</string>
+
+    <!-- SearchContent -->
+    <string name="search_title">検索</string>
+    <string name="back_button">戻る</string>
+    <string name="search_placeholder">タグ名で検索</string>
+    <string name="empty_popular_tag_title">まだタグがありません。</string>
+    <string name="empty_popular_tag_info">スクリーンショットをタグで整理してみてください！</string>
+    <string name="empty_search_result_title">検索結果がありません。</string>
+    <string name="empty_search_result_info">スクリーンショットをタグで整理してみてください</string>
+
+    <!-- SelectedTagsSearchHeader -->
+    <string name="cancel">キャンセル</string>
+
+    <!-- PopularTagsSection -->
+    <string name="tag_shortcut">タグショートカット</string>
+
+    <!-- Tag chip -->
+    <string name="remove_tag">タグを削除</string>
+
+    <!-- Common Dialog -->
+    <string name="common_exit_dialog_title">アプリを終了しますか？</string>
+</resources>

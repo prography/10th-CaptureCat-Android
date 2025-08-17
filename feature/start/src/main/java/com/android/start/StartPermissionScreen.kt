@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,7 @@ fun StartPermissionScreen(
 
             // 상단 텍스트
             Text(
-                text = "사진 접근 허용으로 스크린샷만 쏙!",
+                text = stringResource(com.prography.ui.R.string.start_permission_title),
                 style = headline01Bold,
                 color = Text01,
                 textAlign = TextAlign.Center
@@ -49,7 +50,7 @@ fun StartPermissionScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "모든 사진에 대한 접근 허용을 해도 캡처캣은\n스크린샷만 불러와요",
+                text = stringResource(com.prography.ui.R.string.start_permission_info),
                 style = body01Regular.copy(lineHeight = 25.92.sp),
                 color = Text02,
                 textAlign = TextAlign.Center
@@ -76,7 +77,7 @@ fun StartPermissionScreen(
 
         // 하단 버튼
         UiPrimaryButton(
-            text = "다음",
+            text = stringResource(com.prography.ui.R.string.common_next),
             onClick = onNext,
             state = ButtonState.Enabled,
             modifier = Modifier
