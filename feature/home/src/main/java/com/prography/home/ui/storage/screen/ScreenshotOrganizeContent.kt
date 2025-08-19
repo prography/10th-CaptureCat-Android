@@ -23,12 +23,15 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.LoadState
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.lifecycle.Lifecycle
+import androidx.paging.LoadState
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.home.ui.storage.contract.ScreenshotAction
 import com.prography.home.ui.storage.contract.ScreenshotState
@@ -60,6 +63,7 @@ fun ScreenshotOrganizeContent(
     viewModel: ScreenshotViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
 
     // 전체 스크린샷 개수를 별도로 가져오기
@@ -300,6 +304,7 @@ fun ScreenshotOrganizeContent(
                 deleteLauncher = deleteLauncher,
                 onDeleteCompleted = {
                     onAction(ScreenshotAction.ConfirmDelete)
+                    onAction(ScreenshotAction.RefreshScreenshots) // 삭제 후 새로고침
                 }
             )
         }
