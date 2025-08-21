@@ -2,6 +2,7 @@ package com.prography.data.repository
 
 import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
+import com.prography.data.util.RepositoryModeExecutor
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
@@ -19,39 +20,17 @@ class ScreenshotRepositoryImpl @Inject constructor(
     private val userPrefs: UserPreferenceDataStore
 ) : ScreenshotRepository {
 
-    // 토큰 유무에 따른 모드 체크를 위한 헬퍼 함수들
-    private suspend fun isLocalMode(): Boolean = userPrefs.accessToken.first().isNullOrBlank()
-
-    private suspend fun <T> executeWithMode(
-        localAction: suspend () -> T,
-        remoteAction: suspend () -> T
-    ): T = if (isLocalMode()) localAction() else remoteAction()
-
-    private suspend fun <T> executeWithModeAndFallback(
-        localAction: suspend () -> T,
-        remoteAction: suspend () -> Result<T>
-    ): T = executeWithMode(
-        localAction = localAction,
-        remoteAction = {
-            remoteAction().fold(
-                onSuccess = { it },
-                onFailure = { exception ->
-                    Timber.e(exception, "Remote operation failed")
-                    throw exception
-                }
-            )
-        }
-    )
+    private val modeExecutor = RepositoryModeExecutor(userPrefs)
 
     override suspend fun getLocalScreenshots(): Flow<List<UiScreenshotModel>> {
         return localDataSource.getScreenshots()
     }
 
     override suspend fun getScreenshots(hasTags: Boolean?): Flow<List<UiScreenshotModel>> {
-        return executeWithMode(
+        return modeExecutor.executeWithMode(
             localAction = { localDataSource.getScreenshots(hasTags) },
             remoteAction = {
-                remoteDataSource.getScreenshots(hasTags).fold(
+            remoteDataSource.getScreenshots(hasTags).fold(
                     onSuccess = { screenshots ->
                         Timber.d("Remote success: ${screenshots.size} screenshots with hasTags=$hasTags")
                         flowOf(screenshots)
@@ -70,7 +49,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
         pageSize: Int,
         hasTags: Boolean?
     ): List<UiScreenshotModel> {
-        return executeWithMode(
+        return modeExecutor.executeWithMode(
             localAction = {
                 // 로컬 모드: 전체 데이터를 가져와서 페이징 처리
                 val allScreenshots = localDataSource.getScreenshots(hasTags).first()
@@ -96,9 +75,9 @@ class ScreenshotRepositoryImpl @Inject constructor(
     }
 
     override suspend fun bulkInsert(screenshots: List<UiScreenshotModel>) {
-        Timber.d("BulkInsert - Mode: ${if (isLocalMode()) "Local" else "Remote"}")
+        Timber.d("BulkInsert - Mode: ${modeExecutor.getCurrentModeForLogging()}")
 
-        executeWithMode(
+        modeExecutor.executeWithMode(
             localAction = {
                 // 로컬 저장
                 Timber.d("BulkInsert - Local mode: inserting ${screenshots.size} screenshots")
@@ -133,7 +112,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteScreenshot(screenshotId: String) {
-        executeWithMode(
+        modeExecutor.executeWithModeAndCacheUpdateUnit(
             localAction = {
                 // 로컬 모드: 로컬에서만 스크린샷 삭제
                 Timber.d("DeleteScreenshot - Local mode: deleting screenshot $screenshotId")
@@ -142,36 +121,27 @@ class ScreenshotRepositoryImpl @Inject constructor(
             remoteAction = {
                 // 서버 모드: 서버에서 스크린샷 삭제 시도
                 Timber.d("DeleteScreenshot - Remote mode: deleting screenshot $screenshotId")
-                remoteDataSource.deleteScreenshot(screenshotId).fold(
-                    onSuccess = {
-                        Timber.d("DeleteScreenshot - Remote deletion success")
-                        // 서버 삭제 성공 시 로컬에서도 삭제 (캐시 정리)
-                        try {
-                            localDataSource.deleteById(screenshotId)
-                        } catch (e: Exception) {
-                            Timber.w(e, "Failed to delete local cache after remote deletion")
-                        }
-                    },
-                    onFailure = { exception ->
-                        Timber.e(exception, "DeleteScreenshot - Remote deletion failure")
-                        throw exception
-                    }
-                )
+                remoteDataSource.deleteScreenshot(screenshotId)
+            },
+            onRemoteSuccess = {
+                // 서버 삭제 성공 시 로컬에서도 삭제 (캐시 정리)
+                Timber.d("DeleteScreenshot - Remote deletion success, clearing local cache")
+                localDataSource.deleteById(screenshotId)
             }
         )
     }
 
     override suspend fun getScreenshotById(screenshotId: String): UiScreenshotModel? {
-        return executeWithModeAndFallback(
+        return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.getById(screenshotId) },
             remoteAction = { remoteDataSource.getScreenshotById(screenshotId) }
         )
     }
 
     override suspend fun deleteTag(imageId: String, tagName: String) {
-        Timber.d("DeleteTag - Mode: ${if (isLocalMode()) "Local" else "Remote"}")
+        Timber.d("DeleteTag - Mode: ${modeExecutor.getCurrentModeForLogging()}")
 
-        executeWithMode(
+        modeExecutor.executeWithMode(
             localAction = {
                 // 로컬 모드: 로컬에서만 태그 삭제
                 Timber.d("DeleteTag - Local mode: deleting tag '$tagName' from image $imageId")
@@ -196,7 +166,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
         screenshotId: String,
         tagNames: List<String>
     ): Result<List<TagModel>> {
-        return executeWithMode(
+        return modeExecutor.executeWithMode(
             localAction = {
                 // 로컬 모드: UUID 사용
                 Result.success(tagNames.map {
@@ -214,7 +184,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
     }
 
     override suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean) {
-        executeWithMode(
+        modeExecutor.executeWithModeAndCacheUpdateUnit(
             localAction = {
                 // 로컬 모드: 로컬에서만 북마크 상태 업데이트
                 Timber.d("ToggleBookmark - Local mode: updating bookmark for screenshot $screenshotId to $isBookmarked")
@@ -228,40 +198,26 @@ class ScreenshotRepositoryImpl @Inject constructor(
                 // 서버 모드: 서버에서 북마크 추가/삭제
                 Timber.d("ToggleBookmark - Remote mode: ${if (isBookmarked) "adding" else "removing"} bookmark for screenshot $screenshotId")
 
-                val remoteResult = if (isBookmarked) {
+                if (isBookmarked) {
                     remoteDataSource.addBookmark(screenshotId)
                 } else {
                     remoteDataSource.removeBookmark(screenshotId)
                 }
-
-                remoteResult.fold(
-                    onSuccess = {
-                        Timber.d("ToggleBookmark - Remote bookmark operation success")
-                        // 서버 성공 시 로컬 캐시도 업데이트
-                        try {
-                            val screenshot = localDataSource.getById(screenshotId)
-                            if (screenshot != null) {
-                                val updatedScreenshot = screenshot.copy(isBookmarked = isBookmarked)
-                                localDataSource.update(updatedScreenshot)
-                            }
-                        } catch (e: Exception) {
-                            Timber.w(
-                                e,
-                                "Failed to update local cache after remote bookmark operation"
-                            )
-                        }
-                    },
-                    onFailure = { exception ->
-                        Timber.e(exception, "ToggleBookmark - Remote bookmark operation failure")
-                        throw exception
-                    }
-                )
+            },
+            onRemoteSuccess = {
+                // 서버 성공 시 로컬 캐시도 업데이트
+                Timber.d("ToggleBookmark - Remote bookmark operation success, updating local cache")
+                val screenshot = localDataSource.getById(screenshotId)
+                if (screenshot != null) {
+                    val updatedScreenshot = screenshot.copy(isBookmarked = isBookmarked)
+                    localDataSource.update(updatedScreenshot)
+                }
             }
         )
     }
 
     override suspend fun getFavoriteImages(page: Int, size: Int): Result<List<UiScreenshotModel>> {
-        return executeWithMode(
+        return modeExecutor.executeWithMode(
             localAction = {
                 // 로컬 모드: 로컬 DB에서 즐겨찾기 이미지를 페이징하여 가져오기
                 Timber.d("GetFavoriteImages - Local mode: page=$page, size=$size")
@@ -291,7 +247,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMostUsedTags(size: Int): List<TagWithCount> {
-        return executeWithModeAndFallback(
+        return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.getMostUsedTags(size) },
             remoteAction = { remoteDataSource.getMostUsedTags(size) }
         )
@@ -302,7 +258,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
         page: Int,
         size: Int
     ): List<UiScreenshotModel> {
-        return executeWithModeAndFallback(
+        return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.searchImagesByTags(tagNames, page, size) },
             remoteAction = { remoteDataSource.searchImagesByTags(tagNames, page, size) }
         )
@@ -313,7 +269,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
         page: Int,
         size: Int
     ): List<String> {
-        return executeWithModeAndFallback(
+        return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.getRelatedTags(tagNames, page, size) },
             remoteAction = { remoteDataSource.getRelatedTags(tagNames, page, size) }
         )
