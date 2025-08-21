@@ -20,75 +20,70 @@ import android.Manifest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.prography.ui.R
 import com.prography.ui.component.UiBasicDialog
+import timber.log.Timber
+
+
+enum class PermissionStatus {
+    GRANTED, SHOULD_SHOW_RATIONALE, DENIED_FOREVER
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScreenshotPermissionGate(
     onPermissionGranted: @Composable () -> Unit,
     onPermissionJustGranted: (() -> Unit)? = null,
-    onPermissionDenied: (() -> Unit)? = null,
     onNavigateToSettings: () -> Unit = {}
 ) {
     val permission = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> Manifest.permission.READ_MEDIA_IMAGES
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Manifest.permission.READ_EXTERNAL_STORAGE
         else -> Manifest.permission.READ_EXTERNAL_STORAGE
     }
 
-    val permissionState = rememberPermissionState(permission = permission)
-    var showRationaleDialog by remember { mutableStateOf(true) }
+    val permissionState = rememberPermissionState(permission)
+    var alreadyVisited by rememberSaveable { mutableStateOf(false) }
 
-    // 권한이 허용되었을 때 콜백 호출 (단순하게)
-    LaunchedEffect(permissionState.status.isGranted) {
-        if (permissionState.status.isGranted) {
-            onPermissionJustGranted?.invoke()
+    val status = when {
+        permissionState.status.isGranted -> PermissionStatus.GRANTED
+        !permissionState.status.shouldShowRationale -> PermissionStatus.SHOULD_SHOW_RATIONALE
+        else -> PermissionStatus.DENIED_FOREVER
+    }
+
+    // 시스템 alert 최초 1회만 실행 & 거부안한 경우에만
+    LaunchedEffect(Unit) {
+        if (!alreadyVisited && status == PermissionStatus.SHOULD_SHOW_RATIONALE) {
+            alreadyVisited = true
+            permissionState.launchPermissionRequest()
+            return@LaunchedEffect
         }
     }
 
-    when {
-        permissionState.status.isGranted -> {
+
+
+    when (status) {
+        PermissionStatus.GRANTED -> {
+            Timber.d("권한 허용")
+            onPermissionJustGranted?.invoke()
             onPermissionGranted()
         }
 
-        permissionState.status.shouldShowRationale -> {
-            UiBasicDialog(
-                isVisible = showRationaleDialog,
-                title = stringResource(R.string.permission_photo_title),
-                info = stringResource(R.string.permission_photo_info),
-                confirmButtonText = stringResource(R.string.permission_request),
-                onConfirm = {
-                    showRationaleDialog = false
-                    permissionState.launchPermissionRequest()
-                }
-            )
+        PermissionStatus.SHOULD_SHOW_RATIONALE -> {
+            Timber.d("처음 권한 요청")
         }
 
-        else -> {
-            // permission denied (첫 요청 또는 영구 거부)
-
-            // 최초 진입이면 자동 요청 시도
-            LaunchedEffect(Unit) {
-                permissionState.launchPermissionRequest()
-            }
-
-            // 영구 거부 상태 처리
-            if (!permissionState.status.isGranted && !permissionState.status.shouldShowRationale) {
-                if (onPermissionDenied != null) {
-                    onPermissionDenied()
-                } else {
-                    UiBasicDialog(
-                        isVisible = true,
-                        title = stringResource(R.string.permission_denied_title),
-                        info = stringResource(R.string.permission_setting_info),
-                        confirmButtonText = stringResource(R.string.permission_setting),
-                        onConfirm = onNavigateToSettings
-                    )
-                }
-            }
+        PermissionStatus.DENIED_FOREVER -> {
+            Timber.d("권한 거절")
+            UiBasicDialog(
+                isVisible = true,
+                title = stringResource(R.string.permission_denied_title),
+                info = stringResource(R.string.permission_setting_info),
+                confirmButtonText = stringResource(R.string.permission_setting),
+                onConfirm = onNavigateToSettings
+            )
         }
     }
 }

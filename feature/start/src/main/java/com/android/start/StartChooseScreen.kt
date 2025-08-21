@@ -57,7 +57,7 @@ fun StartChooseScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = stringResource(
-                            com.prography.ui.R.string.start_choose_title,
+                            R.string.start_choose_title,
                             state.totalCount
                         ),
                         style = headline02Bold,
