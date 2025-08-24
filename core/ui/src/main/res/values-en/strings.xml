@@ -171,19 +171,25 @@
     <string name="tag_error_duplicate">A tag with the same name already exists.</string>
 
     <!-- Settings Screen Title -->
-    <string name="setting_title">Settings</string>
+    <string name="setting_title">My</string>
 
     <!-- Guest Mode -->
-    <string name="setting_guest_mode_message">You\'re currently using guest mode</string>
-    <string name="setting_login_button">Login</string>
+    <string name="setting_guest_mode_message">You are currently using guest mode</string>
+    <string name="setting_login_button">Log in</string>
+    <string name="setting_login_device_info">When logged in, you can manage images on other devices too</string>
 
     <!-- Service Info and Help -->
     <string name="setting_service_info">Service Information</string>
     <string name="setting_privacy_policy">Privacy Policy</string>
     <string name="setting_terms_of_service">Terms of Service</string>
-    <string name="setting_version_info">Version Information</string>
+    <string name="setting_version_info">Version Info</string>
     <string name="setting_help">Help</string>
     <string name="setting_screenshot_reset">Reset</string>
+    <string name="setting_app_review">Leave App Review</string>
+    <string name="setting_update">Update</string>
+    <string name="setting_user_preferences">User Preferences</string>
+    <string name="setting_tag_settings">Tag Settings</string>
+    <string name="setting_channel_inquiry">Contact Support</string>
 
     <!-- Member Mode -->
     <string name="setting_member_nickname">%1$s</string>

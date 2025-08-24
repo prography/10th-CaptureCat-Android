@@ -174,16 +174,22 @@
     <string name="setting_title">設定</string>
 
     <!-- Guest Mode -->
-    <string name="setting_guest_mode_message">現在ゲストモードでご利用中です</string>
-    <string name="setting_login_button">ログイン</string>
+    <string name="setting_guest_mode_message">現在ゲストモードで使用中です</string>
+    <string name="setting_login_button">ログインする</string>
+    <string name="setting_login_device_info">ログインすると、他のデバイスでも画像を管理できます</string>
 
-    <!-- Service Info and Help -->
+    <!-- サービス情報とヘルプ -->
     <string name="setting_service_info">サービス情報</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>
     <string name="setting_terms_of_service">利用規約</string>
     <string name="setting_version_info">バージョン情報</string>
     <string name="setting_help">ヘルプ</string>
     <string name="setting_screenshot_reset">初期化</string>
+    <string name="setting_app_review">アプリレビューを書く</string>
+    <string name="setting_update">アップデート</string>
+    <string name="setting_user_preferences">ユーザー設定</string>
+    <string name="setting_tag_settings">タグ設定</string>
+    <string name="setting_channel_inquiry">お問い合わせ</string>
 
     <!-- Member Mode -->
     <string name="setting_member_nickname">%1$sさん</string>

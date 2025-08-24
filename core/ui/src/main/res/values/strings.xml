@@ -12,7 +12,7 @@
     <string name="tab_storage">임시보관함</string>
     <string name="tab_home">홈</string>
     <string name="tab_search">검색</string>
-    <string name="tab_mypage">my</string>
+    <string name="tab_mypage">마이</string>
 
     <string name="home_guide">캡처캣은 처음이시죠? 생산성있게 활용하는 방법을\n확인해 보세요!</string>
     <string name="home_guide_show">사용방법 보기</string>
@@ -165,11 +165,12 @@
     <string name="ui_search_placeholder">태그 이름으로 검색해 보세요</string>
 
     <!-- 설정 화면 타이틀 -->
-    <string name="setting_title">설정</string>
+    <string name="setting_title">마이</string>
 
     <!-- 게스트 모드 -->
     <string name="setting_guest_mode_message">현재 게스트 모드로 사용하고 있어요</string>
     <string name="setting_login_button">로그인하기</string>
+    <string name="setting_login_device_info">로그인 시 다른 기기에서도 이미지를 관리할 수 있어요</string>
 
     <!-- 서비스 정보 및 도움말 -->
     <string name="setting_service_info">서비스 정보</string>
@@ -178,6 +179,11 @@
     <string name="setting_version_info">버전 정보</string>
     <string name="setting_help">도움말</string>
     <string name="setting_screenshot_reset">초기화</string>
+    <string name="setting_app_review">앱 리뷰</string>
+    <string name="setting_update">업데이트</string>
+    <string name="setting_user_preferences">사용자 환경 설정</string>
+    <string name="setting_tag_settings">태그 설정</string>
+    <string name="setting_channel_inquiry">채널 문의</string>
 
     <!-- 회원 모드 -->
     <string name="setting_member_nickname">%1$s님</string>
