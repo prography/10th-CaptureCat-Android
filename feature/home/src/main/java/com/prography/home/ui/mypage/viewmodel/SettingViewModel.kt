@@ -90,7 +90,7 @@ class SettingViewModel @Inject constructor(
                 getUserInfoUseCase()
                     .onSuccess { info ->
                         Timber.d("User info loaded: $info")
-                        updateState { copy(nickname = info.nickname) }
+                        updateState { copy(nickname = info.nickname, email = info.email) }
                     }
                     .onFailure { e -> Timber.e(e, "Failed to load user info") }
             }

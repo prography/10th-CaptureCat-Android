@@ -3,6 +3,7 @@ package com.prography.home.ui.mypage.contract
 data class SettingState(
     val isLoggedIn: Boolean = false,
     val nickname: String? = null,
+    val email: String? = null,
     val isLoading: Boolean = false,
     val showLogoutDialog: Boolean = false,
     val showWithdrawDialog: Boolean = false,
