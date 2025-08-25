@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -48,47 +49,64 @@ fun SettingContent(
             .fillMaxSize()
             .background(Color.White)
             .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
+        // Header (고정)
         UiHeader(
             title = stringResource(id = UiString.setting_title),
             showBackButton = true
         )
+        // 헤더 하단 1dp 라인
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Divider)
+        )
 
-        // 1) 상단 카드: 게스트/회원 분기
-        if (state.isLoggedIn) {
-            MemberProfileCard(
-                nickname = state.nickname ?: "사용자",
-                email = state.email ?: ""
-            )
-        } else {
-            GuestLoginCard(onLogin = { onAction(SettingAction.OnLogin) })
+        // 본문 (스크롤)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            item {
+                if (state.isLoggedIn) {
+                    MemberProfileCard(
+                        nickname = state.nickname ?: "사용자",
+                        email = state.email ?: ""
+                    )
+                } else {
+                    GuestLoginCard(onLogin = { onAction(SettingAction.OnLogin) })
+                }
+            }
+            item {
+                UserPreferenceSection(onAction = onAction)
+            }
+            item {
+                ServiceInfoSection(
+                    versionName = versionName,
+                    onPrivacy = {
+                        onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd"))
+                    },
+                    onTerms = {
+                        onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
+                    },
+                    onReview = { /* TODO */ },
+                    onUpdate = { openPlayStore(context) }
+                )
+            }
+            item {
+                HelpSection(
+                    isLoggedIn = state.isLoggedIn,
+                    onChannel = { /* TODO */ },
+                    onReset = { onAction(SettingAction.OnClickReset) },
+                    onLogout = { onAction(SettingAction.OnClickLogout) },
+                    onWithdraw = { onAction(SettingAction.OnClickWithdraw) }
+                )
+            }
         }
 
-        // 2) 사용자 환경설정 (공통)
-        UserPreferenceSection(onAction = onAction)
-
-        // 3) 서비스 정보 (공통)
-        ServiceInfoSection(
-            versionName = versionName,
-            onPrivacy = {
-                onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f58081abb1e90909cce9fd"))
-            },
-            onTerms = {
-                onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
-            },
-            onReview = { /* TODO: 리뷰 유도 */ },
-            onUpdate = { openPlayStore(context) }
-        )
-
-        // 4) 도움말/기타 (공통 + 회원 전용 항목)
-        HelpSection(
-            isLoggedIn = state.isLoggedIn,
-            onChannel = { /* TODO: 채널 문의 */ },
-            onReset = { onAction(SettingAction.OnClickReset) },
-            onLogout = { onAction(SettingAction.OnClickLogout) },
-            onWithdraw = { onAction(SettingAction.OnClickWithdraw) }
-        )
-
+        // 다이얼로그 (스크롤 밖에 둬도 OK)
         if (state.showLogoutDialog) {
             UiCommonDialog(
                 isVisible = true,
@@ -100,7 +118,6 @@ fun SettingContent(
                 onConfirm = { onAction(SettingAction.OnLogout) }
             )
         }
-
         if (state.showWithdrawDialog) {
             UiCommonDialog(
                 isVisible = true,
@@ -112,7 +129,6 @@ fun SettingContent(
                 onConfirm = { onAction(SettingAction.OnNavigateToWithdraw) }
             )
         }
-
         UiCommonDialog(
             isVisible = state.showResetDialog,
             title = stringResource(UiString.setting_reset_dialog_title),
@@ -132,7 +148,7 @@ private fun GuestLoginCard(onLogin: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(16.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = PrimaryLow)
     ) {
