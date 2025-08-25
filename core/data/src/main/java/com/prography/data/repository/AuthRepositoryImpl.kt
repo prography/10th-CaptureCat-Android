@@ -111,15 +111,16 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun withdraw(reason: String): Result<Unit> {
         return try {
             val accessToken = tokenManager.getAccessToken()
-            if (accessToken.isNullOrBlank()) {
+            val refreshToken = tokenManager.getRefreshToken()
+            if (accessToken.isNullOrBlank() && refreshToken.isNullOrBlank()) {
                 Timber.e("WITHDRAW: Access token is null or blank")
-                return Result.failure(Exception("액세스 토큰이 없습니다"))
+                return Result.failure(Exception("액세스 토큰 혹은 리프레시 토큰이 없습니다"))
             }
 
             val withdrawRequest = WithdrawRequest(reason = reason)
             Timber.d("WITHDRAW: Sending request with reason: $reason")
 
-            val response = authService.withdraw(withdrawRequest)
+            val response = authService.withdraw("Bearer $refreshToken", withdrawRequest)
 
             Timber.d("WITHDRAW: Response code: ${response.code()}")
             Timber.d("WITHDRAW: Response body: ${response.body()}")
