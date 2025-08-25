@@ -28,6 +28,7 @@ interface AuthService {
 
     @HTTP(method = "DELETE", path = "/v1/user/withdraw", hasBody = true)
     suspend fun withdraw(
+        @Header("Refresh-Token") refreshTokenWithBearer: String,
         @Body request: WithdrawRequest
     ): Response<ApiResponse<String>>
 }
