@@ -176,7 +176,7 @@
     <string name="setting_service_info">서비스 정보</string>
     <string name="setting_privacy_policy">개인정보 처리 방침</string>
     <string name="setting_terms_of_service">서비스 이용약관</string>
-    <string name="setting_version_info">버전 정보</string>
+    <string name="setting_version_info">버전 %s</string>
     <string name="setting_help">도움말</string>
     <string name="setting_screenshot_reset">초기화</string>
     <string name="setting_app_review">앱 리뷰</string>

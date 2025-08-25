@@ -55,7 +55,7 @@ fun MainScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
-                        .background(Color(0x0D001758))
+                        .background(Divider)
                 )
                 BottomNavigationBar(
                     navController = navController,

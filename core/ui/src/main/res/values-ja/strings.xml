@@ -182,7 +182,7 @@
     <string name="setting_service_info">サービス情報</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>
     <string name="setting_terms_of_service">利用規約</string>
-    <string name="setting_version_info">バージョン情報</string>
+    <string name="setting_version_info">バージョン %s</string>
     <string name="setting_help">ヘルプ</string>
     <string name="setting_screenshot_reset">初期化</string>
     <string name="setting_app_review">アプリレビューを書く</string>

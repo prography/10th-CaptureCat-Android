@@ -182,7 +182,7 @@
     <string name="setting_service_info">Service Information</string>
     <string name="setting_privacy_policy">Privacy Policy</string>
     <string name="setting_terms_of_service">Terms of Service</string>
-    <string name="setting_version_info">Version Info</string>
+    <string name="setting_version_info">Version %s</string>
     <string name="setting_help">Help</string>
     <string name="setting_screenshot_reset">Reset</string>
     <string name="setting_app_review">Leave App Review</string>
