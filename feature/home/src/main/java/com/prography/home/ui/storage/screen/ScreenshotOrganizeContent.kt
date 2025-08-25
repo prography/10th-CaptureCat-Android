@@ -20,6 +20,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -184,9 +187,8 @@ fun ScreenshotOrganizeContent(
                                 .border(
                                     width = 2.dp,
                                     color = when {
-                                        isSelected -> Primary // 선택된 상태: 파란색
-                                        isOrganized -> Color(0xFF4CAF50) // 정리 완료: 초록색
-                                        else -> Gray04 // 기본 상태: 회색
+                                        isSelected -> Primary
+                                        else -> Gray04
                                     }
                                 )
                                 .fillMaxWidth()
@@ -215,27 +217,6 @@ fun ScreenshotOrganizeContent(
                                     .padding(4.dp),
                                 tint = Color.Unspecified
                             )
-
-                            // 정리 완료 아이콘 (우상단)
-                            if (isOrganized && !isSelected) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(4.dp)
-                                        .size(24.dp)
-                                        .background(
-                                            color = Color(0xFF4CAF50),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "✓",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                            }
                         }
                     }
                 }
