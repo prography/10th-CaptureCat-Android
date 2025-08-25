@@ -6,8 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.setting.contract.SettingEffect
-import com.prography.setting.viewmodel.SettingViewModel
 import androidx.core.net.toUri
+import com.prography.home.ui.mypage.viewmodel.SettingViewModel
 
 @Composable
 fun SettingsScreen(

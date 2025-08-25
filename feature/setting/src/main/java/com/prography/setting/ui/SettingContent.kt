@@ -51,11 +51,6 @@ fun SettingContent(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
-                contentDescription = stringResource(id = UiString.setting_title),
-                modifier = Modifier.clickable { onAction(SettingAction.OnNavigateUp) }
-            )
             Text(
                 text = stringResource(id = UiString.setting_title),
                 style = headline02Bold,

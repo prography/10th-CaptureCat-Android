@@ -5,12 +5,12 @@ import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
 import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
 import com.prography.domain.usecase.user.GetUserInfoUseCase
-import com.prography.home.ui.mypage.contract.SettingAction
-import com.prography.home.ui.mypage.contract.SettingEffect
-import com.prography.home.ui.mypage.contract.SettingState
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
+import com.prography.setting.contract.SettingAction
+import com.prography.setting.contract.SettingEffect
+import com.prography.setting.contract.SettingState
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel

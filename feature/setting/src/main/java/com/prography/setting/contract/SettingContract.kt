@@ -19,11 +19,9 @@ sealed class SettingEffect {
 }
 
 sealed class SettingAction {
-    object OnNavigateUp : SettingAction()
     object OnLogin : SettingAction()
     object OnLogout : SettingAction()
     object OnNavigateToWithdraw : SettingAction()
-    data class OnConfirmWithdraw(val reason: String) : SettingAction()
     data class OnExternalLink(val url: String) : SettingAction()
 
     object OnClickLogout : SettingAction()
