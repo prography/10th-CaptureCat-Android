@@ -153,7 +153,7 @@ fun OrganizeImageCard(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = Color(0x0D001758),
+                        color = com.prography.ui.theme.Divider,
                         shape = RoundedCornerShape(size = 26.dp)
                     )
                     .fillMaxSize()

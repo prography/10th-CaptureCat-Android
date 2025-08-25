@@ -62,4 +62,4 @@ val Text02 = Color(0xFF4D5159)
 val Text03 = Color(0xFF868B94)
 
 // Divider
-val Divider = Color(0xFF001758)
+val Divider = Color(0x0D001758)

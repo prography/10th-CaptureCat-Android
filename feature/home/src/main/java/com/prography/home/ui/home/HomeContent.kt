@@ -35,6 +35,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
+import com.prography.ui.theme.Divider
 
 @Composable
 fun HomeContent(
@@ -212,7 +213,7 @@ fun ScreenshotItem(
             .aspectRatio(45f / 76f)
             .clip(RoundedCornerShape(4.dp))
             .border(
-                width = 0.75.dp, color = Color(0x0D001758),
+                width = 0.75.dp, color = Divider,
                 shape = RoundedCornerShape(size = 4.dp)
             )
             .clickable { onScreenshotClick(screenshot) }

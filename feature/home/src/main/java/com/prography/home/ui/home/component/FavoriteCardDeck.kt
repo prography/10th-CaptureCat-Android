@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import timber.log.Timber
 import androidx.compose.runtime.LaunchedEffect
+import com.prography.ui.theme.Divider
 
 @Composable
 fun FavoriteCardDeck(
@@ -95,7 +96,7 @@ fun FavoriteCardDeck(
                     }
                     .border(
                         width = 1.dp,
-                        color = Color(0x0D001758),
+                        color = Divider,
                         shape = RoundedCornerShape(16.dp)
                     )
                     .clip(RoundedCornerShape(16.dp))
