@@ -1,0 +1,17 @@
+plugins {
+    alias(libs.plugins.multi.module.android.presentation.ui)
+    alias(libs.plugins.multi.module.android.application.hilt)
+}
+
+android {
+    namespace = "com.prography.tag"
+    compileSdk = 35
+}
+
+dependencies {
+    implementation("androidx.paging:paging-runtime:3.3.6")
+    implementation("androidx.paging:paging-compose:3.3.6")
+
+    implementation(project(":core:navigation"))
+    implementation(project(":core:domain"))
+}

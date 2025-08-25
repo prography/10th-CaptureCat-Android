@@ -39,6 +39,11 @@ class SettingViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.Login)
                 )
             }
+            SettingAction.OnTagSetting -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.TagSetting)
+                )
+            }
             SettingAction.OnLogout -> {
                 updateState { copy(showLogoutDialog = false) }
                 logout()

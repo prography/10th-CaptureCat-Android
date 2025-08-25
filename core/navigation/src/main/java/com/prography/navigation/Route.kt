@@ -61,4 +61,7 @@ sealed interface AppRoute : Route {
 
     @Serializable
     data object Upload : AppRoute
+
+    @Serializable
+    data object TagSetting : AppRoute
 }

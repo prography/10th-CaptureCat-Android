@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.collectLatest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import com.prography.tag.navigation.TagSettingRoute
 import com.prography.ui.component.UiBasicDialog
 
 @Composable
@@ -160,6 +161,9 @@ fun AppNavGraph(
         }
         composable<AppRoute.SettingRoute.Withdraw> {
             WithdrawRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.TagSetting> {
+            TagSettingRoute()
         }
     }
 }

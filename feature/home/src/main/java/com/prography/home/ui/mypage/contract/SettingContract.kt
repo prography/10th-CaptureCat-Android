@@ -16,6 +16,7 @@ sealed class SettingEffect {
 
 sealed class SettingAction {
     object OnLogin : SettingAction()
+    object OnTagSetting : SettingAction()
     object OnLogout : SettingAction()
     object OnNavigateToWithdraw : SettingAction()
     data class OnExternalLink(val url: String) : SettingAction()

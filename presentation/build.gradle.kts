@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":feature:start"))
     implementation(project(":feature:setting"))
     implementation(project(":feature:imageDetail"))
+    implementation(project(":feature:tag"))
 
     implementation(libs.splashscreen)
     // Firebase Remote Config

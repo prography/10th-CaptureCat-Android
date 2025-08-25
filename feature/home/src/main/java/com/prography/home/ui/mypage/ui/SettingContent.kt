@@ -211,7 +211,7 @@ private fun MemberProfileCard(
 private fun UserPreferenceSection(onAction: (SettingAction) -> Unit) {
     SettingTitleMenuItem(text = stringResource(UiString.setting_user_preferences))
     SettingMenuItem(text = stringResource(UiString.setting_tag_settings)) {
-        // 태그 설정 이동
+        onAction(SettingAction.OnTagSetting)
     }
     Spacer(modifier = Modifier.height(24.dp))
 }
