@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingState
+import com.prography.ui.R
 import com.prography.ui.component.SelectableCard
 import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UiPrimaryButton
@@ -51,6 +52,13 @@ fun SettingContent(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_backward),
+                contentDescription = stringResource(com.prography.ui.R.string.common_back),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { onAction(SettingAction.OnBackPressed) }
+            )
             Text(
                 text = stringResource(id = UiString.setting_title),
                 style = headline02Bold,

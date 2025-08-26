@@ -70,6 +70,9 @@ class SettingViewModel @Inject constructor(
                     showToast("캡처캣의 데이터가 삭제 되었습니다.")
                 }
             }
+            SettingAction.OnBackPressed -> {
+                navigationHelper.navigate(NavigationEvent.Up)
+            }
         }
     }
 
