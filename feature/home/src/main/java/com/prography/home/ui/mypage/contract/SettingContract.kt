@@ -15,6 +15,7 @@ sealed class SettingEffect {
 }
 
 sealed class SettingAction {
+    object OnBackPressed : SettingAction()
     object OnLogin : SettingAction()
     object OnTagSetting : SettingAction()
     object OnLogout : SettingAction()
