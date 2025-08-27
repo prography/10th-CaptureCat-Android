@@ -45,7 +45,6 @@ import com.prography.ui.R as UiR
 fun SearchContent(
     state: SearchState,
     onAction: (SearchAction) -> Unit,
-    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val searchRefreshManager: SearchRefreshManager =
@@ -76,12 +75,6 @@ fun SearchContent(
                 .padding(start = 16.dp, top = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = UiR.drawable.ic_arrow_backward),
-                contentDescription = stringResource(UiR.string.back_button),
-                modifier = Modifier.clickable { onAction(SearchAction.OnNavigateUp) }
-            )
-            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(id = UiR.string.search_title),
                 style = headline02Bold,

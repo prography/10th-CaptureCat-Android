@@ -31,7 +31,6 @@ import com.prography.ui.theme.Primary
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
 import com.prography.ui.component.clickableWithoutRipple
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
@@ -69,10 +68,10 @@ fun HomeContent(
                 contentDescription = stringResource(R.string.common_logo)
             )
             Image(
-                painter = painterResource(id = R.drawable.ic_search_bar_icon),
-                contentDescription = stringResource(R.string.common_search),
+                painter = painterResource(id = R.drawable.ic_profile),
+                contentDescription = stringResource(R.string.tab_mypage),
                 modifier = Modifier.clickableWithoutRipple {
-                    onAction(HomeAction.NavigateToSearch)
+                    onAction(HomeAction.NavigateToMyPage)
                 }
             )
         }

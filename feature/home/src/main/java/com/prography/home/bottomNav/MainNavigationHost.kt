@@ -1,8 +1,6 @@
 package com.prography.home.bottomNav
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -10,11 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.prography.home.ui.home.HomeScreen
+import com.prography.home.ui.search.screen.SearchScreen
 import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
-import com.prography.home.ui.DummyScreen
-import com.prography.home.ui.mypage.route.SettingRoute
-import com.prography.home.ui.mypage.ui.SettingsScreen
 
 @Composable
 fun MainNavigationHost(
@@ -46,8 +42,18 @@ fun MainNavigationHost(
                 }
             )
         }
-        composable(BottomNavItem.MyPage.route) {
-            SettingRoute()
+        composable(BottomNavItem.Search.route) {
+            SearchScreen(
+                onNavigateToStorage = {
+                    navController.navigate(BottomNavItem.Storage.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
         composable("screenshot_gallery") {
             ScreenshotGalleryScreen(

@@ -4,8 +4,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.SearchEffect
@@ -18,10 +16,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun SearchScreen(
     modifier: Modifier = Modifier,
     onNavigateToStorage: () -> Unit = {},
-    navController: NavController? = null,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-    val actualNavController = navController ?: rememberNavController()
     val state by viewModel.uiState.collectAsState()
     val effectFlow = viewModel.effect
 
@@ -45,7 +41,6 @@ fun SearchScreen(
         onAction = { action ->
             viewModel.sendAction(action)
         },
-        navController = actualNavController,
         modifier = modifier
     )
 }
@@ -69,8 +64,7 @@ fun SearchScreenWithTagsPreview() {
     PrographyTheme {
         SearchContent(
             state = sampleState,
-            onAction = {},
-            navController = rememberNavController()
+            onAction = {}
         )
     }
 }
@@ -83,8 +77,7 @@ fun SearchScreenEmptyPreview() {
             state = SearchState(
                 isLoading = false
             ),
-            onAction = {},
-            navController = rememberNavController()
+            onAction = {}
         )
     }
 }
@@ -125,8 +118,7 @@ fun SearchScreenWithResultsPreview() {
                 searchResults = sampleScreenshots,
                 isLoading = false
             ),
-            onAction = {},
-            navController = rememberNavController()
+            onAction = {}
         )
     }
 }

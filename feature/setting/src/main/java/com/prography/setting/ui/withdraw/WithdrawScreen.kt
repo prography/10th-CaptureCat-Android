@@ -1,4 +1,4 @@
-package com.prography.home.ui.mypage.ui.withdraw
+package com.prography.setting.ui.withdraw
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.prography.home.ui.mypage.ui.withdraw.WithdrawAction
-import com.prography.home.ui.mypage.ui.withdraw.WithdrawEffect
-import com.prography.home.ui.mypage.ui.withdraw.WithdrawViewModel
+import com.prography.setting.ui.withdraw.WithdrawAction
+import com.prography.setting.ui.withdraw.WithdrawEffect
+import com.prography.setting.ui.withdraw.WithdrawViewModel
 import com.prography.ui.component.ButtonSize
 import com.prography.ui.component.ButtonState
 import com.prography.ui.component.ButtonType

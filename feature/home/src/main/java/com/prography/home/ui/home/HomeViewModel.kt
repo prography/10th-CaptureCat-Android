@@ -64,9 +64,9 @@ class HomeViewModel @Inject constructor(
             HomeAction.NavigateToStorage -> {
                 emitEffect(HomeEffect.NavigateToStorage)
             }
-            HomeAction.NavigateToSearch -> {
+            HomeAction.NavigateToMyPage -> {
                 navigationHelper.navigate(
-                    NavigationEvent.To(AppRoute.Search)
+                    NavigationEvent.To(AppRoute.MyPage)
                 )
             }
             is HomeAction.OnScreenshotClick -> {

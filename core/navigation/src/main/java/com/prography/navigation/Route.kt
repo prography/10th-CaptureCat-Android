@@ -38,7 +38,7 @@ sealed interface AppRoute : Route {
     data object StartChoose : AppRoute
 
     @Serializable
-    data object Search : AppRoute
+    data object MyPage : AppRoute
 
     @Serializable
     data class ImageDetail(

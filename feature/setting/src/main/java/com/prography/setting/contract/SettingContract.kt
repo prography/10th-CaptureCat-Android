@@ -1,4 +1,4 @@
-package com.prography.home.ui.mypage.contract
+package com.prography.setting.contract
 
 data class SettingState(
     val isLoggedIn: Boolean = false,

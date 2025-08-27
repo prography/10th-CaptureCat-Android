@@ -6,7 +6,7 @@ import com.prography.domain.model.UiScreenshotModel
 sealed class HomeAction {
     object NavigateToFavorite : HomeAction()
     object NavigateToStorage : HomeAction()
-    object NavigateToSearch : HomeAction()
+    object NavigateToMyPage : HomeAction()
     data class OnScreenshotClick(val screenshot: UiScreenshotModel) : HomeAction()
     object ShowLoginDialog : HomeAction()
     object HideLoginDialog : HomeAction()

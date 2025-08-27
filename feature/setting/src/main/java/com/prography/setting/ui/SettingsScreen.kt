@@ -1,12 +1,12 @@
-package com.prography.home.ui.mypage.ui
+package com.prography.setting.ui
 
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.prography.home.ui.mypage.contract.SettingEffect
-import com.prography.home.ui.mypage.viewmodel.SettingViewModel
+import com.prography.setting.contract.SettingEffect
+import com.prography.setting.viewmodel.SettingViewModel
 import androidx.core.net.toUri
 
 @Composable
