@@ -45,7 +45,7 @@ class SearchViewModel @Inject constructor(
 
     fun loadMostUsedTags() {
         viewModelScope.launch {
-            runCatching { getMostUsedTagsUseCase(size = 5) }
+            runCatching { getMostUsedTagsUseCase(size = 20) }
                 .onSuccess { topTags ->
                     val tagsWithMiscategorized = topTags.toMutableList()
 

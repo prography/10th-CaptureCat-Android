@@ -33,6 +33,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.search.contract.*
+import com.prography.ui.R
 import com.prography.ui.component.*
 import com.prography.ui.theme.*
 import com.prography.util.SearchRefreshManager
@@ -69,18 +70,9 @@ fun SearchContent(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = UiR.string.search_title),
-                style = headline02Bold,
-                color = Text01
-            )
-        }
+        UiHeader(
+            title = stringResource(id = R.string.search_title)
+        )
 
         if (state.selectedTags.isNotEmpty()) {
             SelectedTagsSearchHeader(
@@ -207,8 +199,7 @@ fun SelectedTagsSearchHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 12.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -292,15 +283,16 @@ fun PopularTagsSection(
             text = stringResource(id = UiR.string.tag_shortcut),
             style = subhead01Bold,
             color = Text02,
-            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp, start = 16.dp)
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
         )
 
-        LazyRow(
-            modifier = Modifier.padding(vertical = 8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        FlowRow(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(tags) { tagWithCount ->
+            tags.forEach { tagWithCount ->
                 UiTagShortcutChip(
                     text = tagWithCount.tag,
                     onClick = { onTagClick(tagWithCount.tag) }

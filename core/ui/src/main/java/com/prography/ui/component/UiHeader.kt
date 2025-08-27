@@ -29,7 +29,7 @@ import com.prography.ui.theme.headline02Bold
 @Composable
 fun UiHeader(
     title: String,
-    showBackButton: Boolean = true,
+    showBackButton: Boolean = false,
     onBackClick: () -> Unit = {}
 ) {
     Column(
@@ -71,11 +71,11 @@ fun UiHeader(
 @Preview(showBackground = true)
 @Composable
 fun UiHeaderPreview() {
-    UiHeader(title = "마이")
+    UiHeader(title = "마이", showBackButton = true)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun UiHeaderNoBackPreview() {
-    UiHeader(title = "마이", showBackButton = false)
+    UiHeader(title = "마이")
 }
