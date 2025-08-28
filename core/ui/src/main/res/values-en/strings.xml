@@ -12,7 +12,6 @@
     <string name="tab_storage">Drafts</string>
     <string name="tab_home">Home</string>
     <string name="tab_search">Search</string>
-    <string name="tab_mypage">My</string>
 
     <string name="home_guide">First time using CaptureCat? Check out how to\nuse it productively!</string>
     <string name="home_guide_show">View Usage Guide</string>
