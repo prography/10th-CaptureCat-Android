@@ -231,4 +231,20 @@
 
     <!-- 공통 다이얼로그 -->
     <string name="common_exit_dialog_title">앱을 종료하시겠습니까?</string>
+
+    <!-- 태그 관련 -->
+    <string-array name="default_tag_options">
+        <item>쇼핑</item>
+        <item>직무 관련</item>
+        <item>레퍼런스</item>
+        <item>코디</item>
+        <item>공부</item>
+        <item>글귀</item>
+        <item>여행</item>
+        <item>자기계발</item>
+        <item>맛집</item>
+        <item>노래</item>
+        <item>레시피</item>
+        <item>운동</item>
+    </string-array>
 </resources>

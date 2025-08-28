@@ -15,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,11 +43,7 @@ import com.prography.util.MixpanelUtil
 
 @Composable
 fun StartTagScreen(
-    tagOptions: List<String> = listOf(
-        "쇼핑", "직무 관련", "레퍼런스", "코디",
-        "공부", "글귀", "여행", "자기계발",
-        "맛집", "노래", "레시피", "운동"
-    ),
+    tagOptions: List<String> = stringArrayResource(id = com.prography.ui.R.array.default_tag_options).toList(),
     onFinishSelection: (List<String>) -> Unit,
     onNavigateBack: () -> Unit = {},
     viewModel: StartTagViewModel = hiltViewModel()
@@ -160,11 +158,7 @@ fun StartTagScreen(
 @Composable
 fun StartTagScreenPreview() {
     StartTagScreen(
-        tagOptions = listOf(
-            "쇼핑", "직무 관련", "레퍼런스", "코디",
-            "공부", "글귀", "여행", "자기계발",
-            "맛집", "노래", "레시피", "운동"
-        ),
+        tagOptions = stringArrayResource(id = com.prography.ui.R.array.default_tag_options).toList(),
         onFinishSelection = { }
     )
 }
