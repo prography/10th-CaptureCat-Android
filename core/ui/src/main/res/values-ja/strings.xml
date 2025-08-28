@@ -169,6 +169,9 @@
     <string name="tag_error_registration_failed">タグ登録に失敗しました</string>
     <string name="tag_error_duplicate">同じ名前のタグが既に存在します。</string>
 
+    <!-- Email Related Errors -->
+    <string name="email_app_not_found">メールアプリが見つかりません。</string>
+
     <!-- Settings Screen Title -->
     <string name="setting_title">設定</string>
 

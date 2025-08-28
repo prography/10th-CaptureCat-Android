@@ -169,6 +169,9 @@
     <string name="tag_error_registration_failed">Failed to register tag</string>
     <string name="tag_error_duplicate">A tag with the same name already exists.</string>
 
+    <!-- Email Related Errors -->
+    <string name="email_app_not_found">No email app found on this device.</string>
+
     <!-- Settings Screen Title -->
     <string name="setting_title">Settings</string>
 
