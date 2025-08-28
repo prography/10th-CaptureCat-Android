@@ -225,4 +225,20 @@
 
     <!-- Common Dialog -->
     <string name="common_exit_dialog_title">アプリを終了しますか？</string>
+
+    <!-- タグ -->
+    <string-array name="default_tag_options">
+        <item>ショッピング</item>
+        <item>仕事関連</item>
+        <item>リファレンス</item>
+        <item>コーディネート</item>
+        <item>勉強</item>
+        <item>レシピ</item>
+        <item>旅行</item>
+        <item>自己実現</item>
+        <item>レストラン</item>
+        <item>音楽</item>
+        <item>エクササイズ</item>
+        <item>趣味</item>
+    </string-array>
 </resources>

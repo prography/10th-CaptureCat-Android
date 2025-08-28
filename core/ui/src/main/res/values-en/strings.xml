@@ -224,5 +224,21 @@
     <string name="remove_tag">Remove Tag</string>
 
     <!-- Common Dialog -->
-    <string name="common_exit_dialog_title">Exit the app?</string>
+    <string name="common_exit_dialog_title">Do you want to exit the app?</string>
+
+    <!-- Tags -->
+    <string-array name="default_tag_options">
+        <item>Shopping</item>
+        <item>Work related</item>
+        <item>References</item>
+        <item>Styling</item>
+        <item>Study</item>
+        <item>Quotes</item>
+        <item>Travel</item>
+        <item>Self-improvement</item>
+        <item>Restaurants</item>
+        <item>Music</item>
+        <item>Recipes</item>
+        <item>Fitness</item>
+    </string-array>
 </resources>
