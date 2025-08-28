@@ -229,6 +229,9 @@
     <string name="tag_error_registration_failed">태그 등록 실패</string>
     <string name="tag_error_duplicate">동일한 태그가 이미 존재합니다.</string>
 
+    <!-- 이메일 관련 오류 -->
+    <string name="email_app_not_found">기기에 이메일 앱이 없습니다.</string>
+
     <!-- 공통 다이얼로그 -->
     <string name="common_exit_dialog_title">앱을 종료하시겠습니까?</string>
 
