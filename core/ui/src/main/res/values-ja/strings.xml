@@ -12,7 +12,6 @@
     <string name="tab_storage">一時保管庫</string>
     <string name="tab_home">ホーム</string>
     <string name="tab_search">検索</string>
-    <string name="tab_mypage">マイページ</string>
 
     <string name="home_guide">CaptureCatは初めてですか？生産性の高い\n使い方をチェックしてみてください！</string>
     <string name="home_guide_show">使い方を見る</string>
@@ -82,7 +81,7 @@
     <!-- InitOnboardingContent -->
     <string name="init_onboarding_save_title">スクリーンショットだけを\n選んで保存</string>
     <string name="init_onboarding_organize_title">複数のスクリーンショットを\nタグで一度に整理</string>
-    <string name="init_onboarding_start_title">タグで���単に見つけて\nすぐに活用</string>
+    <string name="init_onboarding_start_title">タグで簡単に探して\nすぐに活用しましょう</string>
 
     <!-- LoginContent -->
     <string name="login_agreement">サインアップすることで、CaptureCatの\n%1$sと%2$sに同意したことになります。</string>
