@@ -4,6 +4,7 @@ import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
 import com.prography.data.util.RepositoryModeExecutor
 import com.prography.datastore.user.UserPreferenceDataStore
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.TagModel
@@ -272,6 +273,18 @@ class ScreenshotRepositoryImpl @Inject constructor(
         return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.getRelatedTags(tagNames, page, size) },
             remoteAction = { remoteDataSource.getRelatedTags(tagNames, page, size) }
+        )
+    }
+
+    override suspend fun getSearchAutoComplete(
+        keyword: String,
+        size: Int
+    ): List<AutocompleteTagModel> {
+        return modeExecutor.executeWithMode(
+            localAction = { localDataSource.getSearchAutoComplete(keyword, size) },
+            remoteAction = {
+                remoteDataSource.getSearchAutoComplete(keyword, size).getOrElse { emptyList() }
+            }
         )
     }
 }

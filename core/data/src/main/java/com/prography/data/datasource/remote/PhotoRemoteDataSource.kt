@@ -1,5 +1,6 @@
 package com.prography.data.datasource.remote
 
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
@@ -34,4 +35,9 @@ interface PhotoRemoteDataSource {
         page: Int = 0,
         size: Int = 10
     ): Result<List<String>>
+
+    suspend fun getSearchAutoComplete(
+        keyword: String,
+        size: Int = 10
+    ): Result<List<AutocompleteTagModel>>
 }

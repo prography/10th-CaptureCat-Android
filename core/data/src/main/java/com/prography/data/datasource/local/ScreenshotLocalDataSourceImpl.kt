@@ -5,6 +5,7 @@ import com.prography.data.mapper.toUiScreenshotModels
 import com.prography.data.mapper.toDomain
 import com.prography.data.mapper.toEntity
 import com.prography.database.dao.ScreenshotDao
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagModel
@@ -183,5 +184,23 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
 
         Timber.d("Local getRelatedTags: found ${pagedResults.size} related tags for $tagNames (page=$page, size=$size)")
         return pagedResults
+    }
+
+    override suspend fun getSearchAutoComplete(
+        keyword: String,
+        size: Int
+    ): List<AutocompleteTagModel> {
+        val screenshots = getScreenshots(null).firstOrNull() ?: emptyList()
+        val tags = mutableListOf<AutocompleteTagModel>()
+
+        screenshots.forEach { screenshot ->
+            screenshot.tags.forEach { tag ->
+                if (tag.name.contains(keyword, ignoreCase = true)) {
+                    tags.add(AutocompleteTagModel(id = tag.id.toIntOrNull() ?: 0, name = tag.name))
+                }
+            }
+        }
+
+        return tags.distinctBy { it.name }.take(size)
     }
 }

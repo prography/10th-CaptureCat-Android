@@ -1,5 +1,6 @@
 package com.prography.domain.repository
 
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
@@ -36,4 +37,5 @@ interface ScreenshotRepository {
     ): List<UiScreenshotModel>
 
     suspend fun getRelatedTags(tagNames: List<String>, page: Int = 0, size: Int = 10): List<String>
+    suspend fun getSearchAutoComplete(keyword: String, size: Int = 10): List<AutocompleteTagModel>
 }

@@ -93,4 +93,10 @@ interface PhotoService {
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10
     ): NetworkState<ApiListResponse<TagResponse>>
+
+    @GET("v1/search/autocomplete")
+    suspend fun getSearchAutoComplete(
+        @Query("keyword") keyword: String,
+        @Query("size") size: Int = 10
+    ): NetworkState<AddTagResponse<TagResponse>>
 }

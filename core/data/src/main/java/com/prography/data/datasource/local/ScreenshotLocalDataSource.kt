@@ -1,5 +1,6 @@
 package com.prography.data.datasource.local
 
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import kotlinx.coroutines.flow.Flow
@@ -22,4 +23,5 @@ interface ScreenshotLocalDataSource {
     ): List<UiScreenshotModel>
 
     suspend fun getRelatedTags(tagNames: List<String>, page: Int = 0, size: Int = 10): List<String>
+    suspend fun getSearchAutoComplete(keyword: String, size: Int = 10): List<AutocompleteTagModel>
 }

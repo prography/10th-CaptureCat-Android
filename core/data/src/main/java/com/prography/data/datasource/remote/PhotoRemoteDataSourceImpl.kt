@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import com.prography.data.mapper.toUiScreenshotModel
 import com.prography.data.mapper.toUiScreenshotModels
+import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
 import com.prography.network.api.PhotoService
@@ -485,6 +486,42 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
             is NetworkState.UnknownError -> {
                 Timber.e("Get related tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun getSearchAutoComplete(
+        keyword: String,
+        size: Int
+    ): Result<List<AutocompleteTagModel>> {
+        Timber.d("Calling photoService.getSearchAutoComplete(keyword=$keyword, size=$size)")
+
+        return when (val networkState = photoService.getSearchAutoComplete(keyword, size)) {
+            is NetworkState.Success -> {
+                Timber.d("Autocomplete API Response: ${networkState.body}")
+                val autocompleteTags = networkState.body.data?.map { tagResponse ->
+                    AutocompleteTagModel(
+                        id = tagResponse.id,
+                        name = tagResponse.name
+                    )
+                } ?: emptyList()
+                Timber.d("Converted autocomplete tags: ${autocompleteTags.size} items")
+                Result.success(autocompleteTags)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Autocomplete API Failure: ${networkState.error}")
+                Result.failure(Exception("자동완성 API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Autocomplete Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Autocomplete Unknown Error: ${networkState.errorState}")
                 Result.failure(networkState.t ?: Exception(networkState.errorState))
             }
         }
