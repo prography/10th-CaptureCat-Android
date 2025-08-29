@@ -7,6 +7,7 @@ import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.usecase.screenshot.GetRelatedTagsUseCase
 import com.prography.domain.usecase.screenshot.GetUncategorizedScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.GetSearchAutoCompleteUseCase
 import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.*
 import com.prography.navigation.AppRoute
@@ -14,6 +15,8 @@ import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +25,11 @@ class SearchViewModel @Inject constructor(
     private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
     private val getRelatedTagsUseCase: GetRelatedTagsUseCase,
     private val getUncategorizedScreenshotsUseCase: GetUncategorizedScreenshotsUseCase,
+    private val getSearchAutoCompleteUseCase: GetSearchAutoCompleteUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SearchState, SearchEffect, SearchAction>(SearchState()) {
+
+    private var autocompleteJob: Job? = null
 
     init {
         loadMostUsedTags()
@@ -40,6 +46,9 @@ class SearchViewModel @Inject constructor(
             is SearchAction.OnSearchComplete -> handleSearchComplete()
             is SearchAction.NavigateToStorage -> navigateToStorage()
             is SearchAction.RefreshSearchResults -> handleRefreshSearchResults()
+            is SearchAction.NavigateToSearchResults -> navigateToSearchResults()
+            is SearchAction.HideAutocomplete -> hideAutocomplete()
+            is SearchAction.NavigateBackToSearch -> navigateBackToSearch()
         }
     }
 
@@ -56,8 +65,9 @@ class SearchViewModel @Inject constructor(
                                 uncategorizedFlow.collect { uncategorizedScreenshots ->
                                     if (uncategorizedScreenshots.isNotEmpty()) {
                                         tagsWithMiscategorized.add(
+                                            0,
                                             TagWithCount(
-                                                "미분류",
+                                                "태그 없음",
                                                 uncategorizedScreenshots.size
                                             )
                                         )
@@ -86,8 +96,44 @@ class SearchViewModel @Inject constructor(
         updateState {
             copy(
                 searchQuery = query,
+                showAutocomplete = query.isNotEmpty(),
                 hasSearched = if (query.isEmpty()) false else hasSearched
             )
+        }
+
+        // Cancel previous autocomplete job
+        autocompleteJob?.cancel()
+
+        if (query.isNotEmpty()) {
+            // Start new autocomplete search with delay
+            autocompleteJob = viewModelScope.launch {
+                delay(500) // 500ms delay to avoid too many API calls
+                runCatching { getSearchAutoCompleteUseCase(query) }
+                    .onSuccess { autocompleteResults ->
+                        updateState {
+                            copy(
+                                autocompleteResults = autocompleteResults,
+                                showAutocomplete = true
+                            )
+                        }
+                    }
+                    .onFailure {
+                        updateState {
+                            copy(
+                                autocompleteResults = emptyList(),
+                                showAutocomplete = false
+                            )
+                        }
+                    }
+            }
+        } else {
+            // Clear autocomplete when query is empty
+            updateState {
+                copy(
+                    autocompleteResults = emptyList(),
+                    showAutocomplete = false
+                )
+            }
         }
     }
 
@@ -110,20 +156,20 @@ class SearchViewModel @Inject constructor(
         val currentTags = currentState.selectedTags
         if (!currentTags.contains(tag)) {
             val newTags = listOf(tag) + currentTags
+            timber.log.Timber.d("🔍 Adding tag: $tag, newTags: $newTags")
+
             updateState {
                 copy(
                     selectedTags = newTags,
-                    searchQuery = ""
+                    searchQuery = "",
+                    showAutocomplete = false,
+                    autocompleteResults = emptyList(),
+                    hasSearched = true
                 )
             }
 
-            // 미분류 태그인 경우 특별 처리
-            if (tag == "미분류") {
-                searchUncategorizedScreenshots()
-            } else {
-                searchBySelectedTags(newTags)
-                updateRelatedTags(newTags)
-            }
+            timber.log.Timber.d("🔍 Navigating to search results")
+            emitEffect(SearchEffect.NavigateToSearchResults)
         }
     }
 
@@ -140,7 +186,7 @@ class SearchViewModel @Inject constructor(
             }
         } else {
             // 미분류가 아닌 태그들만 있는 경우 일반 검색
-            if (!newTags.contains("미분류")) {
+            if (!newTags.contains("태그 없음")) {
                 searchBySelectedTags(newTags)
                 updateRelatedTags(newTags)
             } else {
@@ -156,12 +202,15 @@ class SearchViewModel @Inject constructor(
             return
         }
 
+        timber.log.Timber.d("🔍 Starting search with tags: $selectedTags")
         viewModelScope.launch {
             runCatching { searchImagesByTagsUseCase(selectedTags) }
                 .onSuccess { results ->
+                    timber.log.Timber.d("🔍 Search completed: ${results.size} results found")
                     updateState { copy(searchResults = results) }
                 }
-                .onFailure {
+                .onFailure { exception ->
+                    timber.log.Timber.e(exception, "🔍 Search failed")
                     emitEffect(SearchEffect.ShowError("스크린샷을 불러오는 중 오류가 발생했습니다."))
                 }
         }
@@ -210,58 +259,31 @@ class SearchViewModel @Inject constructor(
                 selectedTags = emptyList(),
                 searchResults = emptyList(),
                 relatedTags = emptyList(),
-                hasSearched = false
+                hasSearched = false,
+                showAutocomplete = false,
+                autocompleteResults = emptyList()
             )
         }
+        // No need to emit NavigateBackToSearch effect as SearchScreen handles view switching
     }
 
     private fun handleSearchComplete() {
         val query = currentState.searchQuery.trim()
         if (query.isEmpty()) return
 
-        updateState { copy(isLoading = true) }
-
-        viewModelScope.launch {
-            try {
-                // 먼저 검색해서 결과가 있는지 확인
-                val searchResults = searchImagesByTagsUseCase(listOf(query))
-
-                if (searchResults.isNotEmpty()) {
-                    // 결과가 있으면 태그를 selectedTags에 추가
-                    val newTags = listOf(query) + currentState.selectedTags
-                    updateState {
-                        copy(
-                            selectedTags = newTags,
-                            searchResults = searchResults,
-                            hasSearched = true,
-                            isLoading = false
-                        )
-                    }
-
-                    // 연관 태그 업데이트
-                    updateRelatedTags(newTags)
-                } else {
-                    // 결과가 없으면 에러 상태로 설정
-                    updateState {
-                        copy(
-                            searchQuery = "",
-                            searchResults = emptyList(),
-                            hasSearched = true,
-                            isLoading = false
-                        )
-                    }
-                    emitEffect(SearchEffect.ShowError("'$query' 태그에 해당하는 스크린샷이 없습니다."))
-                }
-            } catch (exception: Exception) {
-                updateState {
-                    copy(
-                        searchQuery = "",
-                        isLoading = false
-                    )
-                }
-                emitEffect(SearchEffect.ShowError("검색 중 오류가 발생했습니다."))
-            }
+        updateState {
+            copy(
+                selectedTags = listOf(query),
+                searchQuery = "",
+                showAutocomplete = false,
+                autocompleteResults = emptyList(),
+                hasSearched = true,
+                isLoading = false
+            )
         }
+
+        // 검색 결과 화면으로 이동
+        emitEffect(SearchEffect.NavigateToSearchResults)
     }
 
     private fun handleScreenshotClick(clickedScreenshot: com.prography.domain.model.UiScreenshotModel) {
@@ -294,7 +316,7 @@ class SearchViewModel @Inject constructor(
             .map { TagWithCount(it.key, it.value) }
             .sortedByDescending { it.count }
             .take(5) // 상위 5개 태그만
-            .plus(TagWithCount("미분류", screenshots.count { it.tags.isEmpty() })) // 미분류 태그 추가
+            .plus(TagWithCount("태그 없음", screenshots.count { it.tags.isEmpty() })) // 미분류 태그 추가
         return popularTags
     }
 
@@ -302,17 +324,29 @@ class SearchViewModel @Inject constructor(
         emitEffect(SearchEffect.NavigateToStorage)
     }
 
+    private fun navigateToSearchResults() {
+        emitEffect(SearchEffect.NavigateToSearchResults)
+    }
+
+    private fun navigateBackToSearch() {
+        emitEffect(SearchEffect.NavigateBackToSearch)
+    }
+
     private fun handleRefreshSearchResults() {
         val selectedTags = currentState.selectedTags
         if (selectedTags.isNotEmpty()) {
             timber.log.Timber.d("🔄 Refreshing search results with tags: $selectedTags")
             // 미분류 태그인 경우 특별 처리
-            if (selectedTags.contains("미분류")) {
+            if (selectedTags.contains("태그 없음")) {
                 searchUncategorizedScreenshots()
             } else {
                 searchBySelectedTags(selectedTags)
                 updateRelatedTags(selectedTags)
             }
         }
+    }
+
+    private fun hideAutocomplete() {
+        updateState { copy(autocompleteResults = emptyList(), showAutocomplete = false) }
     }
 }

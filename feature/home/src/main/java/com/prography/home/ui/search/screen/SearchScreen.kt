@@ -9,6 +9,9 @@ import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.SearchEffect
 import com.prography.home.ui.search.contract.SearchState
 import com.prography.home.ui.search.viewmodel.SearchViewModel
+import com.prography.home.ui.search.viewmodel.SearchResultsViewModel
+import com.prography.home.ui.search.screen.SearchResultsContent
+import com.prography.home.ui.search.screen.SearchContent
 import com.prography.ui.theme.PrographyTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -16,15 +19,18 @@ import kotlinx.coroutines.flow.collectLatest
 fun SearchScreen(
     modifier: Modifier = Modifier,
     onNavigateToStorage: () -> Unit = {},
-    viewModel: SearchViewModel = hiltViewModel()
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    searchResultsViewModel: SearchResultsViewModel = hiltViewModel()
 ) {
-    val state by viewModel.uiState.collectAsState()
-    val effectFlow = viewModel.effect
+    val searchState by searchViewModel.uiState.collectAsState()
+    val searchResultsState by searchResultsViewModel.uiState.collectAsState()
+    val searchEffectFlow = searchViewModel.effect
+    val searchResultsEffectFlow = searchResultsViewModel.effect
 
-    // Handle effects
+    // Handle search effects
     LaunchedEffect(Unit) {
-        viewModel.loadMostUsedTags()
-        effectFlow.collectLatest { effect ->
+        searchViewModel.loadMostUsedTags()
+        searchEffectFlow.collectLatest { effect ->
             when (effect) {
                 is SearchEffect.ShowError -> {
                     println("Search Error: ${effect.message}")
@@ -32,17 +38,61 @@ fun SearchScreen(
                 is SearchEffect.NavigateToStorage -> {
                     onNavigateToStorage()
                 }
+                is SearchEffect.NavigateToSearchResults -> {
+                    // Load search results in the results viewmodel
+                    searchResultsViewModel.loadSearchResults(searchState.selectedTags)
+                }
+
+                else -> {
+                    // Other effects handled elsewhere
+                }
             }
         }
     }
 
-    SearchContent(
-        state = state,
-        onAction = { action ->
-            viewModel.sendAction(action)
-        },
-        modifier = modifier
-    )
+    // Handle search results effects
+    LaunchedEffect(Unit) {
+        searchResultsEffectFlow.collectLatest { effect ->
+            when (effect) {
+                is SearchEffect.ShowError -> {
+                    println("Search Results Error: ${effect.message}")
+                }
+
+                is SearchEffect.NavigateToStorage -> {
+                    onNavigateToStorage()
+                }
+
+                is SearchEffect.NavigateBackToSearch -> {
+                    // Reset both search and search results state to show search content
+                    searchViewModel.sendAction(com.prography.home.ui.search.contract.SearchAction.ClearSearch)
+                    // SearchResultsViewModel state will be cleared by its own clearSearch call
+                }
+
+                else -> {
+                    // Other effects handled elsewhere
+                }
+            }
+        }
+    }
+
+    // Show SearchResultsContent if we have search results, otherwise show SearchContent
+    if (searchResultsState.hasSearched && searchResultsState.selectedTags.isNotEmpty()) {
+        SearchResultsContent(
+            state = searchResultsState,
+            onAction = { action ->
+                searchResultsViewModel.sendAction(action)
+            },
+            modifier = modifier
+        )
+    } else {
+        SearchContent(
+            state = searchState,
+            onAction = { action ->
+                searchViewModel.sendAction(action)
+            },
+            modifier = modifier
+        )
+    }
 }
 
 @Preview(showBackground = true)
@@ -110,12 +160,13 @@ fun SearchScreenWithResultsPreview() {
     )
 
     PrographyTheme {
-        SearchContent(
+        SearchResultsContent(
             state = SearchState(
                 searchQuery = "",
                 selectedTags = listOf("쇼핑"),
                 relatedTags = listOf("패션", "예쁜가방", "서울", "서울숲", "옷", "콜라보"),
                 searchResults = sampleScreenshots,
+                hasSearched = true,
                 isLoading = false
             ),
             onAction = {}
