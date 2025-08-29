@@ -253,6 +253,10 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun clearSearch() {
+        // Cancel any ongoing autocomplete job
+        autocompleteJob?.cancel()
+        autocompleteJob = null
+
         updateState {
             copy(
                 searchQuery = "",
@@ -261,7 +265,8 @@ class SearchViewModel @Inject constructor(
                 relatedTags = emptyList(),
                 hasSearched = false,
                 showAutocomplete = false,
-                autocompleteResults = emptyList()
+                autocompleteResults = emptyList(),
+                isLoading = false
             )
         }
         // No need to emit NavigateBackToSearch effect as SearchScreen handles view switching

@@ -69,14 +69,13 @@ fun SearchResultsContent(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        UiHeader(
-            title = stringResource(id = R.string.search_title)
-        )
+
 
         SelectedTagsSearchHeader(
             selectedTags = state.selectedTags,
             onRemoveTag = { tag -> onAction(SearchAction.RemoveTag(tag)) },
-            onClearAll = { onAction(SearchAction.ClearSearch) }
+            onClearAll = { onAction(SearchAction.ClearSearch) },
+            onBackClick = { onAction(SearchAction.NavigateBackToSearch) }
         )
 
         when {
@@ -147,19 +146,27 @@ fun SearchResultsContent(
 fun SelectedTagsSearchHeader(
     selectedTags: List<String>,
     onRemoveTag: (String) -> Unit,
-    onClearAll: () -> Unit
+    onClearAll: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Icon(
+            painter = painterResource(UiR.drawable.ic_arrow_backward),
+            contentDescription = "뒤로가기",
+            tint = Text02,
+            modifier = Modifier
+                .clickable { onBackClick() }
+                .padding(8.dp)
+        )
         Box(
             modifier = Modifier
                 .weight(1f)
                 .border(1.dp, Gray03, RoundedCornerShape(6.dp))
-                .background(Gray01, RoundedCornerShape(6.dp))
                 .padding(vertical = 3.dp)
         ) {
             LazyRow(
@@ -182,7 +189,7 @@ fun SelectedTagsSearchHeader(
                         )
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(UiR.string.remove_tag),
+                            contentDescription = "태그 삭제",
                             tint = Primary,
                             modifier = Modifier
                                 .size(14.sp.value.dp)
