@@ -34,7 +34,7 @@ fun ImageDetailScreen(
         MixpanelUtil.track(
             "view_image_detail",
             mapOf(
-                "image_id" to (state.currentScreenshot?.id?.get(0) ?: 0),
+                "image_id" to (state.currentScreenshot?.id ?: 0),
                 "entry_point" to entryPoint
             )
         )
