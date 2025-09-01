@@ -46,6 +46,11 @@ fun SearchScreen(
         }
     }
 
+    // Clear search state when returning to this screen
+    LaunchedEffect(Unit) {
+        searchViewModel.sendAction(com.prography.home.ui.search.contract.SearchAction.ClearSearch)
+    }
+
     SearchContent(
         state = searchState,
         onAction = { action ->
