@@ -47,6 +47,7 @@ import com.prography.ui.component.TagInputField
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.component.ButtonState
 import com.prography.ui.component.UiBottomInputButton
+import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.caption02Regular
@@ -99,14 +100,12 @@ fun TagAddBottomSheet(
                         color = Text01
                     )
 
-                    IconButton(onClick = { onDismiss() }) {
-                        Icon(
-                            painter = painterResource(id = com.prography.ui.R.drawable.ic_bottom_close), // 아이콘 리소스 맞게 수정
-                            contentDescription = stringResource(com.prography.ui.R.string.common_close),
-                            tint = Text01,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = com.prography.ui.R.drawable.ic_bottom_close), // 아이콘 리소스 맞게 수정
+                        contentDescription = stringResource(com.prography.ui.R.string.common_close),
+                        tint = Text01,
+                        modifier = Modifier.size(24.dp).clickableWithoutRipple {  onDismiss() }
+                    )
                 }
                 TagInputField(
                     value = text,
