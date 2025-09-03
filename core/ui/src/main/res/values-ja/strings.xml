@@ -9,9 +9,11 @@
     <string name="login_kakao">カカオでログイン</string>
     <string name="login_google">Googleでログイン</string>
 
-    <string name="tab_storage">一時保管庫</string>
+    <string name="tab_favorite">お気に入り</string>
     <string name="tab_home">ホーム</string>
     <string name="tab_search">検索</string>
+    <string name="tab_storage">一時保管庫</string>
+    <string name="tab_mypage">マイ</string>
 
     <string name="home_guide">CaptureCatは初めてですか？生産性の高い\n使い方をチェックしてみてください！</string>
     <string name="home_guide_show">使い方を見る</string>

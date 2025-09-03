@@ -9,6 +9,7 @@ import com.prography.domain.model.TagWithCount
 import com.prography.home.ui.search.contract.SearchEffect
 import com.prography.home.ui.search.contract.SearchState
 import com.prography.home.ui.search.viewmodel.SearchViewModel
+import com.prography.home.ui.search.viewmodel.SearchResultsViewModel
 import com.prography.ui.theme.PrographyTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -16,11 +17,13 @@ import kotlinx.coroutines.flow.collectLatest
 fun SearchScreen(
     modifier: Modifier = Modifier,
     onNavigateToStorage: () -> Unit = {},
-    onNavigateToSearchResults: (String) -> Unit = {},
-    searchViewModel: SearchViewModel = hiltViewModel()
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    searchResultsViewModel: SearchResultsViewModel = hiltViewModel()
 ) {
     val searchState by searchViewModel.uiState.collectAsState()
+    val searchResultsState by searchResultsViewModel.uiState.collectAsState()
     val searchEffectFlow = searchViewModel.effect
+    val searchResultsEffectFlow = searchResultsViewModel.effect
 
     // Handle search effects
     LaunchedEffect(Unit) {
@@ -34,9 +37,9 @@ fun SearchScreen(
                     onNavigateToStorage()
                 }
                 is SearchEffect.NavigateToSearchResults -> {
-                    // Navigate to search results screen with selected tags
-                    val query = searchState.selectedTags.joinToString(",")
-                    onNavigateToSearchResults(query)
+                    // Load search results with selected tags
+                    val selectedTags = searchState.selectedTags
+                    searchResultsViewModel.loadSearchResults(selectedTags)
                 }
 
                 else -> {
@@ -46,18 +49,49 @@ fun SearchScreen(
         }
     }
 
-    // Clear search state when returning to this screen
+    // Handle search results effects  
     LaunchedEffect(Unit) {
-        searchViewModel.sendAction(com.prography.home.ui.search.contract.SearchAction.ClearSearch)
+        searchResultsEffectFlow.collectLatest { effect ->
+            when (effect) {
+                is SearchEffect.ShowError -> {
+                    println("Search Results Error: ${effect.message}")
+                }
+
+                is SearchEffect.NavigateToStorage -> {
+                    onNavigateToStorage()
+                }
+
+                is SearchEffect.NavigateBackToSearch -> {
+                    // Just clear the search results state, SearchContent will automatically show
+                    // Don't call searchViewModel.ClearSearch as it might cause conflicts
+                    searchResultsViewModel.sendAction(com.prography.home.ui.search.contract.SearchAction.ClearSearch)
+                }
+
+                else -> {
+                    // Other effects handled elsewhere
+                }
+            }
+        }
     }
 
-    SearchContent(
-        state = searchState,
-        onAction = { action ->
-            searchViewModel.sendAction(action)
-        },
-        modifier = modifier
-    )
+    // Show SearchResultsContent if there are search results, otherwise show SearchContent
+    if (searchResultsState.hasSearched && searchResultsState.selectedTags.isNotEmpty()) {
+        SearchResultsContent(
+            state = searchResultsState,
+            onAction = { action ->
+                searchResultsViewModel.sendAction(action)
+            },
+            modifier = modifier
+        )
+    } else {
+        SearchContent(
+            state = searchState,
+            onAction = { action ->
+                searchViewModel.sendAction(action)
+            },
+            modifier = modifier
+        )
+    }
 }
 
 @Preview(showBackground = true)

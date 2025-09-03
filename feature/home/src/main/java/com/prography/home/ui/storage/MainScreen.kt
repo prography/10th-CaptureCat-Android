@@ -58,8 +58,7 @@ fun MainScreen() {
                         .background(Divider)
                 )
                 BottomNavigationBar(
-                    navController = navController,
-                    onItemSelected = { /* 탭 클릭 시 */ }
+                    navController = navController
                 )
             }
         }

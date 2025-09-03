@@ -7,11 +7,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
 import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.search.screen.SearchScreen
-import com.prography.home.ui.search.screen.SearchResultsScreen
 import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 
@@ -55,9 +52,6 @@ fun MainNavigationHost(
                         launchSingleTop = true
                         restoreState = true
                     }
-                },
-                onNavigateToSearchResults = { query ->
-                    navController.navigate("search_results/${query}")
                 }
             )
         }
@@ -65,25 +59,6 @@ fun MainNavigationHost(
             ScreenshotGalleryScreen(
                 onNavigateUp = { navController.navigateUp() },
                 screenshotViewModel = screenshotViewModel
-            )
-        }
-        composable(
-            route = "search_results/{query}",
-            arguments = listOf(navArgument("query") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val query = backStackEntry.arguments?.getString("query") ?: ""
-            SearchResultsScreen(
-                query = query,
-                onNavigateUp = { navController.navigateUp() },
-                onNavigateToStorage = {
-                    navController.navigate(BottomNavItem.Storage.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
             )
         }
     }
