@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeState
@@ -25,11 +27,11 @@ import androidx.compose.ui.draw.clip
 import com.prography.ui.theme.caption01SemiBold
 import com.prography.ui.component.UiEmptyState
 import coil3.compose.AsyncImage
-import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
 import com.prography.ui.theme.Primary
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
@@ -109,59 +111,34 @@ fun HomeContent(
             }
 
             else -> {
-                // 스크린샷 리스트
-                LazyColumn(
+                // 스크린샷 그리드 리스트 (한 줄에 3개씩)
+                val screenshotItems = (0 until pagingItems.itemCount).mapNotNull { index ->
+                    pagingItems[index]
+                }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // 즐겨찾기 카드 덱
-                    item {
-                        FavoriteCardDeck(
-                            favoriteScreenshots = state.favoriteScreenshots,
-                            onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
-                        )
-                    }
-
-                    // Paging된 스크린샷들을 2개씩 묶어서 표시
-                    val screenshots = (0 until pagingItems.itemCount).mapNotNull { index ->
-                        pagingItems[index]
-                    }
-
-                    items(count = screenshots.size / 2 + screenshots.size % 2) { rowIndex ->
-                        val startIndex = rowIndex * 2
-                        val endIndex = minOf(startIndex + 2, screenshots.size)
-                        val rowItems = screenshots.subList(startIndex, endIndex)
-
-                        Row(
+                    items(screenshotItems) { screenshot ->
+                        ScreenshotItem(
+                            screenshot = screenshot,
+                            onScreenshotClick = {
+                                onAction(HomeAction.OnScreenshotClick(screenshot))
+                            },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            rowItems.forEach { screenshot ->
-                                ScreenshotItem(
-                                    screenshot = screenshot,
-                                    onScreenshotClick = {
-                                        onAction(
-                                            HomeAction.OnScreenshotClick(
-                                                screenshot
-                                            )
-                                        )
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            if (rowItems.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                        }
+                        )
                     }
 
                     // 로딩 인디케이터 (Paging3가 append 시 자동 처리)
                     when (pagingItems.loadState.append) {
                         is LoadState.Loading -> {
-                            item {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -176,7 +153,7 @@ fun HomeContent(
                             }
                         }
                         is LoadState.Error -> {
-                            item {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -191,7 +168,6 @@ fun HomeContent(
                                 }
                             }
                         }
-
                         else -> { /* no-op */
                         }
                     }
@@ -224,23 +200,5 @@ fun ScreenshotItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
-            verticalArrangement = Arrangement.spacedBy(3.dp),
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 12.dp, bottom = 9.dp)
-        ) {
-            screenshot.tags.forEach { tag ->
-                Text(
-                    text = tag.name,
-                    style = caption01SemiBold,
-                    color = Color.White,
-                    modifier = Modifier
-                        .background(Color(0x66000000), RoundedCornerShape(4.5.dp))
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                )
-            }
-        }
     }
 }
