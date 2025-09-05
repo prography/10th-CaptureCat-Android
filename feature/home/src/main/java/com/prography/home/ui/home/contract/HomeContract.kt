@@ -1,5 +1,6 @@
 package com.prography.home.ui.home.contract
 
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 
 // Define Actions
@@ -13,6 +14,7 @@ sealed class HomeAction {
     object NavigateToLogin : HomeAction()
     object OnErrorReportClick : HomeAction() // 오류 제보 클릭
     object DismissErrorReportBanner : HomeAction() // 오류 제보 배너 닫기
+    data class OnTabSelected(val tabTag: String) : HomeAction() // 탭 선택
 }
 
 // Define Effects
@@ -28,5 +30,8 @@ data class HomeState(
     val favoriteScreenshots: List<UiScreenshotModel> = emptyList(),
     val showLoginDialog: Boolean = false,
     val showErrorReportBanner: Boolean = true, // 오류 제보 배너 표시 여부
-    val error: String? = null
+    val error: String? = null,
+    val popularTags: List<TagWithCount> = emptyList(), // 인기 태그 목록
+    val selectedTab: String = "전체", // 선택된 탭 (기본값: "전체")
+    val isLoadingTags: Boolean = false // 태그 로딩 상태
 )

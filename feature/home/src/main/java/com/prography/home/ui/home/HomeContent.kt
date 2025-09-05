@@ -31,7 +31,9 @@ import com.prography.ui.R
 import com.prography.ui.theme.Primary
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.items
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
@@ -47,10 +49,6 @@ fun HomeContent(
     // 초기 로딩 중인지 확인
     val isInitialLoading = pagingItems.loadState.refresh is LoadState.Loading
 
-    // Debug logging
-    LaunchedEffect(state.favoriteScreenshots) {
-        Timber.d("HomeContent - State has ${state.favoriteScreenshots.size} favorite screenshots")
-    }
 
     Column(
         modifier = Modifier
@@ -85,6 +83,15 @@ fun HomeContent(
             )
         }
 
+        // 탭 세션
+        TabSection(
+            popularTags = state.popularTags,
+            selectedTab = state.selectedTab,
+            onTabSelected = { tabTag ->
+                onAction(HomeAction.OnTabSelected(tabTag))
+            }
+        )
+
         // 본문: 상황에 따라 다른 영역
         when {
             // 초기 로딩 중 (처음 진입 시)
@@ -112,32 +119,93 @@ fun HomeContent(
 
             else -> {
                 // 스크린샷 그리드 리스트 (한 줄에 3개씩)
-                val screenshotItems = (0 until pagingItems.itemCount).mapNotNull { index ->
-                    pagingItems[index]
-                }
-
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    items(screenshotItems) { screenshot ->
-                        ScreenshotItem(
-                            screenshot = screenshot,
-                            onScreenshotClick = {
-                                onAction(HomeAction.OnScreenshotClick(screenshot))
-                            },
-                            modifier = Modifier
-                        )
+                if (state.selectedTab == "전체") {
+                    // "전체" 탭 선택 시: Paging3 사용
+                    val screenshotItems = (0 until pagingItems.itemCount).mapNotNull { index ->
+                        pagingItems[index]
                     }
 
-                    // 로딩 인디케이터 (Paging3가 append 시 자동 처리)
-                    when (pagingItems.loadState.append) {
-                        is LoadState.Loading -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(screenshotItems) { screenshot ->
+                            ScreenshotItem(
+                                screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(HomeAction.OnScreenshotClick(screenshot))
+                                },
+                                modifier = Modifier
+                            )
+                        }
+
+                        // 로딩 인디케이터 (Paging3가 append 시 자동 처리)
+                        when (pagingItems.loadState.append) {
+                            is LoadState.Loading -> {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = Primary
+                                        )
+                                    }
+                                }
+                            }
+
+                            is LoadState.Error -> {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.home_loading_failed),
+                                            color = Color.Red,
+                                            modifier = Modifier.clickable { pagingItems.retry() }
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> { /* no-op */
+                            }
+                        }
+                    }
+                } else {
+                    // 특정 태그 선택 시: state.screenshots 사용
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(state.screenshots) { screenshot ->
+                            ScreenshotItem(
+                                screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(HomeAction.OnScreenshotClick(screenshot))
+                                },
+                                modifier = Modifier
+                            )
+                        }
+
+                        // 태그별 검색 로딩 표시
+                        if (state.isLoadingTags) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Box(
                                     modifier = Modifier
@@ -151,24 +219,6 @@ fun HomeContent(
                                     )
                                 }
                             }
-                        }
-                        is LoadState.Error -> {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.home_loading_failed),
-                                        color = Color.Red,
-                                        modifier = Modifier.clickable { pagingItems.retry() }
-                                    )
-                                }
-                            }
-                        }
-                        else -> { /* no-op */
                         }
                     }
                 }
@@ -201,4 +251,63 @@ fun ScreenshotItem(
             modifier = Modifier.fillMaxSize()
         )
     }
+}
+
+@Composable
+fun TabSection(
+    popularTags: List<com.prography.domain.model.TagWithCount>,
+    selectedTab: String,
+    onTabSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // "전체" 탭
+        item {
+            TagChip(
+                text = "전체",
+                isSelected = selectedTab == "전체",
+                onClick = { onTabSelected("전체") }
+            )
+        }
+
+        // 인기 태그들
+        items(popularTags) { tag ->
+            TagChip(
+                text = tag.tag,
+                isSelected = selectedTab == tag.tag,
+                onClick = { onTabSelected(tag.tag) }
+            )
+        }
+    }
+}
+
+@Composable
+fun TagChip(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        modifier = modifier
+            .background(
+                color = if (isSelected) com.prography.ui.theme.Primary else com.prography.ui.theme.Gray01,
+                shape = RoundedCornerShape(20.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = if (isSelected) com.prography.ui.theme.Primary else com.prography.ui.theme.Gray03,
+                shape = RoundedCornerShape(20.dp)
+            )
+            .clickableWithoutRipple { onClick() }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        style = com.prography.ui.theme.body02Regular,
+        color = if (isSelected) Color.White else com.prography.ui.theme.Text02
+    )
 }
