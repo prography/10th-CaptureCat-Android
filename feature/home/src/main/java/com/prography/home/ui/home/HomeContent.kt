@@ -34,11 +34,14 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
 import com.prography.ui.theme.Divider
+import com.prography.ui.theme.Text03
+import com.prography.ui.theme.subhead02Bold
 
 @Composable
 fun HomeContent(
@@ -263,8 +266,7 @@ fun TabSection(
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         // "전체" 탭
         item {
@@ -293,21 +295,22 @@ fun TagChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = text,
+    Column(
         modifier = modifier
-            .background(
-                color = if (isSelected) com.prography.ui.theme.Primary else com.prography.ui.theme.Gray01,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .border(
-                width = 1.dp,
-                color = if (isSelected) com.prography.ui.theme.Primary else com.prography.ui.theme.Gray03,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clickableWithoutRipple { onClick() }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        style = com.prography.ui.theme.body02Regular,
-        color = if (isSelected) Color.White else com.prography.ui.theme.Text02
-    )
+            .width(IntrinsicSize.Max)
+            .padding(horizontal = 8.dp)
+    ){
+        Text(
+            text = text,
+            modifier = modifier
+                .clickableWithoutRipple { onClick() }
+                .padding(top = 2.dp, bottom = 10.dp),
+            style = subhead02Bold,
+            color = if (isSelected) Primary else Text03,
+        )
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = if (isSelected) Primary else Color.Transparent,
+            thickness = 3.dp)
+    }
 }
