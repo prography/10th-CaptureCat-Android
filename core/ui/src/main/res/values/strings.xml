@@ -66,10 +66,10 @@
     <string name="home_loading_failed">더 불러오기 실패</string>
 
     <!-- FavoriteContent -->
-    <string name="favorite_title">즐겨찾기</string>
-    <string name="favorite_empty_title">즐겨찾기한 스크린샷이 없어요</string>
-    <string name="favorite_empty_info">마음에 드는 스크린샷을 즐겨찾기해보세요!</string>
-    <string name="favorite_icon">즐겨찾기</string>
+    <string name="favorite_title">좋아요</string>
+    <string name="favorite_empty_title">아직 좋아요가 없어요.</string>
+    <string name="favorite_empty_info">자주보고 싶은 이미지에\n좋아요를 누르면 빠르게 찾아볼 수 있어요</string>
+    <string name="favorite_icon">좋아요</string>
 
     <!-- ImageDetailContent -->
     <string name="image_detail_tag_edit">태그편집</string>

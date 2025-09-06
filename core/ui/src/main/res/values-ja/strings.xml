@@ -67,10 +67,10 @@
     <string name="home_loading_failed">読み込みに失敗しました</string>
 
     <!-- FavoriteContent -->
-    <string name="favorite_title">お気に入り</string>
-    <string name="favorite_empty_title">お気に入りのスクリーンショットがありません</string>
-    <string name="favorite_empty_info">スクリーンショットをお気に入りに追加してください！</string>
-    <string name="favorite_icon">お気に入り</string>
+    <string name="favorite_title">いいね</string>
+    <string name="favorite_empty_title">まだいいねがありません。</string>
+    <string name="favorite_empty_info">よく見たい画像に\nいいねを押すと素早く見つけることができます</string>
+    <string name="favorite_icon">いいね</string>
 
     <!-- ImageDetailContent -->
     <string name="image_detail_tag_edit">タグ編集</string>
