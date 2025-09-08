@@ -136,6 +136,11 @@ class HomeViewModel @Inject constructor(
             is HomeAction.OnTabSelected -> {
                 searchImagesByTag(action.tabTag)
             }
+            HomeAction.NavigateToTagSetting -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.TagSetting)
+                )
+            }
         }
     }
 

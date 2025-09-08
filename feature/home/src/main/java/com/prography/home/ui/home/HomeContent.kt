@@ -35,6 +35,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.ui.graphics.Brush
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
@@ -92,7 +95,8 @@ fun HomeContent(
             selectedTab = state.selectedTab,
             onTabSelected = { tabTag ->
                 onAction(HomeAction.OnTabSelected(tabTag))
-            }
+            },
+            onTagSettingClick = { onAction(HomeAction.NavigateToTagSetting) }
         )
 
         // 본문: 상황에 따라 다른 영역
@@ -261,30 +265,76 @@ fun TabSection(
     popularTags: List<com.prography.domain.model.TagWithCount>,
     selectedTab: String,
     onTabSelected: (String) -> Unit,
+    onTagSettingClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // "전체" 탭
-        item {
-            TagChip(
-                text = "전체",
-                isSelected = selectedTab == "전체",
-                onClick = { onTabSelected("전체") }
-            )
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            // 스크롤 가능한 탭 영역
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // "전체" 탭
+                item {
+                    TagChip(
+                        text = "전체",
+                        isSelected = selectedTab == "전체",
+                        onClick = { onTabSelected("전체") }
+                    )
+                }
+
+                // 인기 태그들
+                items(popularTags) { tag ->
+                    TagChip(
+                        text = tag.tag,
+                        isSelected = selectedTab == tag.tag,
+                        onClick = { onTabSelected(tag.tag) }
+                    )
+                }
+            }
+            Box(modifier = Modifier.matchParentSize()) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(16.dp)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0f),
+                                    Color.White.copy(alpha = 1f)
+                                )
+                            )
+                        )
+                )
+            }
         }
 
-        // 인기 태그들
-        items(popularTags) { tag ->
-            TagChip(
-                text = tag.tag,
-                isSelected = selectedTab == tag.tag,
-                onClick = { onTabSelected(tag.tag) }
-            )
-        }
+        // 세로 구분선
+        Box(
+            modifier = Modifier
+                .padding(vertical = 8.dp, horizontal = 6.dp)
+                .width(1.dp)
+                .height(10.dp)
+                .background(com.prography.ui.theme.Gray03)
+        )
+
+        // 고정된 태그 설정 아이콘
+        Icon(
+            painter = painterResource(id = R.drawable.ic_home_tag_tab),
+            contentDescription = "태그 설정",
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .clickableWithoutRipple { onTagSettingClick() }
+        )
     }
 }
 

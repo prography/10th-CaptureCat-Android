@@ -15,6 +15,7 @@ sealed class HomeAction {
     object OnErrorReportClick : HomeAction() // 오류 제보 클릭
     object DismissErrorReportBanner : HomeAction() // 오류 제보 배너 닫기
     data class OnTabSelected(val tabTag: String) : HomeAction() // 탭 선택
+    object NavigateToTagSetting : HomeAction() // 태그 설정으로 이동
 }
 
 // Define Effects
