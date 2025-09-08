@@ -48,7 +48,7 @@ fun TagSettingScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadTags()
+        viewModel.sendAction(TagSettingAction.LoadTags)
     }
 
     TagSettingContent(
@@ -58,12 +58,13 @@ fun TagSettingScreen(
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
         onNavigateBack = onNavigateBack,
-        onToggleEditMode = viewModel::toggleEditMode,
-        onTagClick = viewModel::toggleTagSelection,
+        onToggleEditMode = { viewModel.sendAction(TagSettingAction.ToggleEditMode) },
+        onTagClick = { tag -> viewModel.sendAction(TagSettingAction.ToggleTagSelection(tag)) },
         onDeleteTag = { tag ->
-            if (tag == "") viewModel.deleteAllTags()
-            else if (tag == "_SELECTED_") viewModel.deleteSelectedTags()
-            // else viewModel.deleteTag(tag)
+            when (tag) {
+                "" -> viewModel.sendAction(TagSettingAction.DeleteAllTags)
+                "_SELECTED_" -> viewModel.sendAction(TagSettingAction.DeleteSelectedTags)
+            }
         },
         onNavigateToTagAdd = onNavigateToTagAdd
     )

@@ -9,6 +9,14 @@ interface AuthRepository {
         idToken: String,
         accessToken: String? = null
     ): Result<LoginResult>
+
+    suspend fun linkAccount(
+        provider: String,
+        idToken: String,
+        linkToken: String,
+        accessToken: String? = null
+    ): Result<LoginResult>
+
     suspend fun logout(): Result<Unit>
     suspend fun withdraw(reason: String): Result<Unit>
     fun isLoggedIn(): Boolean

@@ -76,12 +76,78 @@ class AuthRepositoryImpl @Inject constructor(
                     Timber.d("DEBUG: 토큰 헤더가 비어있음 - auth: $authHeader, refresh: $refreshHeader")
                     Result.failure(Exception("토큰을 받지 못했습니다"))
                 }
+            } else if (response.code() == 409) {
+                // 409 ALREADY_REGISTERED_EMAIL 응답 처리
+                val responseBody = response.body()?.data
+                Timber.d("DEBUG: 409 응답 - 이메일 중복, responseBody: $responseBody")
+
+                Result.success(
+                    LoginResult(
+                        email = responseBody?.email ?: "",
+                        nickname = responseBody?.nickname ?: "",
+                        tutorialCompleted = responseBody?.tutorialCompleted ?: false,
+                        isEmailAlreadyRegistered = true,
+                        existingProvider = responseBody?.existingProvider,
+                        linkToken = responseBody?.linkToken
+                    )
+                )
             } else {
                 Timber.d("DEBUG: 응답 실패 - code: ${response.code()}, message: ${response.message()}")
                 Result.failure(Exception("로그인에 실패했습니다"))
             }
         } catch (e: Exception) {
             Timber.d("DEBUG: 예외 발생 - ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun linkAccount(
+        provider: String,
+        idToken: String,
+        linkToken: String,
+        accessToken: String?
+    ): Result<LoginResult> {
+        return try {
+            val request = SocialLoginRequest(
+                idToken = idToken,
+                authToken = accessToken,
+                accountLinking = true,
+                linkToken = linkToken
+            )
+            val response = authService.socialLogin(provider, request)
+
+            if (response.isSuccessful) {
+                val authHeader = response.headers()["authorization"]
+                val refreshHeader = response.headers()["refresh-token"]
+                val responseBody = response.body()?.data
+
+                Timber.d("DEBUG: Account Link - Auth header: $authHeader")
+                Timber.d("DEBUG: Account Link - Refresh header: $refreshHeader")
+                Timber.d("DEBUG: Account Link - Response body: $responseBody")
+
+                if (!authHeader.isNullOrBlank() && !refreshHeader.isNullOrBlank() && responseBody != null) {
+                    val accessToken = authHeader.removePrefix("Bearer ")
+                    val refreshToken = refreshHeader.removePrefix("Bearer ")
+
+                    tokenManager.saveTokens(accessToken, refreshToken)
+
+                    Result.success(
+                        LoginResult(
+                            email = responseBody.email,
+                            nickname = responseBody.nickname,
+                            tutorialCompleted = responseBody.tutorialCompleted
+                        )
+                    )
+                } else {
+                    Timber.d("DEBUG: Account Link - 토큰 헤더가 비어있음 - auth: $authHeader, refresh: $refreshHeader")
+                    Result.failure(Exception("토큰을 받지 못했습니다"))
+                }
+            } else {
+                Timber.d("DEBUG: Account Link - 응답 실패 - code: ${response.code()}, message: ${response.message()}")
+                Result.failure(Exception("계정 연동에 실패했습니다"))
+            }
+        } catch (e: Exception) {
+            Timber.d("DEBUG: Account Link - 예외 발생 - ${e.message}")
             Result.failure(e)
         }
     }

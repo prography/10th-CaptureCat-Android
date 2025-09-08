@@ -22,7 +22,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import androidx.core.net.toUri
 import com.prography.domain.model.TagModel
 
 class PhotoRemoteDataSourceImpl @Inject constructor(

@@ -1,152 +1,186 @@
 package com.prography.tag
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prography.domain.model.TagWithCount
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagsUseCase
+import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-
-data class TagSettingUiState(
-    val tags: List<TagWithCount> = emptyList(),
-    val tagCount: Int = 0,
-    val isEditMode: Boolean = false,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val selectedTags: Set<String> = emptySet()
-)
 
 @HiltViewModel
 class TagSettingViewModel @Inject constructor(
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val deleteTagsUseCase: DeleteTagsUseCase
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(TagSettingUiState())
-    val uiState: StateFlow<TagSettingUiState> = _uiState.asStateFlow()
+) : BaseComposeViewModel<TagSettingState, TagSettingEffect, TagSettingAction>(TagSettingState()) {
 
     fun loadTags() {
+        updateState { copy(isLoading = true) }
+
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
                 val tags = getMostUsedTagsUseCase(30)
-                _uiState.value = _uiState.value.copy(
-                    tags = tags,
-                    tagCount = tags.size,
-                    isLoading = false,
-                    errorMessage = null
-                )
+                updateState {
+                    copy(
+                        tags = tags,
+                        tagCount = tags.size,
+                        isLoading = false,
+                        errorMessage = null
+                    )
+                }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message
-                )
+                updateState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                emitEffect(TagSettingEffect.ShowError(e.message ?: "태그 로드에 실패했습니다."))
+                Timber.e(e, "Failed to load tags")
             }
         }
     }
 
-    fun toggleEditMode() {
-        _uiState.value = _uiState.value.copy(
-            isEditMode = !_uiState.value.isEditMode,
-            selectedTags = emptySet()
-        )
+    override fun handleAction(action: TagSettingAction) {
+        when (action) {
+            TagSettingAction.LoadTags -> loadTags()
+            TagSettingAction.ToggleEditMode -> toggleEditMode()
+            is TagSettingAction.ToggleTagSelection -> toggleTagSelection(action.tag)
+            TagSettingAction.SelectAllTags -> selectAllTags()
+            TagSettingAction.ClearAllSelections -> clearAllSelections()
+            TagSettingAction.DeleteSelectedTags -> deleteSelectedTags()
+            TagSettingAction.DeleteAllTags -> deleteAllTags()
+        }
     }
 
-    fun toggleTagSelection(tag: String) {
-        _uiState.value = _uiState.value.copy(
-            selectedTags = _uiState.value.selectedTags.let {
-                if (it.contains(tag)) it - tag else it + tag
-            }
-        )
+    private fun toggleEditMode() {
+        updateState {
+            copy(
+                isEditMode = !isEditMode,
+                selectedTags = emptySet()
+            )
+        }
     }
 
-    fun selectAllTags() {
-        _uiState.value = _uiState.value.copy(
-            selectedTags = _uiState.value.tags.map { it.tag }.toSet()
-        )
+    private fun toggleTagSelection(tag: String) {
+        updateState {
+            copy(
+                selectedTags = selectedTags.let {
+                    if (it.contains(tag)) it - tag else it + tag
+                }
+            )
+        }
     }
 
-    fun clearAllSelections() {
-        _uiState.value = _uiState.value.copy(selectedTags = emptySet())
+    private fun selectAllTags() {
+        updateState {
+            copy(selectedTags = tags.map { it.tag }.toSet())
+        }
     }
 
-    fun deleteSelectedTags() {
+    private fun clearAllSelections() {
+        updateState {
+            copy(selectedTags = emptySet())
+        }
+    }
+
+    private fun deleteSelectedTags() {
+        updateState { copy(isLoading = true) }
+
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val selectedTagIds = _uiState.value.tags
-                    .filter { _uiState.value.selectedTags.contains(it.tag) }
+                val selectedTagIds = currentState.tags
+                    .filter { currentState.selectedTags.contains(it.tag) }
                     .mapNotNull { it.id }
 
                 if (selectedTagIds.isNotEmpty()) {
-                    Result.runCatching {deleteTagsUseCase(selectedTagIds)}
+                    Result.runCatching { deleteTagsUseCase(selectedTagIds) }
                         .onSuccess {
-                            val updatedTags =
-                                _uiState.value.tags.filter { !_uiState.value.selectedTags.contains(it.tag) }
-                            _uiState.value = _uiState.value.copy(
-                                tags = updatedTags,
-                                tagCount = updatedTags.size,
-                                selectedTags = emptySet(),
-                                isLoading = false,
-                                errorMessage = null
-                            )
+                            val updatedTags = currentState.tags.filter {
+                                !currentState.selectedTags.contains(it.tag)
+                            }
+                            updateState {
+                                copy(
+                                    tags = updatedTags,
+                                    tagCount = updatedTags.size,
+                                    selectedTags = emptySet(),
+                                    isLoading = false,
+                                    errorMessage = null
+                                )
+                            }
+                            emitEffect(TagSettingEffect.ShowSuccess("선택된 태그가 삭제되었습니다."))
                             Timber.d("Selected tags deleted successfully")
                         }
                         .onFailure {
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                errorMessage = "선택된 태그 삭제에 실패했습니다."
-                            )
+                            updateState {
+                                copy(
+                                    isLoading = false,
+                                    errorMessage = "선택된 태그 삭제에 실패했습니다."
+                                )
+                            }
+                            emitEffect(TagSettingEffect.ShowError("선택된 태그 삭제에 실패했습니다."))
+                            Timber.e(it, "Failed to delete selected tags")
                         }
                 } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        errorMessage = "삭제할 태그가 선택되지 않았습니다."
-                    )
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = "삭제할 태그가 선택되지 않았습니다."
+                        )
+                    }
+                    emitEffect(TagSettingEffect.ShowError("삭제할 태그가 선택되지 않았습니다."))
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message
-                )
+                updateState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                emitEffect(TagSettingEffect.ShowError(e.message ?: "선택된 태그 삭제 중 오류가 발생했습니다."))
                 Timber.e(e, "Exception while deleting selected tags")
             }
         }
     }
 
-    fun deleteAllTags() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            try {
+    private fun deleteAllTags() {
+        updateState { copy(isLoading = true) }
 
-                Result.runCatching {deleteTagsUseCase.deleteAllTags() }
+        viewModelScope.launch {
+            try {
+                Result.runCatching { deleteTagsUseCase.deleteAllTags() }
                     .onSuccess {
-                        _uiState.value = _uiState.value.copy(
-                            tags = emptyList(),
-                            tagCount = 0,
-                            selectedTags = emptySet(),
-                            isLoading = false,
-                            errorMessage = null
-                        )
+                        updateState {
+                            copy(
+                                tags = emptyList(),
+                                tagCount = 0,
+                                selectedTags = emptySet(),
+                                isLoading = false,
+                                errorMessage = null
+                            )
+                        }
+                        emitEffect(TagSettingEffect.ShowSuccess("모든 태그가 삭제되었습니다."))
                         Timber.d("All tags deleted successfully")
                     }
                     .onFailure {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = "전체 태그 삭제에 실패했습니다."
-                        )
+                        updateState {
+                            copy(
+                                isLoading = false,
+                                errorMessage = "전체 태그 삭제에 실패했습니다."
+                            )
+                        }
+                        emitEffect(TagSettingEffect.ShowError("전체 태그 삭제에 실패했습니다."))
+                        Timber.e(it, "Failed to delete all tags")
                     }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message
-                )
+                updateState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                emitEffect(TagSettingEffect.ShowError(e.message ?: "전체 태그 삭제 중 오류가 발생했습니다."))
                 Timber.e(e, "Exception while deleting all tags")
             }
         }
