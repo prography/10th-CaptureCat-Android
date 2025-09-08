@@ -445,11 +445,11 @@ fun TagInputWithRegister(
 fun TagSettingContentPreview() {
     TagSettingContent(
         tags = listOf(
-            TagWithCount("일상", 15),
-            TagWithCount("추가된 태그", 8),
-            TagWithCount("추가된 태그", 5),
-            TagWithCount("추가된 태그", 3),
-            TagWithCount("추가된 태그", 2)
+            TagWithCount(0, "일상", 15),
+            TagWithCount(0, "추가된 태그", 8),
+            TagWithCount(0, "추가된 태그", 5),
+            TagWithCount(0, "추가된 태그", 3),
+            TagWithCount(0, "추가된 태그", 2)
         ),
         tagCount = 5,
         isEditMode = false,
@@ -468,10 +468,10 @@ fun TagSettingContentPreview() {
 fun TagSettingEditModePreview() {
     TagSettingContent(
         tags = listOf(
-            TagWithCount("일상", 15),
-            TagWithCount("추가된 태그", 8),
-            TagWithCount("추가된 태그", 5),
-            TagWithCount("추가된 태그", 3)
+            TagWithCount(0, "일상", 15),
+            TagWithCount(0, "추가된 태그", 8),
+            TagWithCount(0, "추가된 태그", 5),
+            TagWithCount(0, "추가된 태그", 3)
         ),
         tagCount = 4,
         isEditMode = true,

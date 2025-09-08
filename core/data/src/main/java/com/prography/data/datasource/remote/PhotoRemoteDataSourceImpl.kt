@@ -527,6 +527,85 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteTag(tagId: Int): Result<Unit> {
+        Timber.d("Calling photoService.deleteTag(tagId=$tagId)")
+
+        return when (val networkState = photoService.deleteTag(tagId)) {
+            is NetworkState.Success -> {
+                Timber.d("Delete tag API Response: ${networkState.body}")
+                Result.success(Unit)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Delete tag API Failure: ${networkState.error}")
+                Result.failure(Exception("태그 삭제 API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Delete tag Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Delete tag Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun deleteTags(tagIds: List<Int>): Result<Unit> {
+        Timber.d("Calling photoService.deleteTags(tagIds=$tagIds)")
+
+        return when (val networkState =
+            photoService.deleteTags(com.prography.network.entity.DeleteTagsRequest(tagIds))) {
+            is NetworkState.Success -> {
+                Timber.d("Delete tags API Response: ${networkState.body}")
+                Result.success(Unit)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Delete tags API Failure: ${networkState.error}")
+                Result.failure(Exception("태그 삭제 API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Delete tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Delete tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun deleteAllTags(): Result<Unit> {
+        Timber.d("Calling photoService.deleteAllTags()")
+
+        return when (val networkState = photoService.deleteAllTags()) {
+            is NetworkState.Success -> {
+                Timber.d("Delete all tags API Response: ${networkState.body}")
+                Result.success(Unit)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Delete all tags API Failure: ${networkState.error}")
+                Result.failure(Exception("전체 태그 삭제 API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Delete all tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Delete all tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
     private fun getFileNameFromUri(uriString: String): String {
         val uri = Uri.parse(uriString)
 

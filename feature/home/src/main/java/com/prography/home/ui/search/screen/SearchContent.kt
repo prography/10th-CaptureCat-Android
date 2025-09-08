@@ -1,10 +1,6 @@
 // SearchContent.kt
 
 package com.prography.home.ui.search.screen
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -204,13 +200,13 @@ fun SearchContentInitialPreview() {
     val sampleState = SearchState(
         searchQuery = "",
         popularTags = listOf(
-            TagWithCount("쇼핑", 25),
-            TagWithCount("여행", 18),
-            TagWithCount("음식", 15),
-            TagWithCount("강아지", 12),
-            TagWithCount("세상에서 제일 귀여운 강아지들", 8),
-            TagWithCount("통키", 6),
-            TagWithCount("여러분", 4)
+            TagWithCount(0, "쇼핑", 25),
+            TagWithCount(0, "여행", 18),
+            TagWithCount(0, "음식", 15),
+            TagWithCount(0, "강아지", 12),
+            TagWithCount(0, "세상에서 제일 귀여운 강아지들", 8),
+            TagWithCount(0, "통키", 6),
+            TagWithCount(0, "여러분", 4)
         ),
         showAutocomplete = false,
         autocompleteResults = emptyList(),
@@ -231,8 +227,8 @@ fun SearchContentAutocompletePreview() {
     val sampleState = SearchState(
         searchQuery = "자",
         popularTags = listOf(
-            TagWithCount("쇼핑", 25),
-            TagWithCount("여행", 18)
+            TagWithCount(0, "쇼핑", 25),
+            TagWithCount(0, "여행", 18)
         ),
         showAutocomplete = true,
         autocompleteResults = listOf(
@@ -259,8 +255,8 @@ fun SearchContentEmptyAutocompletePreview() {
     val sampleState = SearchState(
         searchQuery = "없는검색어",
         popularTags = listOf(
-            TagWithCount("쇼핑", 25),
-            TagWithCount("여행", 18)
+            TagWithCount(0, "쇼핑", 25),
+            TagWithCount(0, "여행", 18)
         ),
         showAutocomplete = true,
         autocompleteResults = emptyList(),

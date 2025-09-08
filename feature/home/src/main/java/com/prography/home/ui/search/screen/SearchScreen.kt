@@ -99,13 +99,13 @@ fun SearchScreen(
 fun SearchScreenWithTagsPreview() {
     val sampleState = SearchState(
         popularTags = listOf(
-            TagWithCount("쇼핑", 25),
-            TagWithCount("여행", 18),
-            TagWithCount("음식", 15),
-            TagWithCount("강아지", 12),
-            TagWithCount("세상에서 제일 귀여운 강아지들", 8),
-            TagWithCount("통키", 6),
-            TagWithCount("여러분", 4)
+            TagWithCount(0, "쇼핑", 25),
+            TagWithCount(0, "여행", 18),
+            TagWithCount(0, "음식", 15),
+            TagWithCount(0, "강아지", 12),
+            TagWithCount(0, "세상에서 제일 귀여운 강아지들", 8),
+            TagWithCount(0, "통키", 6),
+            TagWithCount(0, "여러분", 4)
         ),
         isLoading = false
     )

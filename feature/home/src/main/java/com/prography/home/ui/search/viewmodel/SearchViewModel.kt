@@ -67,6 +67,7 @@ class SearchViewModel @Inject constructor(
                                         tagsWithMiscategorized.add(
                                             0,
                                             TagWithCount(
+                                                0,
                                                 "태그 없음",
                                                 uncategorizedScreenshots.size
                                             )
@@ -83,11 +84,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
                 .onFailure {
-                    val screenshots = currentState.screenshots
-                    if (screenshots.isNotEmpty()) {
-                        val popularTags = getPopularTags(screenshots)
-                        updateState { copy(popularTags = popularTags) }
-                    }
+                    showToast("오류가 발생했습니다.")
                 }
         }
     }
@@ -306,23 +303,6 @@ class SearchViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    private fun getPopularTags(screenshots: List<com.prography.domain.model.UiScreenshotModel>): List<TagWithCount> {
-        val tagCounts = mutableMapOf<String, Int>()
-
-        screenshots.forEach { screenshot ->
-            screenshot.tags.forEach { tag ->
-                tagCounts[tag.name] = tagCounts.getOrDefault(tag.name, 0) + 1
-            }
-        }
-
-        val popularTags = tagCounts.entries
-            .map { TagWithCount(it.key, it.value) }
-            .sortedByDescending { it.count }
-            .take(5) // 상위 5개 태그만
-            .plus(TagWithCount("태그 없음", screenshots.count { it.tags.isEmpty() })) // 미분류 태그 추가
-        return popularTags
     }
 
     private fun navigateToStorage() {
