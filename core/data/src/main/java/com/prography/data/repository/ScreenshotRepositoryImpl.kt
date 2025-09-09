@@ -287,4 +287,25 @@ class ScreenshotRepositoryImpl @Inject constructor(
             }
         )
     }
+
+    override suspend fun deleteTag(tagId: Int) {
+        return modeExecutor.executeWithModeAndFallback(
+            localAction = { localDataSource.deleteTag(tagId) },
+            remoteAction = { remoteDataSource.deleteTag(tagId) }
+        )
+    }
+
+    override suspend fun deleteTags(tagIds: List<Int>) {
+        return modeExecutor.executeWithModeAndFallback(
+            localAction = { localDataSource.deleteTags(tagIds) },
+            remoteAction = { remoteDataSource.deleteTags(tagIds) }
+        )
+    }
+
+    override suspend fun deleteAllTags() {
+        return modeExecutor.executeWithModeAndFallback(
+            localAction = { localDataSource.deleteAllTags() },
+            remoteAction = { remoteDataSource.deleteAllTags() }
+        )
+    }
 }

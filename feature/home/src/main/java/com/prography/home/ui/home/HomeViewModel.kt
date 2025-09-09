@@ -9,6 +9,8 @@ import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
+import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
+import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.component.ScreenshotPagingSource
 import com.prography.home.ui.home.contract.HomeAction
@@ -23,12 +25,13 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
     private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
+    private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
+    private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
 
@@ -50,6 +53,43 @@ class HomeViewModel @Inject constructor(
             if (!isLoggedIn) {
                 // 게스트 모드라면 로그인 다이얼로그 표시
                 updateState { copy(showLoginDialog = true) }
+            }
+        }
+    }
+
+    fun loadMostUsedTags() {
+        viewModelScope.launch {
+            try {
+                val tags = getMostUsedTagsUseCase(size = 5)
+                updateState { copy(popularTags = tags) }
+            } catch (exception: Exception) {
+                Timber.e(exception, "Failed to load most used tags")
+                emitEffect(HomeEffect.ShowError("인기 태그를 불러오는 중 오류가 발생했습니다."))
+            }
+        }
+    }
+
+    fun searchImagesByTag(tagName: String) {
+        viewModelScope.launch {
+            try {
+                updateState { copy(selectedTab = tagName, isLoadingTags = true) }
+                val images = if (tagName == "전체") {
+                    // 전체인 경우 기본 스크린샷 사용 (paging으로 처리됨)
+                    emptyList()
+                } else {
+                    searchImagesByTagsUseCase(listOf(tagName), page = 0, size = 50)
+                }
+                updateState {
+                    copy(
+                        screenshots = images,
+                        selectedTab = tagName,
+                        isLoadingTags = false
+                    )
+                }
+            } catch (exception: Exception) {
+                Timber.e(exception, "Failed to search images by tag: $tagName")
+                updateState { copy(isLoadingTags = false) }
+                emitEffect(HomeEffect.ShowError("태그 검색 중 오류가 발생했습니다."))
             }
         }
     }
@@ -92,6 +132,14 @@ class HomeViewModel @Inject constructor(
 
             HomeAction.DismissErrorReportBanner -> {
                 dismissErrorReportBanner()
+            }
+            is HomeAction.OnTabSelected -> {
+                searchImagesByTag(action.tabTag)
+            }
+            HomeAction.NavigateToTagSetting -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.TagSetting)
+                )
             }
         }
     }

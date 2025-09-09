@@ -9,9 +9,11 @@
     <string name="login_kakao">Login with Kakao</string>
     <string name="login_google">Login with Google</string>
 
-    <string name="tab_storage">Drafts</string>
+    <string name="tab_favorite">Favorite</string>
     <string name="tab_home">Home</string>
     <string name="tab_search">Search</string>
+    <string name="tab_storage">Drafts</string>
+    <string name="tab_mypage">My</string>
 
     <string name="home_guide">First time using CaptureCat? Check out how to\nuse it productively!</string>
     <string name="home_guide_show">View Usage Guide</string>
@@ -65,10 +67,10 @@
     <string name="home_loading_failed">Failed to load more</string>
 
     <!-- FavoriteContent -->
-    <string name="favorite_title">Favorites</string>
-    <string name="favorite_empty_title">No favorite screenshots</string>
-    <string name="favorite_empty_info">Add screenshots to your favorites!</string>
-    <string name="favorite_icon">Favorite</string>
+    <string name="favorite_title">Likes</string>
+    <string name="favorite_empty_title">No likes yet.</string>
+    <string name="favorite_empty_info">Like images you want to see often\nto find them quickly</string>
+    <string name="favorite_icon">Like</string>
 
     <!-- ImageDetailContent -->
     <string name="image_detail_tag_edit">Edit Tags</string>

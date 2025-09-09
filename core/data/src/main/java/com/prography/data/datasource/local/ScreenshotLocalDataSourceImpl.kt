@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import javax.inject.Inject
 import java.util.UUID
-
+import kotlin.Result
 
 class ScreenshotLocalDataSourceImpl @Inject constructor(
     private val dao: ScreenshotDao
@@ -53,15 +53,16 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun deleteTag(imageId: String, tagName: String) {
-        // 전체 스크린샷을 가져와서 해당 ID의 태그를 삭제
-        val screenshots = dao.getAll().map { entities ->
-            entities.map { it.toDomain() }
+        val screenshotEntity = dao.getById(imageId)
+        if (screenshotEntity != null) {
+            val screenshot = screenshotEntity.toDomain()
+            val updatedTags = screenshot.tags.filter { it.name != tagName }
+            val updatedScreenshot = screenshot.copy(tags = updatedTags)
+            dao.update(updatedScreenshot.toEntity())
+            Timber.d("Deleted tag $tagName from screenshot $imageId")
+        } else {
+            Timber.w("deleteTag: Screenshot with id $imageId not found.")
         }
-
-        // 이 구현은 실시간 업데이트가 아니므로 나중에 개선 필요
-        // 현재는 ViewModel에서 UpdateScreenshotUseCase를 사용하는 것이 더 적합
-        Timber.d("deleteTag called for imageId: $imageId, tagName: $tagName")
-        throw UnsupportedOperationException("Use UpdateScreenshotUseCase instead for tag deletion")
     }
 
     override suspend fun getById(screenshotId: String): UiScreenshotModel? {
@@ -103,7 +104,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
 
         // 카운트가 높은 순으로 정렬하고 상위 size개만 반환
         val mostUsedTags = tagCounts.entries
-            .map { TagWithCount(it.key, it.value) }
+            .map { TagWithCount(0, it.key, it.value) }
             .sortedByDescending { it.count }
             .take(size)
 
@@ -202,5 +203,35 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         }
 
         return tags.distinctBy { it.name }.take(size)
+    }
+
+    override suspend fun deleteTag(tagId: Int): Result<Unit> {
+        return try {
+            // 로컬에서는 단순히 성공을 반환 (실제 삭제는 서버에서 처리)
+            Timber.d("Local deleteTag called for tagId: $tagId")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteTags(tagIds: List<Int>): Result<Unit> {
+        return try {
+            // 로컬에서는 단순히 성공을 반환 (실제 삭제는 서버에서 처리)
+            Timber.d("Local deleteTags called for tagIds: $tagIds")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteAllTags(): Result<Unit> {
+        return try {
+            // 로컬에서는 단순히 성공을 반환 (실제 삭제는 서버에서 처리)
+            Timber.d("Local deleteAllTags called")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

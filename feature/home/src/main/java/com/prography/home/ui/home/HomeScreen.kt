@@ -33,9 +33,10 @@ fun HomeScreen(
 
     val pagingItems = viewModel.screenshotsPagingFlow.collectAsLazyPagingItems()
 
-    // 처음 접근 시 로그인 상태 체크
+    // 처음 접근 시 로그인 상태 체크 및 인기 태그 로드
     LaunchedEffect(Unit) {
         viewModel.checkLoginStatusOnFirstAccess()
+        viewModel.loadMostUsedTags()
     }
 
     LaunchedEffect(effectFlow) {

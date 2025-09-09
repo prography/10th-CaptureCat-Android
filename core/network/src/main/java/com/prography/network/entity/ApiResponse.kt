@@ -57,3 +57,11 @@ data class ApiError(
     val code: String,
     val message: String
 )
+
+/**
+ * 태그 삭제 요청 형식
+ */
+@Serializable
+data class DeleteTagsRequest(
+    val tagIds: List<Int>
+)

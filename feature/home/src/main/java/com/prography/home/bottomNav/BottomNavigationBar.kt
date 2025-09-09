@@ -29,8 +29,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavHostController,
-    onItemSelected: (BottomNavItem) -> Unit
+    navController: NavHostController
 ) {
     val items = listOf(
         BottomNavItem.Storage,
@@ -68,20 +67,13 @@ fun BottomNavigationBar(
                             restoreState = true
                             launchSingleTop = true
                         }
-                        onItemSelected(item)
                     }
             ) {
                 Icon(
                     painter = painterResource(id = if (selected) item.selectedIcon else item.unselectedIcon),
                     contentDescription = stringResource(item.title),
-                    tint = Color.Unspecified
-                )
-
-                Text(
-                    text = stringResource(item.title),
-                    style = caption01SemiBold,
-                    color = if (selected) Gray09 else Gray06,
-                    modifier = Modifier.padding(top = 2.dp)
+                    tint = Color.Unspecified,
+                    modifier = Modifier.padding(vertical = 6.dp)
                 )
             }
         }

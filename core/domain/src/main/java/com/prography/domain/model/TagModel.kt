@@ -6,6 +6,7 @@ data class TagModel(
 )
 
 data class TagWithCount(
+    val id: Int? = 0,
     val tag: String,
     val count: Int
 )

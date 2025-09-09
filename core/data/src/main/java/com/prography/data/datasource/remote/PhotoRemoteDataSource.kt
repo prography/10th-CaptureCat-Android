@@ -40,4 +40,9 @@ interface PhotoRemoteDataSource {
         keyword: String,
         size: Int = 10
     ): Result<List<AutocompleteTagModel>>
+
+    // 태그 삭제 관련 메소드들
+    suspend fun deleteTag(tagId: Int): Result<Unit>
+    suspend fun deleteTags(tagIds: List<Int>): Result<Unit>
+    suspend fun deleteAllTags(): Result<Unit>
 }

@@ -1,5 +1,12 @@
 package com.prography.tag
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,8 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.domain.model.TagWithCount
+import com.prography.ui.component.BottomInputButtonVariant
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.component.clickableWithoutRipple
@@ -111,9 +121,9 @@ private fun TagSettingContent(
             Text(
                 text = if (isEditMode) "완료" else "편집",
                 style = body01Regular,
-                color = Gray02,
+                color = Text03,
                 modifier = Modifier
-                    .clickable { onToggleEditMode() }
+                    .clickableWithoutRipple { onToggleEditMode() }
             )
         }
 
@@ -138,7 +148,7 @@ private fun TagSettingContent(
                 onClear = { text = "" },
                 onRegister = { /* 등록로직 */ },
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 32.dp)
+                    .padding(16.dp)
             )
         }
 
@@ -198,13 +208,19 @@ private fun TagList(
     onNavigateToTagAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listBottomPadding by animateDpAsState(
+        targetValue = if (isEditMode) 96.dp else 0.dp, // 바텀바 높이 + 여유
+        animationSpec = tween(220),
+        label = "listBottomPadding"
+    )
+
     Box(modifier = modifier.fillMaxWidth()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 start = 16.dp,
                 end = 16.dp,
-                bottom = if (isEditMode) 80.dp else 0.dp
+                bottom = listBottomPadding
             )
         ) {
             items(tags) { tagWithCount ->
@@ -216,14 +232,28 @@ private fun TagList(
                     onDeleteTag = onDeleteTag
                 )
             }
-
         }
-        if (isEditMode) {
+
+        AnimatedVisibility(
+            visible = isEditMode,
+            enter = slideInVertically(
+                initialOffsetY = { it } // 아래에서 위로
+            ) + fadeIn(),
+            exit = slideOutVertically(
+                targetOffsetY = { it } // 위에서 아래로
+            ) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .zIndex(1f)
+        ) {
             EditModeBottomBar(
                 enabled = selectedTags.isNotEmpty(),
                 onDelete = { onDeleteTag("") },
                 onDeleteSelected = { onDeleteTag("_SELECTED_") },
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding() // 시스템 바 피하기
             )
         }
     }
@@ -244,14 +274,14 @@ private fun TagListItem(
                 enabled = isEditMode,
                 value = checked,
                 onValueChange = { onCheckToggle(tag.tag) })
-            .padding(16.dp, 12.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isEditMode) {
             Icon(
-                painter = painterResource(id = if (checked) com.prography.ui.R.drawable.ic_check_box_able else com.prography.ui.R.drawable.ic_check_box_unchecked),
+                painter = painterResource(id = if (checked) com.prography.ui.R.drawable.ic_check_box_able else com.prography.ui.R.drawable.ic_check_box_disable),
                 contentDescription = "선택",
-                tint = if (checked) Primary else Gray04,
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .size(22.dp)
                     .clickableWithoutRipple { onCheckToggle(tag.tag) }
@@ -260,18 +290,27 @@ private fun TagListItem(
         }
         Text(
             text = tag.tag,
-            style = body01Regular,
-            color = Text01,
-            modifier = Modifier.weight(1f)
+            style = body01Regular.copy(
+                color = Text01
+            ),
+            modifier = Modifier
+                .weight(1f)
+                .heightIn(min = 26.dp)
         )
         if (!isEditMode) {
             Text(
-                text = "${tag.count}회",
-                style = caption02Regular,
-                color = Text03
+                text = "수정",
+                style = body01Regular,
+                color = Gray05
             )
         }
     }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Divider)
+    )
 }
 
 @Composable
@@ -281,28 +320,36 @@ private fun EditModeBottomBar(
     onDeleteSelected: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(
-            onClick = onDelete,
-            colors = ButtonDefaults.buttonColors(containerColor = Gray02),
-            modifier = Modifier.weight(1f)
+        // 상단 구분선
+        HorizontalDivider(
+            color = Divider,
+            thickness = 1.dp
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("전체삭제", color = Text01)
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Button(
-            onClick = onDeleteSelected,
-            enabled = enabled,
-            colors = ButtonDefaults.buttonColors(containerColor = if (enabled) Primary else Gray02),
-            modifier = Modifier.weight(1f)
-        ) {
-            Text("삭제하기", color = if (enabled) Color.White else Text03)
+            UiBottomInputButton(
+                onClick = onDelete,
+                text = "전체삭제",
+                enabled = true,
+                modifier = Modifier.weight(1f),
+                variant = BottomInputButtonVariant.Sub
+            )
+            Spacer(Modifier.width(10.dp))
+            UiBottomInputButton(
+                onClick = onDeleteSelected,
+                enabled = enabled,
+                modifier = Modifier.weight(1f),
+                text = "삭제하기"
+            )
         }
     }
 }
@@ -332,12 +379,11 @@ fun TagInputWithRegister(
                     color = if (isError) Error else Gray03,
                     shape = RoundedCornerShape(6.dp)
                 )
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
                 .fillMaxWidth(),
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(38.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 BasicTextField(
                     value = value,
@@ -347,14 +393,13 @@ fun TagInputWithRegister(
                     textStyle = body02Regular.copy(color = Text02),
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(),
+                        .heightIn(min = 26.dp),
                     decorationBox = { innerTextField ->
                         Box(contentAlignment = Alignment.CenterStart) {
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholder,
-                                    color = if (enabled) Text03 else Gray03,
-                                    style = body02Regular,
+                                    color = if (enabled) Text03 else Gray06,
                                     maxLines = 1
                                 )
                             }
@@ -363,27 +408,27 @@ fun TagInputWithRegister(
                     }
                 )
                 if (value.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClear,
-                        modifier = Modifier.height(38.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = com.prography.ui.R.drawable.ic_text_field_delete),
-                            contentDescription = "Clear",
-                            tint = Color.Gray
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = com.prography.ui.R.drawable.ic_text_field_delete),
+                        contentDescription = "Clear",
+                        tint = Secondary,
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(20.dp)
+                            .clickableWithoutRipple { onClear() }
+                    )
                 }
-                Button(
-                    enabled = value.isNotBlank() && !isError,
-                    onClick = onRegister,
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text("등록", style = body02Regular)
-                }
+                Text(
+                    text = "등록",
+                    color = Text03,
+                    style = body02Regular,
+                    modifier = Modifier
+                        .clickableWithoutRipple(enabled = value.isNotBlank() && !isError) {
+                            onRegister()
+                        }
+                )
             }
         }
-        Spacer(modifier = Modifier.height(6.dp))
         errorMessage?.let {
             Text(
                 text = it,
@@ -400,11 +445,11 @@ fun TagInputWithRegister(
 fun TagSettingContentPreview() {
     TagSettingContent(
         tags = listOf(
-            TagWithCount("일상", 15),
-            TagWithCount("추가된 태그", 8),
-            TagWithCount("추가된 태그", 5),
-            TagWithCount("추가된 태그", 3),
-            TagWithCount("추가된 태그", 2)
+            TagWithCount(0, "일상", 15),
+            TagWithCount(0, "추가된 태그", 8),
+            TagWithCount(0, "추가된 태그", 5),
+            TagWithCount(0, "추가된 태그", 3),
+            TagWithCount(0, "추가된 태그", 2)
         ),
         tagCount = 5,
         isEditMode = false,
@@ -423,10 +468,10 @@ fun TagSettingContentPreview() {
 fun TagSettingEditModePreview() {
     TagSettingContent(
         tags = listOf(
-            TagWithCount("일상", 15),
-            TagWithCount("추가된 태그", 8),
-            TagWithCount("추가된 태그", 5),
-            TagWithCount("추가된 태그", 3)
+            TagWithCount(0, "일상", 15),
+            TagWithCount(0, "추가된 태그", 8),
+            TagWithCount(0, "추가된 태그", 5),
+            TagWithCount(0, "추가된 태그", 3)
         ),
         tagCount = 4,
         isEditMode = true,

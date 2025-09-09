@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -37,7 +40,9 @@ import com.prography.ui.theme.Error
 import com.prography.ui.theme.Gray01
 import com.prography.ui.theme.Gray02
 import com.prography.ui.theme.Gray03
+import com.prography.ui.theme.Gray06
 import com.prography.ui.theme.Gray09
+import com.prography.ui.theme.Secondary
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body02Regular
@@ -68,7 +73,8 @@ fun TagInputField(
                     width = 1.dp,
                     color = when {
                         isError -> Error
-                        else -> Gray03
+                        value.isNotEmpty() -> Gray03
+                        else -> Transparent
                     },
                     shape = RoundedCornerShape(6.dp)
                 )
@@ -76,10 +82,7 @@ fun TagInputField(
                 .fillMaxWidth(),
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(38.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 BasicTextField(
                     value = value,
@@ -99,18 +102,15 @@ fun TagInputField(
                     ),
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(),
+                        .heightIn(min = 26.dp),
                     decorationBox = { innerTextField ->
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
+                        Box(contentAlignment = Alignment.CenterStart) {
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholder,
-                                    color = if (enabled) Text03 else Gray03,
-                                    style = body02Regular,
-                                    maxLines = 1
+                                    color = if (enabled) Text03 else Gray06,
+                                    maxLines = 1,
+                                    style = body02Regular
                                 )
                             }
                             innerTextField()
@@ -119,16 +119,15 @@ fun TagInputField(
                 )
 
                 if (value.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClear,
-                        modifier = Modifier.height(38.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_text_field_delete),
-                            contentDescription = "Clear",
-                            tint = Color.Gray
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = com.prography.ui.R.drawable.ic_text_field_delete),
+                        contentDescription = "Clear",
+                        tint = Secondary,
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(20.dp)
+                            .clickableWithoutRipple { onClear() }
+                    )
                 }
             }
         }

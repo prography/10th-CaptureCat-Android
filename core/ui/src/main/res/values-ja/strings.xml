@@ -9,9 +9,11 @@
     <string name="login_kakao">カカオでログイン</string>
     <string name="login_google">Googleでログイン</string>
 
-    <string name="tab_storage">一時保管庫</string>
+    <string name="tab_favorite">お気に入り</string>
     <string name="tab_home">ホーム</string>
     <string name="tab_search">検索</string>
+    <string name="tab_storage">一時保管庫</string>
+    <string name="tab_mypage">マイ</string>
 
     <string name="home_guide">CaptureCatは初めてですか？生産性の高い\n使い方をチェックしてみてください！</string>
     <string name="home_guide_show">使い方を見る</string>
@@ -65,10 +67,10 @@
     <string name="home_loading_failed">読み込みに失敗しました</string>
 
     <!-- FavoriteContent -->
-    <string name="favorite_title">お気に入り</string>
-    <string name="favorite_empty_title">お気に入りのスクリーンショットがありません</string>
-    <string name="favorite_empty_info">スクリーンショットをお気に入りに追加してください！</string>
-    <string name="favorite_icon">お気に入り</string>
+    <string name="favorite_title">いいね</string>
+    <string name="favorite_empty_title">まだいいねがありません。</string>
+    <string name="favorite_empty_info">よく見たい画像に\nいいねを押すと素早く見つけることができます</string>
+    <string name="favorite_icon">いいね</string>
 
     <!-- ImageDetailContent -->
     <string name="image_detail_tag_edit">タグ編集</string>

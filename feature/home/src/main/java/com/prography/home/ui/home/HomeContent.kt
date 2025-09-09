@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeState
@@ -25,16 +27,24 @@ import androidx.compose.ui.draw.clip
 import com.prography.ui.theme.caption01SemiBold
 import com.prography.ui.component.UiEmptyState
 import coil3.compose.AsyncImage
-import com.prography.home.ui.home.component.FavoriteCardDeck
 import com.prography.ui.R
 import com.prography.ui.theme.Primary
 import timber.log.Timber
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.ui.graphics.Brush
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
 import com.prography.ui.theme.Divider
+import com.prography.ui.theme.Text03
+import com.prography.ui.theme.subhead02Bold
 
 @Composable
 fun HomeContent(
@@ -45,10 +55,6 @@ fun HomeContent(
     // 초기 로딩 중인지 확인
     val isInitialLoading = pagingItems.loadState.refresh is LoadState.Loading
 
-    // Debug logging
-    LaunchedEffect(state.favoriteScreenshots) {
-        Timber.d("HomeContent - State has ${state.favoriteScreenshots.size} favorite screenshots")
-    }
 
     Column(
         modifier = Modifier
@@ -83,6 +89,16 @@ fun HomeContent(
             )
         }
 
+        // 탭 세션
+        TabSection(
+            popularTags = state.popularTags,
+            selectedTab = state.selectedTab,
+            onTabSelected = { tabTag ->
+                onAction(HomeAction.OnTabSelected(tabTag))
+            },
+            onTagSettingClick = { onAction(HomeAction.NavigateToTagSetting) }
+        )
+
         // 본문: 상황에 따라 다른 영역
         when {
             // 초기 로딩 중 (처음 진입 시)
@@ -109,59 +125,95 @@ fun HomeContent(
             }
 
             else -> {
-                // 스크린샷 리스트
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    // 즐겨찾기 카드 덱
-                    item {
-                        FavoriteCardDeck(
-                            favoriteScreenshots = state.favoriteScreenshots,
-                            onFavoriteClick = { onAction(HomeAction.NavigateToFavorite) }
-                        )
-                    }
-
-                    // Paging된 스크린샷들을 2개씩 묶어서 표시
-                    val screenshots = (0 until pagingItems.itemCount).mapNotNull { index ->
+                // 스크린샷 그리드 리스트 (한 줄에 3개씩)
+                if (state.selectedTab == "전체") {
+                    // "전체" 탭 선택 시: Paging3 사용
+                    val screenshotItems = (0 until pagingItems.itemCount).mapNotNull { index ->
                         pagingItems[index]
                     }
 
-                    items(count = screenshots.size / 2 + screenshots.size % 2) { rowIndex ->
-                        val startIndex = rowIndex * 2
-                        val endIndex = minOf(startIndex + 2, screenshots.size)
-                        val rowItems = screenshots.subList(startIndex, endIndex)
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(screenshotItems) { screenshot ->
+                            ScreenshotItem(
+                                screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(HomeAction.OnScreenshotClick(screenshot))
+                                },
+                                modifier = Modifier
+                            )
+                        }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            rowItems.forEach { screenshot ->
-                                ScreenshotItem(
-                                    screenshot = screenshot,
-                                    onScreenshotClick = {
-                                        onAction(
-                                            HomeAction.OnScreenshotClick(
-                                                screenshot
-                                            )
+                        // 로딩 인디케이터 (Paging3가 append 시 자동 처리)
+                        when (pagingItems.loadState.append) {
+                            is LoadState.Loading -> {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = Primary
                                         )
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                    }
+                                }
                             }
-                            if (rowItems.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f))
+
+                            is LoadState.Error -> {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.home_loading_failed),
+                                            color = Color.Red,
+                                            modifier = Modifier.clickable { pagingItems.retry() }
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> { /* no-op */
                             }
                         }
                     }
+                } else {
+                    // 특정 태그 선택 시: state.screenshots 사용
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(state.screenshots) { screenshot ->
+                            ScreenshotItem(
+                                screenshot = screenshot,
+                                onScreenshotClick = {
+                                    onAction(HomeAction.OnScreenshotClick(screenshot))
+                                },
+                                modifier = Modifier
+                            )
+                        }
 
-                    // 로딩 인디케이터 (Paging3가 append 시 자동 처리)
-                    when (pagingItems.loadState.append) {
-                        is LoadState.Loading -> {
-                            item {
+                        // 태그별 검색 로딩 표시
+                        if (state.isLoadingTags) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -174,25 +226,6 @@ fun HomeContent(
                                     )
                                 }
                             }
-                        }
-                        is LoadState.Error -> {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.home_loading_failed),
-                                        color = Color.Red,
-                                        modifier = Modifier.clickable { pagingItems.retry() }
-                                    )
-                                }
-                            }
-                        }
-
-                        else -> { /* no-op */
                         }
                     }
                 }
@@ -224,23 +257,110 @@ fun ScreenshotItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
-            verticalArrangement = Arrangement.spacedBy(3.dp),
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 12.dp, bottom = 9.dp)
+    }
+}
+
+@Composable
+fun TabSection(
+    popularTags: List<com.prography.domain.model.TagWithCount>,
+    selectedTab: String,
+    onTabSelected: (String) -> Unit,
+    onTagSettingClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier.weight(1f)
         ) {
-            screenshot.tags.forEach { tag ->
-                Text(
-                    text = tag.name,
-                    style = caption01SemiBold,
-                    color = Color.White,
+            // 스크롤 가능한 탭 영역
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // "전체" 탭
+                item {
+                    TagChip(
+                        text = "전체",
+                        isSelected = selectedTab == "전체",
+                        onClick = { onTabSelected("전체") }
+                    )
+                }
+
+                // 인기 태그들
+                items(popularTags) { tag ->
+                    TagChip(
+                        text = tag.tag,
+                        isSelected = selectedTab == tag.tag,
+                        onClick = { onTabSelected(tag.tag) }
+                    )
+                }
+            }
+            Box(modifier = Modifier.matchParentSize()) {
+                Box(
                     modifier = Modifier
-                        .background(Color(0x66000000), RoundedCornerShape(4.5.dp))
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .align(Alignment.CenterEnd)
+                        .width(16.dp)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0f),
+                                    Color.White.copy(alpha = 1f)
+                                )
+                            )
+                        )
                 )
             }
         }
+
+        // 세로 구분선
+        Box(
+            modifier = Modifier
+                .padding(vertical = 8.dp, horizontal = 6.dp)
+                .width(1.dp)
+                .height(10.dp)
+                .background(com.prography.ui.theme.Gray03)
+        )
+
+        // 고정된 태그 설정 아이콘
+        Icon(
+            painter = painterResource(id = R.drawable.ic_home_tag_tab),
+            contentDescription = "태그 설정",
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .clickableWithoutRipple { onTagSettingClick() }
+        )
+    }
+}
+
+@Composable
+fun TagChip(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .width(IntrinsicSize.Max)
+            .padding(horizontal = 8.dp)
+    ){
+        Text(
+            text = text,
+            modifier = modifier
+                .clickableWithoutRipple { onClick() }
+                .padding(top = 2.dp, bottom = 10.dp),
+            style = subhead02Bold,
+            color = if (isSelected) Primary else Text03,
+        )
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = if (isSelected) Primary else Color.Transparent,
+            thickness = 3.dp)
     }
 }

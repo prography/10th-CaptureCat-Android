@@ -38,4 +38,9 @@ interface ScreenshotRepository {
 
     suspend fun getRelatedTags(tagNames: List<String>, page: Int = 0, size: Int = 10): List<String>
     suspend fun getSearchAutoComplete(keyword: String, size: Int = 10): List<AutocompleteTagModel>
+
+    // 태그 삭제 관련 메소드들
+    suspend fun deleteTag(tagId: Int)
+    suspend fun deleteTags(tagIds: List<Int>)
+    suspend fun deleteAllTags()
 }

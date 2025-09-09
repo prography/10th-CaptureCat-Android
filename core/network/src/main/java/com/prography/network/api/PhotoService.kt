@@ -4,6 +4,7 @@ import com.prography.network.entity.AddTagResponse
 import com.prography.network.entity.AddTagsRequest
 import com.prography.network.entity.ApiListResponse
 import com.prography.network.entity.ApiResponse
+import com.prography.network.entity.DeleteTagsRequest
 import com.prography.network.entity.PhotoResponse
 import com.prography.network.entity.TagResponse
 import com.prography.network.util.NetworkState
@@ -99,4 +100,17 @@ interface PhotoService {
         @Query("keyword") keyword: String,
         @Query("size") size: Int = 10
     ): NetworkState<AddTagResponse<TagResponse>>
+
+    @DELETE("v1/tags/{tagId}")
+    suspend fun deleteTag(
+        @Path("tagId") tagId: Int
+    ): NetworkState<ApiResponse<TagResponse>>
+
+    @DELETE("v1/tags")
+    suspend fun deleteTags(
+        @Body tagIds: DeleteTagsRequest
+    ): NetworkState<ApiResponse<List<TagResponse>>>
+
+    @DELETE("v1/tags/all")
+    suspend fun deleteAllTags(): NetworkState<ApiResponse<Unit>>
 }
