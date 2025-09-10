@@ -42,24 +42,14 @@ fun FavoriteContent(
             .statusBarsPadding()
     ) {
         // Top Bar
-        Row(
+        Text(
+            text = stringResource(com.prography.ui.R.string.favorite_title),
+            style = headline02Bold,
+            color = Text01,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = com.prography.ui.R.drawable.ic_arrow_backward),
-                contentDescription = stringResource(com.prography.ui.R.string.common_back),
-                modifier = Modifier.clickable { onAction(FavoriteAction.OnNavigateUp) }
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = stringResource(com.prography.ui.R.string.favorite_title),
-                style = headline02Bold,
-                color = Text01
-            )
-        }
+        )
 
         when {
             !state.hasData -> {
@@ -166,7 +156,7 @@ fun FavoriteScreenshotItem(
 
         // 즐겨찾기 아이콘 (우상단)
         Icon(
-            painter = painterResource(id = com.prography.ui.R.drawable.ic_favorite_checked),
+            painter = painterResource(id = com.prography.ui.R.drawable.favorite_white),
             contentDescription = stringResource(com.prography.ui.R.string.favorite_icon),
             tint = Color.Unspecified,
             modifier = Modifier
