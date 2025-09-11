@@ -161,7 +161,7 @@ fun FavoriteScreenshotItem(
             tint = Color.Unspecified,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(8.dp)
+                .padding(12.dp)
                 .size(32.dp)
                 .clickableWithoutRipple {
                     onToggleFavorite()
