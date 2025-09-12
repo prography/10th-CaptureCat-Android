@@ -42,7 +42,7 @@ fun AccountLinkDialog(
                 ) {
                     // 제목
                     Text(
-                        text = "계정 연동",
+                        text = "기존에 사용하던 계정이 있어요",
                         style = headline03Bold,
                         color = Text01,
                         textAlign = TextAlign.Center
@@ -50,7 +50,8 @@ fun AccountLinkDialog(
 
                     // 메시지
                     Text(
-                        text = "이미 해당 이메일로 가입된 계정이 있어요.\n${getProviderDisplayName(existingProvider)} 계정과 연동하여 통합관리하시겠습니까?",
+                        text = "이미 해당 이메일로 가입 되어 있어요." +
+                                "카카오와 구글 계정을 하나로 통합할까요?",
                         style = body01Regular,
                         color = Text02,
                         textAlign = TextAlign.Center,
