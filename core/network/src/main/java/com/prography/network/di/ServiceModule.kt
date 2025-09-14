@@ -3,6 +3,7 @@ package com.prography.network.di
 import com.prography.network.api.AuthService
 import com.prography.network.api.PhotoService
 import com.prography.network.api.UserService
+import com.prography.network.api.TagService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,11 @@ object ServiceModule {
     @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTagService(retrofit: Retrofit): TagService =
+        retrofit.create(TagService::class.java)
 
     @Provides
     @Singleton

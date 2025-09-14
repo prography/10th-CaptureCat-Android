@@ -332,7 +332,7 @@ class ImageDetailViewModel @Inject constructor(
             runCatching {
                 // 먼저 서버에서 태그 삭제 시도
                 try {
-                    deleteTagUseCase(currentScreenshot.id, tag.id)
+                    deleteTagUseCase(currentScreenshot.id, tag.id.toString())
                     Timber.d("Successfully deleted tag '${tag.name}' from server for screenshot: ${updatedScreenshot.id}")
                 } catch (e: UnsupportedOperationException) {
                     // 로컬 모드인 경우 UpdateScreenshotUseCase 사용

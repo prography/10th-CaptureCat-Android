@@ -12,7 +12,7 @@ fun ScreenshotEntity.toDomain(): UiScreenshotModel {
             .filter { it.isNotBlank() }
             .mapIndexed { index, tagName ->
                 TagModel(
-                    id = "${id}_tag_$index", // 로컬에서는 임시 ID 생성
+                    id = (id.hashCode() + index).toLong(), // 로컬에서는 임시 ID 생성
                     name = tagName.trim()
                 )
             },

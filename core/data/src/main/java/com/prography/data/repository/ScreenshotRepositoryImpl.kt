@@ -169,10 +169,9 @@ class ScreenshotRepositoryImpl @Inject constructor(
     ): Result<List<TagModel>> {
         return modeExecutor.executeWithMode(
             localAction = {
-                // 로컬 모드: UUID 사용
                 Result.success(tagNames.map {
                     TagModel(
-                        java.util.UUID.randomUUID().toString(),
+                        System.currentTimeMillis(),
                         it
                     )
                 })
@@ -279,7 +278,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
     override suspend fun getSearchAutoComplete(
         keyword: String,
         size: Int
-    ): List<AutocompleteTagModel> {
+    ): List<TagModel> {
         return modeExecutor.executeWithMode(
             localAction = { localDataSource.getSearchAutoComplete(keyword, size) },
             remoteAction = {

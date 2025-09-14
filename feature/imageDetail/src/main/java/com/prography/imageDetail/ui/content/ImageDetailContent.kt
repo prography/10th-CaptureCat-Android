@@ -324,7 +324,7 @@ private fun TagEditBottomSheetContent(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val isMaxTagsReached = (state.currentScreenshot?.tags?.size ?: 0) >= 4
-    
+
     // 키보드 상태 확인
     val ime = WindowInsets.ime
     val density = LocalDensity.current
@@ -443,50 +443,4 @@ private fun TagEditBottomSheetContent(
 
     // 강제 포커스 제거 (→ 사용자가 눌러야 키보드 뜸)
     // 필요 시 직접 클릭으로 포커스 유도
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun ImageDetailScreenPreview() {
-    val sampleScreenshots = listOf(
-        UiScreenshotModel(
-            id = "1",
-            uri = "https://via.placeholder.com/300x400",
-            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isBookmarked = false,
-            dateStr = "2024년 1월 15일"
-        ),
-        UiScreenshotModel(
-            id = "2",
-            uri = "https://via.placeholder.com/300x400",
-            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isBookmarked = true,
-            dateStr = "2024년 1월 14일"
-        ),
-        UiScreenshotModel(
-            id = "3",
-            uri = "https://via.placeholder.com/300x400",
-            tags = listOf(TagModel("1","쇼핑"), TagModel("2","패션")),
-            isBookmarked = false,
-            dateStr = "2024년 1월 13일"
-        )
-    )
-
-    PrographyTheme {
-        ImageDetailContent(
-            state = ImageDetailState(
-                screenshots = sampleScreenshots,
-                currentIndex = 0,
-                currentScreenshot = sampleScreenshots.first(),
-                availableTags = listOf("쇼핑", "패션", "여행", "음식", "생활용품"),
-                isTagEditBottomSheetVisible = false,
-                newTagText = "",
-                isLoading = false,
-                isDeleteDialogVisible = false
-            ),
-            onAction = {}
-        )
-    }
 }

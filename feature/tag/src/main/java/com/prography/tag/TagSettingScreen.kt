@@ -9,7 +9,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,24 +19,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.ui.component.BottomInputButtonVariant
 import com.prography.ui.component.UiBottomInputButton
-import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.*
-import kotlinx.coroutines.launch
 
 @Composable
 fun TagSettingScreen(
@@ -51,19 +46,28 @@ fun TagSettingScreen(
         viewModel.loadTags()
     }
 
+    // Convert TagModel to TagWithCount for display
+    val tagsWithCount = uiState.tags.map { tagModel ->
+        TagWithCount(
+            id = tagModel.id?.toInt() ?: 0,
+            tag = tagModel.name,
+            count = 0 // 로컬에서는 카운트 정보가 없음
+        )
+    }
+
     TagSettingContent(
-        tags = uiState.tags,
+        tags = tagsWithCount,
         tagCount = uiState.tagCount,
         isEditMode = uiState.isEditMode,
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
         onNavigateBack = onNavigateBack,
-        onToggleEditMode = viewModel::toggleEditMode,
-        onTagClick = viewModel::toggleTagSelection,
+        onToggleEditMode = { viewModel.handleAction(TagSettingAction.ToggleEditMode) },
+        onTagClick = { tag -> viewModel.handleAction(TagSettingAction.ToggleTagSelection(tag)) },
         onDeleteTag = { tag ->
-            if (tag == "") viewModel.deleteAllTags()
-            else if (tag == "_SELECTED_") viewModel.deleteSelectedTags()
-            // else viewModel.deleteTag(tag)
+            when (tag) {
+                "_SELECTED_" -> viewModel.handleAction(TagSettingAction.DeleteSelectedTags)
+            }
         },
         onNavigateToTagAdd = onNavigateToTagAdd
     )
@@ -437,67 +441,4 @@ fun TagInputWithRegister(
             )
         }
     }
-}
-
-// Preview
-@Preview(showBackground = true)
-@Composable
-fun TagSettingContentPreview() {
-    TagSettingContent(
-        tags = listOf(
-            TagWithCount(0, "일상", 15),
-            TagWithCount(0, "추가된 태그", 8),
-            TagWithCount(0, "추가된 태그", 5),
-            TagWithCount(0, "추가된 태그", 3),
-            TagWithCount(0, "추가된 태그", 2)
-        ),
-        tagCount = 5,
-        isEditMode = false,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TagSettingEditModePreview() {
-    TagSettingContent(
-        tags = listOf(
-            TagWithCount(0, "일상", 15),
-            TagWithCount(0, "추가된 태그", 8),
-            TagWithCount(0, "추가된 태그", 5),
-            TagWithCount(0, "추가된 태그", 3)
-        ),
-        tagCount = 4,
-        isEditMode = true,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TagSettingEmptyPreview() {
-    TagSettingContent(
-        tags = emptyList(),
-        tagCount = 0,
-        isEditMode = false,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
 }
