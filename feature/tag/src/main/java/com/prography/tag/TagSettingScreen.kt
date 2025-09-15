@@ -290,7 +290,6 @@ private fun TagListItem(
                     .size(22.dp)
                     .clickableWithoutRipple { onCheckToggle(tag.tag) }
             )
-            Spacer(modifier = Modifier.width(6.dp))
         }
         Text(
             text = tag.tag,
