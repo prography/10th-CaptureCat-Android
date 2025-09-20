@@ -7,6 +7,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.search.screen.SearchScreen
 import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
@@ -23,16 +24,18 @@ fun MainNavigationHost(
         startDestination = BottomNavItem.Home.route,
         modifier = modifier
     ) {
-        composable(BottomNavItem.Storage.route) {
+        composable(BottomNavItem.Favorite.route) {
+            FavoriteRoute()
+            /*
             ScreenshotGalleryScreen(
                 onNavigateUp = { navController.navigateUp() },
                 screenshotViewModel = screenshotViewModel
-            )
+            )*/
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(
                 onNavigateToStorage = {
-                    navController.navigate(BottomNavItem.Storage.route) {
+                    navController.navigate(BottomNavItem.Favorite.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -45,7 +48,7 @@ fun MainNavigationHost(
         composable(BottomNavItem.Search.route) {
             SearchScreen(
                 onNavigateToStorage = {
-                    navController.navigate(BottomNavItem.Storage.route) {
+                    navController.navigate(BottomNavItem.Favorite.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

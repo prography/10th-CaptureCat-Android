@@ -160,7 +160,7 @@ fun FavoriteScreenshotItem(
             contentDescription = stringResource(com.prography.ui.R.string.favorite_icon),
             tint = Color.Unspecified,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
+                .align(Alignment.BottomStart)
                 .padding(12.dp)
                 .size(32.dp)
                 .clickableWithoutRipple {
