@@ -37,7 +37,6 @@ import com.prography.ui.theme.*
 @Composable
 fun TagSettingScreen(
     viewModel: TagSettingViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit = {},
     onNavigateToTagAdd: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -61,7 +60,7 @@ fun TagSettingScreen(
         isEditMode = uiState.isEditMode,
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { viewModel.handleAction(TagSettingAction.NavigateBack)},
         onToggleEditMode = { viewModel.handleAction(TagSettingAction.ToggleEditMode) },
         onTagClick = { tag -> viewModel.handleAction(TagSettingAction.ToggleTagSelection(tag)) },
         onDeleteTag = { tag ->
