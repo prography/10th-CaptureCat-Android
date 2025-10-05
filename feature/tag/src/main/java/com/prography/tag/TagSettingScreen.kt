@@ -63,7 +63,7 @@ fun TagSettingScreen(
         isEditMode = uiState.isEditMode,
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
-
+        errorMessage = uiState.errorMessage,
         onNavigateBack = { viewModel.handleAction(TagSettingAction.NavigateBack)},
         onToggleEditMode = { viewModel.handleAction(TagSettingAction.ToggleEditMode) },
         onTagClick = { tag -> viewModel.handleAction(TagSettingAction.ToggleTagSelection(tag)) },
@@ -103,6 +103,7 @@ private fun TagSettingContent(
     isEditMode: Boolean,
     isLoading: Boolean,
     selectedTags: Set<String>,
+    errorMessage : String?,
     onNavigateBack: () -> Unit,
     onToggleEditMode: () -> Unit,
     onTagClick: (String) -> Unit,
@@ -165,12 +166,10 @@ private fun TagSettingContent(
 
         if (!isEditMode) {
             var text by remember { mutableStateOf("") }
-            var errorMessage by remember { mutableStateOf<String?>(null) }
             TagInputWithRegister(
                 value = text,
                 onValueChange = {
                     text = it
-                    // TODO: 중복 등 검증/에러 세팅 로직
                 },
                 errorMessage = errorMessage,
                 onClear = { text = "" },
@@ -462,6 +461,7 @@ fun TagInputWithRegister(
             }
         }
         errorMessage?.let {
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = it,
                 color = Error,

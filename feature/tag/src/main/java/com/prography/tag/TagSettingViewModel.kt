@@ -156,7 +156,7 @@ class TagSettingViewModel @Inject constructor(
                     return@launch
                 }
                 currentState.tags.any { it.name == t } -> {
-                    updateState { copy(errorMessage = "이미 있는 태그예요.") }
+                    updateState { copy(errorMessage = "동일한 태그가 이미 존재합니다.") }
                     return@launch
                 }
                 currentState.tagCount >= 30 -> {
@@ -182,6 +182,7 @@ class TagSettingViewModel @Inject constructor(
                 Timber.e(e, "addInputTag failed")
             } finally {
                 hideLoading()
+                showToast("새로운 태그가 등록되었어요")
             }
         }
     }
@@ -229,7 +230,7 @@ class TagSettingViewModel @Inject constructor(
                         )
                     }
                     hideLoading()
-                    showToast("선택된 태그가 삭제되었습니다.")
+                    showToast("태그가 삭제되었어요")
                 }
             } catch (e: Exception) {
                 val errorMessage = "태그 삭제에 실패했습니다: ${e.message}"
