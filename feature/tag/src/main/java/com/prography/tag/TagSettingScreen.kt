@@ -29,6 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.domain.model.TagWithCount
 import com.prography.ui.R
 import com.prography.ui.component.BottomInputButtonVariant
+import com.prography.ui.component.TagAddBottomSheet
+import com.prography.ui.component.TagEditBottomSheet
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.*
@@ -40,11 +42,13 @@ fun TagSettingScreen(
     val viewModel: TagSettingViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
+    var editTarget by remember { mutableStateOf<TagWithCount?>(null) }
+    var showEditSheet by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.loadTags()
     }
 
-    // Convert TagModel to TagWithCount for display
     val tagsWithCount = uiState.tags.map { tagModel ->
         TagWithCount(
             id = tagModel.id?.toInt() ?: 0,
@@ -68,8 +72,28 @@ fun TagSettingScreen(
                 "_SELECTED_" -> viewModel.handleAction(TagSettingAction.DeleteSelectedTags)
             }
         },
-        onTagAdd = { inputTag -> viewModel.handleAction(TagSettingAction.AddInputTag(inputTag)) }
+        onTagAdd = { inputTag -> viewModel.handleAction(TagSettingAction.AddInputTag(inputTag)) },
+        onOpenEdit = { tag ->
+            editTarget = tag
+            showEditSheet = true
+        }
     )
+    // ✅ 수정 시트
+    if (showEditSheet && editTarget != null) {
+        val tgt = editTarget!!
+        // id가 0이면(로컬/임시) 서버 업데이트 불가 → 버튼 비활성화 or 안내
+        val tagId = tgt.id?.toLong() ?: 0L
+
+        TagEditBottomSheet(
+            tagId = tagId,
+            initialText = tgt.tag,
+            onSubmit = { id, newName ->
+                viewModel.handleAction(TagSettingAction.UpdateTag(id, newName))
+                showEditSheet = false
+            },
+            onDismiss = { showEditSheet = false }
+        )
+    }
 }
 
 @Composable
@@ -83,7 +107,8 @@ private fun TagSettingContent(
     onToggleEditMode: () -> Unit,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
-    onTagAdd: (String) -> Unit
+    onTagAdd: (String) -> Unit,
+    onOpenEdit: (TagWithCount) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -169,7 +194,8 @@ private fun TagSettingContent(
                 onTagClick = onTagClick,
                 onDeleteTag = onDeleteTag,
                 onNavigateToTagAdd = onTagAdd,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onEdit = { tag -> onOpenEdit(tag) }
             )
         }
     }
@@ -208,6 +234,7 @@ private fun TagList(
     selectedTags: Set<String>,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
+    onEdit: (TagWithCount) -> Unit,
     onNavigateToTagAdd: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -232,7 +259,8 @@ private fun TagList(
                     isEditMode = isEditMode,
                     checked = selectedTags.contains(tagWithCount.tag),
                     onCheckToggle = onTagClick,
-                    onDeleteTag = onDeleteTag
+                    onDeleteTag = onDeleteTag,
+                    onEdit = onEdit
                 )
             }
         }
@@ -268,7 +296,8 @@ private fun TagListItem(
     isEditMode: Boolean,
     checked: Boolean = false,
     onCheckToggle: (String) -> Unit = {},
-    onDeleteTag: (String) -> Unit = {}
+    onDeleteTag: (String) -> Unit = {},
+    onEdit: (TagWithCount) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -303,7 +332,8 @@ private fun TagListItem(
             Text(
                 text = "수정",
                 style = body01Regular,
-                color = Gray05
+                color = Gray05,
+                modifier = Modifier.clickableWithoutRipple { onEdit(tag) }
             )
         }
     }

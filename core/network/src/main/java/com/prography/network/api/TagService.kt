@@ -21,7 +21,7 @@ interface TagService {
     suspend fun addUserTag(
         @Query("tagName") tagName: String
     ): NetworkState<ApiResponse<TagResponse>>
-    
+
     @PATCH("v1/user-tags")
     suspend fun updateUserTag(
         @Body body: UpdateTagRequest
