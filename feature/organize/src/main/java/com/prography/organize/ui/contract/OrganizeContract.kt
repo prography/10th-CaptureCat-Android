@@ -1,12 +1,13 @@
 package com.prography.organize.ui.contract
 
+import com.prography.domain.model.TagModel
 import com.prography.organize.model.OrganizeScreenshotItem
 
 data class OrganizeState(
     val screenshots: List<OrganizeScreenshotItem> = emptyList(),
     val currentIndex: Int = 0,
     val organizeMode: OrganizeMode = OrganizeMode.BATCH,
-    val availableTags: List<String> = emptyList(),
+    val availableTags: List<TagModel> = emptyList(),
     val isLoading: Boolean = false,
     val showCompletionMessage: Boolean = false
 )

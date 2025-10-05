@@ -7,6 +7,8 @@ class AddRecentTagsUseCase @Inject constructor(
     private val repository: TagRepository
 ) {
     suspend operator fun invoke(tags: List<String>) {
-        repository.addRecentTags(tags)
+        tags.map {
+            repository.addUserTag(it)
+        }
     }
 }

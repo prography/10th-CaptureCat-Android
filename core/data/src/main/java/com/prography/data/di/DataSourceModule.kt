@@ -48,9 +48,10 @@ object DataSourceModule {
     @Provides
     fun provideTagRepository(
         localDataSource: TagLocalDataSource,
-        remoteDataSource: TagRemoteDataSource
+        remoteDataSource: TagRemoteDataSource,
+        userPrefs: UserPreferenceDataStore
     ): TagRepository {
-        return TagRepositoryImpl(localDataSource, remoteDataSource)
+        return TagRepositoryImpl(localDataSource, remoteDataSource, userPrefs)
     }
 
     @Provides

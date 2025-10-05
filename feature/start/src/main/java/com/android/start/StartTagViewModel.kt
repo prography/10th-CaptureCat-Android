@@ -4,10 +4,13 @@ import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.tag.AddRecentTagsUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
 import com.prography.domain.usecase.auth.CompleteTutorialUseCase
+import com.prography.domain.usecase.tag.AddRecentTagUseCase
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,7 +29,7 @@ sealed class StartTagAction {
 
 @HiltViewModel
 class StartTagViewModel @Inject constructor(
-    private val addRecentTagsUseCase: AddRecentTagsUseCase,
+    private val addRecentTagUseCase: AddRecentTagUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
     private val completeTutorialUseCase: CompleteTutorialUseCase
 ) : BaseComposeViewModel<StartTagState, Nothing, StartTagAction>(
@@ -77,19 +80,15 @@ class StartTagViewModel @Inject constructor(
     }
 
     fun saveSelectedTags(tags: List<String>) {
+        if (tags.isEmpty()) return
+
         viewModelScope.launch {
-            try {
-                addRecentTagsUseCase(tags)
-                MixpanelUtil.track(
-                    "click_register_frequent_tag",
-                    mapOf(
-                        "selected_tags" to tags // tags는 List<String>
-                    )
-                )
-                Timber.d("Selected tags saved to recent tags: $tags")
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to save selected tags")
-            }
+            addRecentTagUseCase(tags)
+                .catch { Timber.e(it, "Failed to save selected tags") }
+                .onCompletion {
+                    MixpanelUtil.track("click_register_frequent_tag", mapOf("selected_tags" to tags))
+                    Timber.d("Selected tags saved: $tags")
+                }
         }
     }
 }

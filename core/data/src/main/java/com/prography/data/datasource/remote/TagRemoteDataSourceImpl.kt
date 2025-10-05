@@ -26,6 +26,19 @@ class TagRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun addUserTag(tagName: String): Result<TagModel> {
+        return when (val state = tagService.addUserTag(tagName)) {
+            is NetworkState.Success -> {
+                val resp = state.body.getDataOrNull()
+                if (resp != null) Result.success(TagModel(id = resp.id, name = resp.name))
+                else Result.failure(Exception("응답 데이터가 비어있습니다."))
+            }
+
+            is NetworkState.Failure -> Result.failure(Exception(state.error ?: "유저 태그 조회 실패"))
+            is NetworkState.NetworkError -> Result.failure(state.error)
+            is NetworkState.UnknownError -> Result.failure(state.t ?: Exception(state.errorState))
+        }
+    }
     override suspend fun updateUserTag(tagId: Long, newTagName: String): Result<TagModel> {
         return when (val state = tagService.updateUserTag(
             UpdateTagRequest(

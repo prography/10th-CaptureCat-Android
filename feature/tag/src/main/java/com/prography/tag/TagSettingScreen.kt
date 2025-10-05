@@ -23,12 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
+import com.prography.ui.R
 import com.prography.ui.component.BottomInputButtonVariant
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.clickableWithoutRipple
@@ -36,9 +35,9 @@ import com.prography.ui.theme.*
 
 @Composable
 fun TagSettingScreen(
-    viewModel: TagSettingViewModel = hiltViewModel(),
-    onNavigateToTagAdd: () -> Unit = {}
 ) {
+
+    val viewModel: TagSettingViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -60,6 +59,7 @@ fun TagSettingScreen(
         isEditMode = uiState.isEditMode,
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
+
         onNavigateBack = { viewModel.handleAction(TagSettingAction.NavigateBack)},
         onToggleEditMode = { viewModel.handleAction(TagSettingAction.ToggleEditMode) },
         onTagClick = { tag -> viewModel.handleAction(TagSettingAction.ToggleTagSelection(tag)) },
@@ -68,7 +68,7 @@ fun TagSettingScreen(
                 "_SELECTED_" -> viewModel.handleAction(TagSettingAction.DeleteSelectedTags)
             }
         },
-        onNavigateToTagAdd = onNavigateToTagAdd
+        onTagAdd = { inputTag -> viewModel.handleAction(TagSettingAction.AddInputTag(inputTag)) }
     )
 }
 
@@ -83,7 +83,7 @@ private fun TagSettingContent(
     onToggleEditMode: () -> Unit,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
-    onNavigateToTagAdd: () -> Unit
+    onTagAdd: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -149,7 +149,7 @@ private fun TagSettingContent(
                 },
                 errorMessage = errorMessage,
                 onClear = { text = "" },
-                onRegister = { /* 등록로직 */ },
+                onRegister = { onTagAdd(text) },
                 modifier = Modifier
                     .padding(16.dp)
             )
@@ -168,7 +168,7 @@ private fun TagSettingContent(
                 selectedTags = selectedTags,
                 onTagClick = onTagClick,
                 onDeleteTag = onDeleteTag,
-                onNavigateToTagAdd = onNavigateToTagAdd,
+                onNavigateToTagAdd = onTagAdd,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -208,7 +208,7 @@ private fun TagList(
     selectedTags: Set<String>,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
-    onNavigateToTagAdd: () -> Unit,
+    onNavigateToTagAdd: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listBottomPadding by animateDpAsState(
@@ -363,7 +363,7 @@ fun TagInputWithRegister(
     errorMessage: String? = null,
     onClear: () -> Unit = {},
     onRegister: () -> Unit = {},
-    placeholder: String = stringResource(com.prography.ui.R.string.image_detail_tag_input_placeholder),
+    placeholder: String = stringResource(R.string.image_detail_tag_input_placeholder),
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {

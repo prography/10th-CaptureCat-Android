@@ -18,17 +18,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.prography.domain.model.TagModel
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.components.*
 import com.prography.organize.ui.contract.OrganizeAction
 import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
 import com.prography.ui.theme.Gray03
-import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.subhead02Bold
@@ -124,7 +123,7 @@ fun OrganizeContent(
             contentAlignment = Alignment.BottomCenter
         ) {
             OrganizeBottomControls(
-                availableTags = state.availableTags,
+                availableTags = state.availableTags.map { it.name },
                 selectedTags = getCurrentScreenshotTags(),
                 onTagToggle = { tagText ->
                     val screenshotId = getCurrentScreenshotId()
@@ -304,7 +303,11 @@ fun OrganizeContentPreview() {
         screenshots = mockScreenshots,
         currentIndex = 0,
         organizeMode = OrganizeMode.BATCH,
-        availableTags = listOf("쇼핑", "여행", "음식"),
+        availableTags = listOf(
+            TagModel(0, "쇼핑"),
+            TagModel(0, "여행"),
+            TagModel(0, "음식")
+        ),
         isLoading = false
     )
 

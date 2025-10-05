@@ -2,6 +2,7 @@ package com.prography.tag
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.TagModel
+import com.prography.domain.usecase.tag.AddRecentTagUseCase
 import com.prography.domain.usecase.tag.DeleteUserTagUseCase
 import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.domain.usecase.tag.UpdateUserTagUseCase
@@ -9,12 +10,14 @@ import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import java.io.IOException
 
 data class TagSettingUiState(
+    val inputTag: String? = null,
     val tags: List<TagModel> = emptyList(),
     val tagCount: Int = 0,
     val isEditMode: Boolean = false,
@@ -34,6 +37,7 @@ sealed class TagSettingAction {
     data class ToggleTagSelection(val tag: String) : TagSettingAction()
     object SelectAllTags : TagSettingAction()
     object ClearAllSelections : TagSettingAction()
+    data class AddInputTag(val tag: String) : TagSettingAction()
     object DeleteSelectedTags : TagSettingAction()
     data class UpdateTag(val tagId: Long, val newTagName: String) : TagSettingAction()
     object NavigateBack : TagSettingAction()
@@ -42,6 +46,7 @@ sealed class TagSettingAction {
 @HiltViewModel
 class TagSettingViewModel @Inject constructor(
     private val getUserTagsUseCase: GetUserTagsUseCase,
+    private val addUserTagsUseCase: AddRecentTagUseCase,
     private val deleteUserTagUseCase: DeleteUserTagUseCase,
     private val updateUserTagUseCase: UpdateUserTagUseCase,
     private val navigationHelper: NavigationHelper
@@ -54,6 +59,7 @@ class TagSettingViewModel @Inject constructor(
             is TagSettingAction.ToggleTagSelection -> toggleTagSelection(action.tag)
             is TagSettingAction.SelectAllTags -> selectAllTags()
             is TagSettingAction.ClearAllSelections -> clearAllSelections()
+            is TagSettingAction.AddInputTag -> addInputTag(action.tag)
             is TagSettingAction.DeleteSelectedTags -> deleteSelectedTags()
             is TagSettingAction.UpdateTag -> updateTag(action.tagId, action.newTagName)
             is TagSettingAction.NavigateBack -> navigationHelper.navigate(NavigationEvent.Up)
@@ -136,6 +142,50 @@ class TagSettingViewModel @Inject constructor(
     private fun clearAllSelections() {
         updateState { copy(selectedTags = emptySet()) }
     }
+
+    private fun addInputTag(text: String) {
+        viewModelScope.launch {
+            val t = text.trim()
+
+            // 초기화
+            updateState { copy(errorMessage = null) }
+
+            when {
+                t.isBlank() -> {
+                    updateState { copy(errorMessage = "태그를 입력해 주세요.") }
+                    return@launch
+                }
+                currentState.tags.any { it.name == t } -> {
+                    updateState { copy(errorMessage = "이미 있는 태그예요.") }
+                    return@launch
+                }
+                currentState.tagCount >= 30 -> {
+                    updateState { copy(errorMessage = "최대 30개까지 등록 가능해요.") }
+                    return@launch
+                }
+            }
+
+            showLoading()
+            try {
+                val added = addUserTagsUseCase(t).first()
+                val updated = currentState.tags + added
+                updateState {
+                    copy(
+                        tags = updated,
+                        tagCount = updated.size,
+                        inputTag = "",      // 입력칸 비우기
+                        errorMessage = null // 성공 시 에러 초기화
+                    )
+                }
+            } catch (e: Throwable) {
+                updateState { copy(errorMessage = e.message ?: "등록 실패") }
+                Timber.e(e, "addInputTag failed")
+            } finally {
+                hideLoading()
+            }
+        }
+    }
+
 
     private fun deleteSelectedTags() {
         viewModelScope.launch {
