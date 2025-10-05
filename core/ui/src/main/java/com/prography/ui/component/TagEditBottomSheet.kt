@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,7 +48,11 @@ fun TagEditBottomSheet(
         windowInsets = WindowInsets(0),
         dragHandle = null
     ) {
-        Column(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+        ) {
             Row(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 28.dp)
@@ -56,7 +61,7 @@ fun TagEditBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "수정" /*stringResource(com.prography.ui.R.string.common_edit)*/, // "수정"
+                    text = "태그 수정" /*stringResource(com.prography.ui.R.string.common_edit)*/, // "수정"
                     style = headline03Bold,
                     color = Text01
                 )
