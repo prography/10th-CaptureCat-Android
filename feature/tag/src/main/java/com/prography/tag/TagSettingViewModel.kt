@@ -225,6 +225,7 @@ class TagSettingViewModel @Inject constructor(
                             tags = updatedTags,
                             tagCount = updatedTags.size,
                             selectedTags = emptySet(),
+                            isEditMode = false,
                             isLoading = false,
                             errorMessage = null
                         )
