@@ -27,7 +27,6 @@ import com.prography.onboarding.navigation.OnboardingRoute
 import com.prography.organize.navigation.OrganizeRoute
 import com.prography.setting.route.SettingRoute
 import com.prography.setting.route.WithdrawRoute
-import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.upload.UploadRoute
 import com.prography.util.MixpanelUtil
 import com.prography.util.permission.ScreenshotPermissionGate
@@ -147,9 +146,6 @@ fun AppNavGraph(
                 currentIndex = imageDetail.currentIndex,
                 entryPoint = imageDetail.entryPoint
             )
-        }
-        composable<AppRoute.Favorite> {
-            FavoriteRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.SettingRoute.Setting> {
             SettingRoute()

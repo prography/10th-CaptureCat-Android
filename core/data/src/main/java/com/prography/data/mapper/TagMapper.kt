@@ -5,7 +5,7 @@ import com.prography.network.entity.TagResponse
 
 fun TagResponse.toTagModel(): TagModel {
     return TagModel(
-        id = this.id.toString(),
+        id = this.id.toLong(),
         name = this.name
     )
 }
@@ -16,7 +16,7 @@ fun List<TagResponse>.toTagModels(): List<TagModel> {
 
 fun TagModel.toTagResponse(): TagResponse {
     return TagResponse(
-        id = this.id.toIntOrNull() ?: 0,
+        id = this.id ?: 0,
         name = this.name
     )
 }

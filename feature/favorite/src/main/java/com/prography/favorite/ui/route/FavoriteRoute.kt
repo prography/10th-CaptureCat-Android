@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun FavoriteRoute(
-    navigationHelper: NavigationHelper,
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()

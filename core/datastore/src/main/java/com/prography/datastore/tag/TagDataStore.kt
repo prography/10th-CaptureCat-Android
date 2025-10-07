@@ -29,22 +29,6 @@ class TagDataStore(private val context: Context) {
             }
         }
 
-    suspend fun addRecentTags(tags: List<String>) {
-        dataStore.edit { preferences ->
-            val currentTagsString = preferences[TagPreferenceKeys.RECENT_TAGS] ?: ""
-            val currentTags = if (currentTagsString.isBlank()) {
-                emptyList()
-            } else {
-                currentTagsString.split(separator).filter { it.isNotBlank() }
-            }
-
-            // 새로운 태그들을 앞에 추가하고 중복 제거
-            val updatedTags = (tags + currentTags).distinct()
-
-            preferences[TagPreferenceKeys.RECENT_TAGS] = updatedTags.joinToString(separator)
-        }
-    }
-
     suspend fun addRecentTag(tag: String) {
         dataStore.edit { preferences ->
             val currentTagsString = preferences[TagPreferenceKeys.RECENT_TAGS] ?: ""

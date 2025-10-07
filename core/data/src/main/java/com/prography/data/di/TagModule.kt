@@ -2,6 +2,8 @@ package com.prography.data.di
 
 import com.prography.data.datasource.local.TagLocalDataSource
 import com.prography.data.datasource.local.TagLocalDataSourceImpl
+import com.prography.data.datasource.remote.TagRemoteDataSource
+import com.prography.data.datasource.remote.TagRemoteDataSourceImpl
 import com.prography.data.repository.TagRepositoryImpl
 import com.prography.domain.repository.TagRepository
 import dagger.Binds
@@ -20,9 +22,4 @@ abstract class TagModule {
         tagLocalDataSourceImpl: TagLocalDataSourceImpl
     ): TagLocalDataSource
 
-    @Binds
-    @Singleton
-    abstract fun bindTagRepository(
-        tagRepositoryImpl: TagRepositoryImpl
-    ): TagRepository
 }

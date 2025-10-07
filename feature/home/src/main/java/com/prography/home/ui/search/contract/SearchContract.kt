@@ -1,6 +1,7 @@
 package com.prography.home.ui.search.contract
 
 import com.prography.domain.model.AutocompleteTagModel
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
 
@@ -12,7 +13,7 @@ data class SearchState(
     val popularTags: List<TagWithCount> = emptyList(),
     val relatedTags: List<String> = emptyList(),
     val searchResults: List<UiScreenshotModel> = emptyList(),
-    val autocompleteResults: List<AutocompleteTagModel> = emptyList(),
+    val autocompleteResults: List<TagModel> = emptyList(),
     val showAutocomplete: Boolean = false,
     val isLoading: Boolean = false,
     val hasSearched: Boolean = false

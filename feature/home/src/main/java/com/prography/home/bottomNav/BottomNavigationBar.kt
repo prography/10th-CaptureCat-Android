@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,9 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.prography.ui.theme.Gray06
-import com.prography.ui.theme.Gray09
-import com.prography.ui.theme.caption01SemiBold
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -32,7 +28,7 @@ fun BottomNavigationBar(
     navController: NavHostController
 ) {
     val items = listOf(
-        BottomNavItem.Storage,
+        BottomNavItem.Favorite,
         BottomNavItem.Home,
         BottomNavItem.Search
     )

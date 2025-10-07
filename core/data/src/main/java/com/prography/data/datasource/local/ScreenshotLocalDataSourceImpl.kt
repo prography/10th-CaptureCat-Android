@@ -76,7 +76,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
             // Convert tag names to TagModel objects
             val newTags = tagNames.map { tagName ->
                 TagModel(
-                    id = UUID.randomUUID().toString(),
+                    id = System.currentTimeMillis(),
                     name = tagName
                 )
             }
@@ -190,14 +190,14 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
     override suspend fun getSearchAutoComplete(
         keyword: String,
         size: Int
-    ): List<AutocompleteTagModel> {
+    ): List<TagModel> {
         val screenshots = getScreenshots(null).firstOrNull() ?: emptyList()
-        val tags = mutableListOf<AutocompleteTagModel>()
+        val tags = mutableListOf<TagModel>()
 
         screenshots.forEach { screenshot ->
             screenshot.tags.forEach { tag ->
                 if (tag.name.contains(keyword, ignoreCase = true)) {
-                    tags.add(AutocompleteTagModel(id = tag.id.toIntOrNull() ?: 0, name = tag.name))
+                    tags.add(TagModel(id = tag.id, name = tag.name))
                 }
             }
         }

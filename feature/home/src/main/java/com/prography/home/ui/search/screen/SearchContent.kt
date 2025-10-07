@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.prography.domain.model.AutocompleteTagModel
+import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.home.ui.search.contract.*
@@ -140,8 +141,8 @@ fun SearchContent(
 
 @Composable
 fun AutocompleteTagItem(
-    tag: AutocompleteTagModel,
-    onTagClick: (AutocompleteTagModel) -> Unit,
+    tag: TagModel,
+    onTagClick: (TagModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -210,34 +211,6 @@ fun SearchContentInitialPreview() {
         ),
         showAutocomplete = false,
         autocompleteResults = emptyList(),
-        isLoading = false
-    )
-
-    PrographyTheme {
-        SearchContent(
-            state = sampleState,
-            onAction = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchContentAutocompletePreview() {
-    val sampleState = SearchState(
-        searchQuery = "자",
-        popularTags = listOf(
-            TagWithCount(0, "쇼핑", 25),
-            TagWithCount(0, "여행", 18)
-        ),
-        showAutocomplete = true,
-        autocompleteResults = listOf(
-            AutocompleteTagModel(1, "자바"),
-            AutocompleteTagModel(2, "자바스크립트"),
-            AutocompleteTagModel(3, "자동차"),
-            AutocompleteTagModel(4, "자료구조"),
-            AutocompleteTagModel(5, "자연")
-        ),
         isLoading = false
     )
 

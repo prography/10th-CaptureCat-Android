@@ -9,64 +9,96 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.domain.model.TagWithCount
+import com.prography.ui.R
 import com.prography.ui.component.BottomInputButtonVariant
+import com.prography.ui.component.TagAddBottomSheet
+import com.prography.ui.component.TagEditBottomSheet
 import com.prography.ui.component.UiBottomInputButton
-import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.*
-import kotlinx.coroutines.launch
 
 @Composable
 fun TagSettingScreen(
-    viewModel: TagSettingViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit = {},
-    onNavigateToTagAdd: () -> Unit = {}
 ) {
+
+    val viewModel: TagSettingViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+
+    var editTarget by remember { mutableStateOf<TagWithCount?>(null) }
+    var showEditSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadTags()
     }
 
+    val tagsWithCount = uiState.tags.map { tagModel ->
+        TagWithCount(
+            id = tagModel.id?.toInt() ?: 0,
+            tag = tagModel.name,
+            count = 0 // 로컬에서는 카운트 정보가 없음
+        )
+    }
+
     TagSettingContent(
-        tags = uiState.tags,
+        tags = tagsWithCount,
         tagCount = uiState.tagCount,
         isEditMode = uiState.isEditMode,
         isLoading = uiState.isLoading,
         selectedTags = uiState.selectedTags,
-        onNavigateBack = onNavigateBack,
-        onToggleEditMode = viewModel::toggleEditMode,
-        onTagClick = viewModel::toggleTagSelection,
+        errorMessage = uiState.errorMessage,
+        onNavigateBack = { viewModel.handleAction(TagSettingAction.NavigateBack)},
+        onToggleEditMode = { viewModel.handleAction(TagSettingAction.ToggleEditMode) },
+        onTagClick = { tag -> viewModel.handleAction(TagSettingAction.ToggleTagSelection(tag)) },
         onDeleteTag = { tag ->
-            if (tag == "") viewModel.deleteAllTags()
-            else if (tag == "_SELECTED_") viewModel.deleteSelectedTags()
-            // else viewModel.deleteTag(tag)
+            when (tag) {
+                "_SELECTED_" -> viewModel.handleAction(TagSettingAction.DeleteSelectedTags)
+            }
         },
-        onNavigateToTagAdd = onNavigateToTagAdd
+        onTagAdd = { inputTag -> viewModel.handleAction(TagSettingAction.AddInputTag(inputTag)) },
+        onOpenEdit = { tag ->
+            editTarget = tag
+            showEditSheet = true
+        }
     )
+    // ✅ 수정 시트
+    if (showEditSheet && editTarget != null) {
+        val tgt = editTarget!!
+        // id가 0이면(로컬/임시) 서버 업데이트 불가 → 버튼 비활성화 or 안내
+        val tagId = tgt.id?.toLong() ?: 0L
+
+        TagEditBottomSheet(
+            tagId = tagId,
+            initialText = tgt.tag,
+            onSubmit = { id, newName ->
+                viewModel.handleAction(TagSettingAction.UpdateTag(id, newName))
+                showEditSheet = false
+            },
+            onDismiss = { showEditSheet = false }
+        )
+    }
 }
 
 @Composable
@@ -76,11 +108,13 @@ private fun TagSettingContent(
     isEditMode: Boolean,
     isLoading: Boolean,
     selectedTags: Set<String>,
+    errorMessage : String?,
     onNavigateBack: () -> Unit,
     onToggleEditMode: () -> Unit,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
-    onNavigateToTagAdd: () -> Unit
+    onTagAdd: (String) -> Unit,
+    onOpenEdit: (TagWithCount) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -137,16 +171,14 @@ private fun TagSettingContent(
 
         if (!isEditMode) {
             var text by remember { mutableStateOf("") }
-            var errorMessage by remember { mutableStateOf<String?>(null) }
             TagInputWithRegister(
                 value = text,
                 onValueChange = {
                     text = it
-                    // TODO: 중복 등 검증/에러 세팅 로직
                 },
                 errorMessage = errorMessage,
                 onClear = { text = "" },
-                onRegister = { /* 등록로직 */ },
+                onRegister = { onTagAdd(text) },
                 modifier = Modifier
                     .padding(16.dp)
             )
@@ -165,8 +197,9 @@ private fun TagSettingContent(
                 selectedTags = selectedTags,
                 onTagClick = onTagClick,
                 onDeleteTag = onDeleteTag,
-                onNavigateToTagAdd = onNavigateToTagAdd,
-                modifier = Modifier.weight(1f)
+                onNavigateToTagAdd = onTagAdd,
+                modifier = Modifier.weight(1f),
+                onEdit = { tag -> onOpenEdit(tag) }
             )
         }
     }
@@ -205,7 +238,8 @@ private fun TagList(
     selectedTags: Set<String>,
     onTagClick: (String) -> Unit,
     onDeleteTag: (String) -> Unit,
-    onNavigateToTagAdd: () -> Unit,
+    onEdit: (TagWithCount) -> Unit,
+    onNavigateToTagAdd: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listBottomPadding by animateDpAsState(
@@ -229,7 +263,8 @@ private fun TagList(
                     isEditMode = isEditMode,
                     checked = selectedTags.contains(tagWithCount.tag),
                     onCheckToggle = onTagClick,
-                    onDeleteTag = onDeleteTag
+                    onDeleteTag = onDeleteTag,
+                    onEdit = onEdit
                 )
             }
         }
@@ -265,7 +300,8 @@ private fun TagListItem(
     isEditMode: Boolean,
     checked: Boolean = false,
     onCheckToggle: (String) -> Unit = {},
-    onDeleteTag: (String) -> Unit = {}
+    onDeleteTag: (String) -> Unit = {},
+    onEdit: (TagWithCount) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -279,29 +315,36 @@ private fun TagListItem(
     ) {
         if (isEditMode) {
             Icon(
-                painter = painterResource(id = if (checked) com.prography.ui.R.drawable.ic_check_box_able else com.prography.ui.R.drawable.ic_check_box_disable),
+                painter = painterResource(
+                    id = if (checked) R.drawable.ic_check_box_able
+                    else R.drawable.ic_check_box_disable
+                ),
                 contentDescription = "선택",
                 tint = Color.Unspecified,
                 modifier = Modifier
-                    .size(22.dp)
-                    .clickableWithoutRipple { onCheckToggle(tag.tag) }
+                    .size(24.dp)
+                    .align(Alignment.CenterVertically)
             )
-            Spacer(modifier = Modifier.width(6.dp))
+            Spacer(Modifier.width(8.dp))
         }
+
         Text(
             text = tag.tag,
-            style = body01Regular.copy(
-                color = Text01
-            ),
+            style = body01Regular.copy(color = Text01),
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 26.dp)
+                .height(26.dp)
+                .wrapContentHeight(Alignment.CenterVertically)
         )
+
         if (!isEditMode) {
             Text(
                 text = "수정",
                 style = body01Regular,
-                color = Gray05
+                color = Gray05,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .clickableWithoutRipple { onEdit(tag) }
             )
         }
     }
@@ -361,10 +404,12 @@ fun TagInputWithRegister(
     errorMessage: String? = null,
     onClear: () -> Unit = {},
     onRegister: () -> Unit = {},
-    placeholder: String = stringResource(com.prography.ui.R.string.image_detail_tag_input_placeholder),
+    placeholder: String = stringResource(R.string.image_detail_tag_input_placeholder),
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     val isError = errorMessage != null
 
     Column(modifier = modifier) {
@@ -405,7 +450,15 @@ fun TagInputWithRegister(
                             }
                             innerTextField()
                         }
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus(force = true)
+                            keyboard?.hide()
+                            onRegister()
+                        }
+                    ),
                 )
                 if (value.isNotEmpty()) {
                     Icon(
@@ -413,23 +466,26 @@ fun TagInputWithRegister(
                         contentDescription = "Clear",
                         tint = Secondary,
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(horizontal = 6.dp)
                             .size(20.dp)
                             .clickableWithoutRipple { onClear() }
                     )
                 }
                 Text(
                     text = "등록",
-                    color = Text03,
+                    color = if (isError) Gray04 else Text03,
                     style = body02Regular,
                     modifier = Modifier
                         .clickableWithoutRipple(enabled = value.isNotBlank() && !isError) {
+                            focusManager.clearFocus(force = true)
+                            keyboard?.hide()
                             onRegister()
                         }
                 )
             }
         }
         errorMessage?.let {
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = it,
                 color = Error,
@@ -437,67 +493,4 @@ fun TagInputWithRegister(
             )
         }
     }
-}
-
-// Preview
-@Preview(showBackground = true)
-@Composable
-fun TagSettingContentPreview() {
-    TagSettingContent(
-        tags = listOf(
-            TagWithCount(0, "일상", 15),
-            TagWithCount(0, "추가된 태그", 8),
-            TagWithCount(0, "추가된 태그", 5),
-            TagWithCount(0, "추가된 태그", 3),
-            TagWithCount(0, "추가된 태그", 2)
-        ),
-        tagCount = 5,
-        isEditMode = false,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TagSettingEditModePreview() {
-    TagSettingContent(
-        tags = listOf(
-            TagWithCount(0, "일상", 15),
-            TagWithCount(0, "추가된 태그", 8),
-            TagWithCount(0, "추가된 태그", 5),
-            TagWithCount(0, "추가된 태그", 3)
-        ),
-        tagCount = 4,
-        isEditMode = true,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TagSettingEmptyPreview() {
-    TagSettingContent(
-        tags = emptyList(),
-        tagCount = 0,
-        isEditMode = false,
-        isLoading = false,
-        selectedTags = setOf(),
-        onNavigateBack = {},
-        onToggleEditMode = {},
-        onTagClick = {},
-        onDeleteTag = {},
-        onNavigateToTagAdd = {}
-    )
 }

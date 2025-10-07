@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -18,11 +16,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,10 +39,10 @@ import androidx.compose.ui.unit.dp
 import com.prography.ui.R
 import com.prography.ui.theme.Error
 import com.prography.ui.theme.Gray01
-import com.prography.ui.theme.Gray02
 import com.prography.ui.theme.Gray03
 import com.prography.ui.theme.Gray06
-import com.prography.ui.theme.Gray09
+import com.prography.ui.theme.Gray10
+import com.prography.ui.theme.PrimaryLow
 import com.prography.ui.theme.Secondary
 import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
@@ -84,50 +85,57 @@ fun TagInputField(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BasicTextField(
-                    value = value,
-                    onValueChange = onValueChange,
-                    singleLine = true,
-                    enabled = enabled,
-                    textStyle = body02Regular.copy(
-                        color = Text02
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (enabled && value.isNotBlank()) {
-                                onDone()
-                            }
-                        }
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .heightIn(min = 26.dp),
-                    decorationBox = { innerTextField ->
-                        Box(contentAlignment = Alignment.CenterStart) {
-                            if (value.isEmpty()) {
-                                Text(
-                                    text = placeholder,
-                                    color = if (enabled) Text03 else Gray06,
-                                    maxLines = 1,
-                                    style = body02Regular
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
+                val customTextSelectionColors = TextSelectionColors(
+                    handleColor = Gray10,
+                    backgroundColor = PrimaryLow
                 )
 
-                if (value.isNotEmpty()) {
-                    Icon(
-                        painter = painterResource(id = com.prography.ui.R.drawable.ic_text_field_delete),
-                        contentDescription = "Clear",
-                        tint = Secondary,
+                CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+                    BasicTextField(
+                        value = value,
+                        onValueChange = onValueChange,
+                        singleLine = true,
+                        enabled = enabled,
+                        textStyle = body02Regular.copy(
+                            color = Text02
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (enabled && value.isNotBlank()) {
+                                    onDone()
+                                }
+                            }
+                        ),
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .size(20.dp)
-                            .clickableWithoutRipple { onClear() }
+                            .weight(1f)
+                            .heightIn(min = 26.dp),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.CenterStart) {
+                                if (value.isEmpty()) {
+                                    Text(
+                                        text = placeholder,
+                                        color = if (enabled) Text03 else Gray06,
+                                        maxLines = 1,
+                                        style = body02Regular
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
                     )
+
+                    if (value.isNotEmpty()) {
+                        Icon(
+                            painter = painterResource(id = com.prography.ui.R.drawable.ic_text_field_delete),
+                            contentDescription = "Clear",
+                            tint = Secondary,
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                                .size(20.dp)
+                                .clickableWithoutRipple { onClear() }
+                        )
+                    }
                 }
             }
         }

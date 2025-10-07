@@ -205,7 +205,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         return when (networkState) {
             is NetworkState.Success -> {
                 val tagModels = networkState.body.data?.map { response ->
-                    TagModel(id = response.id.toString(), name = response.name)
+                    TagModel(id = response.id.toLong(), name = response.name)
                 } ?: emptyList()
                 Result.success(tagModels)
             }
@@ -494,14 +494,14 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
     override suspend fun getSearchAutoComplete(
         keyword: String,
         size: Int
-    ): Result<List<AutocompleteTagModel>> {
+    ): Result<List<TagModel>> {
         Timber.d("Calling photoService.getSearchAutoComplete(keyword=$keyword, size=$size)")
 
         return when (val networkState = photoService.getSearchAutoComplete(keyword, size)) {
             is NetworkState.Success -> {
                 Timber.d("Autocomplete API Response: ${networkState.body}")
                 val autocompleteTags = networkState.body.data?.map { tagResponse ->
-                    AutocompleteTagModel(
+                    TagModel(
                         id = tagResponse.id,
                         name = tagResponse.name
                     )

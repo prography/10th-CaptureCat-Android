@@ -22,7 +22,6 @@ import java.util.*
 import javax.inject.Inject
 import com.prography.ui.common.ToastType
 import com.prography.domain.model.TagModel
-import java.util.UUID
 import android.provider.MediaStore
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -178,7 +177,7 @@ class OrganizeViewModel @Inject constructor(
         } else if (currentTags.size >= 4) {
             showToast("태그는 최대 4개까지 지정할 수 있어요.", ToastType.Default)
         } else {
-            val newTagModel = TagModel(UUID.randomUUID().toString(), tagText)
+            val newTagModel = TagModel(System.currentTimeMillis(), tagText)
             updateState {
                 val updatedScreenshots = when (organizeMode) {
                     OrganizeMode.BATCH -> {
@@ -200,20 +199,57 @@ class OrganizeViewModel @Inject constructor(
         }
     }
 
+
+    private fun canAttach(sc: OrganizeScreenshotItem, name: String): Boolean =
+        sc.tags.size < 4 && sc.tags.none { it.name.equals(name, ignoreCase = true) }
+
     private fun addNewTagToScreenshot(screenshotId: String, tagText: String) {
-        updateState {
-            val newAvailableTags = if (!availableTags.contains(tagText)) {
-                listOf(tagText) + availableTags
-            } else availableTags
-            copy(availableTags = newAvailableTags)
-        }
-        toggleScreenshotTag(screenshotId, tagText)
+        val t = tagText.trim()
+        if (t.isEmpty()) { showToast("태그를 입력해 주세요."); return }
+
         viewModelScope.launch {
-            try {
-                addRecentTagUseCase(tagText)
-            } catch (_: Exception) { }
+            showLoading()
+            runCatching {
+                // 서버/레포 성공 시 TagModel 반환 (Flow<TagModel>의 첫 값)
+                addRecentTagUseCase(t).first()
+            }.onSuccess { saved ->
+                // 1) availableTags 반영 (기존 동일 name 있으면 치환, 없으면 맨 앞 추가)
+                updateState {
+                    val newAvailable = if (availableTags.any { it.name.equals(saved.name, true) }) {
+                        availableTags.map { if (it.name.equals(saved.name, true)) saved else it }
+                            .distinctBy { it.name.lowercase() }
+                    } else listOf(saved) + availableTags
+
+                    // 2) 스크린샷들에 실제 태그 부착 (mode에 따라 대상 달라짐)
+                    val newScreenshots = when (organizeMode) {
+                        OrganizeMode.BATCH -> {
+                            screenshots.map { sc ->
+                                if (canAttach(sc, saved.name)) sc.copy(tags = sc.tags + saved) else sc
+                            }
+                        }
+                        OrganizeMode.SINGLE -> {
+                            screenshots.map { sc ->
+                                if (sc.id == screenshotId && canAttach(sc, saved.name))
+                                    sc.copy(tags = sc.tags + saved)
+                                else sc
+                            }
+                        }
+                    }
+
+                    copy(availableTags = newAvailable, screenshots = newScreenshots)
+                }
+
+                // 필요 시 트래킹
+                // MixpanelUtil.track("create_tag", mapOf("tag" to saved.name))
+
+            }.onFailure { e ->
+                Timber.e(e, "Failed to persist recent tag")
+                showToast("태그 저장 실패: ${e.message ?: ""}")
+            }
+            hideLoading()
         }
     }
+
 
     private fun saveScreenshots() {
         val screenshotsToSave = currentState.screenshots
@@ -265,9 +301,11 @@ class OrganizeViewModel @Inject constructor(
         }
     }
 
-    private fun getAvailableTags(): List<String> {
+    private fun getAvailableTags(): List<TagModel> {
         return listOf(
-            "쇼핑", "직무 관련", "레퍼런스"
+            TagModel(0, "쇼핑"),
+            TagModel(0,"직무 관련"),
+            TagModel(0,"레퍼런스")
         )
     }
 
