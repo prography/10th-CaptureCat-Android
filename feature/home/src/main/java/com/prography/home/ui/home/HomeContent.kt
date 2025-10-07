@@ -1,5 +1,14 @@
 package com.prography.home.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,13 +46,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
 import com.prography.ui.theme.Divider
+import com.prography.ui.theme.Gray02
+import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
+import com.prography.ui.theme.body02Regular
+import com.prography.ui.theme.subhead01Bold
 import com.prography.ui.theme.subhead02Bold
 
 @Composable
@@ -349,7 +368,7 @@ fun TagChip(
         modifier = modifier
             .width(IntrinsicSize.Max)
             .padding(horizontal = 8.dp)
-    ){
+    ) {
         Text(
             text = text,
             modifier = modifier
@@ -361,6 +380,143 @@ fun TagChip(
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             color = if (isSelected) Primary else Color.Transparent,
-            thickness = 3.dp)
+            thickness = 3.dp
+        )
+    }
+}
+
+@Composable
+fun CaptureCatFab(
+    onUploadClick: () -> Unit,
+    onOrganizeClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val rotation by animateFloatAsState(
+        targetValue = if (expanded) 45f else 0f,
+        animationSpec = tween(250, easing = FastOutSlowInEasing),
+        label = "rotation"
+    )
+    val bgColor by animateColorAsState(
+        targetValue = if (expanded) Color.White else Color(0xFFFF6600),
+        animationSpec = tween(250),
+        label = "bgColor"
+    )
+    val iconColor by animateColorAsState(
+        targetValue = if (expanded) Color(0xFFFF6600) else Color.White,
+        animationSpec = tween(250),
+        label = "iconColor"
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        // 🔹 배경 dim
+        AnimatedVisibility(
+            visible = expanded,
+            enter = fadeIn(tween(200)),
+            exit = fadeOut(tween(200))
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .clickableWithoutRipple { expanded = false }
+            )
+        }
+
+        // 🔹 메뉴 (한 박스로)
+        AnimatedVisibility(
+            visible = expanded,
+            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut()
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 20.dp, bottom = 82.dp)
+                    .shadow(
+                        elevation = 6.dp,
+                        spotColor = Color(0x1A000000),
+                        ambientColor = Color(0x1A000000),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .background(Color.White, RoundedCornerShape(12.dp))
+                    .width(IntrinsicSize.Max)
+                    .padding(top = 12.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                FabMenuItem(
+                    iconRes = R.drawable.ic_fab_upload,
+                    text = "캡처 업로드",
+                    onClick = {
+                        expanded = false
+                        onUploadClick()
+                    }
+                )
+                FabMenuItem(
+                    iconRes = R.drawable.ic_fab_delete,
+                    text = "캡처 정리",
+                    onClick = {
+                        expanded = false
+                        onOrganizeClick()
+                    }
+                )
+            }
+        }
+
+        // 🔹 메인 FAB
+        Box(
+            modifier = Modifier
+                .padding(end = 20.dp, bottom = 20.dp)
+                .size(50.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    spotColor = Color(0x1A000000),
+                    ambientColor = Color(0x1A000000),
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .background(bgColor, RoundedCornerShape(25.dp))
+                .clickableWithoutRipple { expanded = !expanded },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_fab_button),
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.graphicsLayer { rotationZ = rotation }
+            )
+        }
+    }
+}
+
+@Composable
+private fun FabMenuItem(
+    iconRes: Int,
+    text: String,
+    onClick: () -> Unit,
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .widthIn(min = 139.dp)
+                .clickableWithoutRipple { onClick() }
+                .padding(top = 16.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = text,
+                tint = Text02,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(15.dp))
+            Text(
+                text = text,
+                color = Text02,
+                style = subhead01Bold
+            )
+        }
     }
 }
