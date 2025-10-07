@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,18 +16,24 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.headline03Bold
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,11 +43,20 @@ fun TagEditBottomSheet(
     onSubmit: (Long, String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var text by remember { mutableStateOf(initialText) }
 
+    // ⬇️ 키보드/포커스 컨트롤
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            // 닫힐 때도 키보드/포커스 정리
+            keyboard?.hide()
+            onDismiss()
+        },
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         containerColor = Color.White,
@@ -52,6 +68,7 @@ fun TagEditBottomSheet(
             Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
+                .imePadding()
         ) {
             Row(
                 modifier = Modifier
@@ -61,7 +78,7 @@ fun TagEditBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "태그 수정" /*stringResource(com.prography.ui.R.string.common_edit)*/, // "수정"
+                    text = "태그 수정",
                     style = headline03Bold,
                     color = Text01
                 )
@@ -71,25 +88,39 @@ fun TagEditBottomSheet(
                     tint = Text01,
                     modifier = Modifier
                         .size(24.dp)
-                        .clickableWithoutRipple { onDismiss() }
+                        .clickableWithoutRipple {
+                            focusManager.clearFocus()
+                            keyboard?.hide()
+                            onDismiss()
+                        }
                 )
             }
 
+            // 👉 TagInputField 안에 BasicTextField를 쓰고 있으니 focusRequester만 걸어주면 됨
             TagInputField(
                 value = text,
                 onValueChange = { text = it },
                 onClear = { text = "" },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .focusRequester(focusRequester)
                     .padding(top = 20.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
             )
 
             UiBottomInputButton(
-                text = stringResource(com.prography.ui.R.string.common_complete), // "완료"
+                text = stringResource(com.prography.ui.R.string.common_complete),
                 enabled = text.isNotBlank() && text != initialText,
-                onClick = { if (text.isNotBlank()) onSubmit(tagId, text.trim()) },
+                onClick = {
+                    val trimmed = text.trim()
+                    if (trimmed.isNotEmpty()) {
+                        onSubmit(tagId, trimmed)
+                        focusManager.clearFocus()
+                        keyboard?.hide()
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
     }
 }
+
