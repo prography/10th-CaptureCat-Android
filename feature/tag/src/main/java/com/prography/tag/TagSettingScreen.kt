@@ -310,29 +310,36 @@ private fun TagListItem(
     ) {
         if (isEditMode) {
             Icon(
-                painter = painterResource(id = if (checked) com.prography.ui.R.drawable.ic_check_box_able else com.prography.ui.R.drawable.ic_check_box_disable),
+                painter = painterResource(
+                    id = if (checked) R.drawable.ic_check_box_able
+                    else R.drawable.ic_check_box_disable
+                ),
                 contentDescription = "선택",
                 tint = Color.Unspecified,
                 modifier = Modifier
-                    .size(22.dp)
-                    .clickableWithoutRipple { onCheckToggle(tag.tag) }
+                    .size(24.dp)
+                    .align(Alignment.CenterVertically)
             )
+            Spacer(Modifier.width(8.dp))
         }
+
         Text(
             text = tag.tag,
-            style = body01Regular.copy(
-                color = Text01
-            ),
+            style = body01Regular.copy(color = Text01),
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 26.dp)
+                .height(26.dp)
+                .wrapContentHeight(Alignment.CenterVertically)
         )
+
         if (!isEditMode) {
             Text(
                 text = "수정",
                 style = body01Regular,
                 color = Gray05,
-                modifier = Modifier.clickableWithoutRipple { onEdit(tag) }
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .clickableWithoutRipple { onEdit(tag) }
             )
         }
     }
