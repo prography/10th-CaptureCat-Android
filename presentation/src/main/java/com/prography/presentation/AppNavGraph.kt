@@ -1,13 +1,6 @@
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.android.start.StartRoute
-import com.android.start.ScreenshotItem
 import com.prography.auth.route.navigation.LoginRoute
 import com.prography.home.route.MainRoute
 import com.prography.imageDetail.ui.route.ImageDetailRoute
@@ -34,8 +26,8 @@ import kotlinx.coroutines.flow.collectLatest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import com.prography.home.ui.storage.screen.SelectPictureScreen
 import com.prography.tag.navigation.TagSettingRoute
-import com.prography.ui.component.UiBasicDialog
 
 @Composable
 fun AppNavGraph(
@@ -129,6 +121,11 @@ fun AppNavGraph(
         composable<AppRoute.MyPage> {
             SettingRoute()
         }
+        composable<AppRoute.Storage> { backStackEntry ->
+            val storage = backStackEntry.toRoute<AppRoute.Storage>()
+            SelectPictureScreen(storage.mode)
+        }
+
         composable<AppRoute.Organize> { backStackEntry ->
             val organize = backStackEntry.toRoute<AppRoute.Organize>()
             OrganizeRoute(

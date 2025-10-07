@@ -61,7 +61,7 @@
     <string name="login_message">현재 게스트 모드로 이용 중이에요.\n게스트 모드에서는 최대 10장까지만 저장할 수 있어요.\n로그인하시겠습니까?</string>
     <!-- HomeContent -->
     <string name="home_no_screenshot_title">아직 스크린샷이 없어요.</string>
-    <string name="home_no_screenshot_info">임시보관함에서 스크린샷을 저장할 수 있어요!</string>
+    <string name="home_no_screenshot_info">이미지를 업로드하면\n캡처캣에서 관리할 수 있어요!</string>
     <string name="home_go_to_storage">임시보관함 가기</string>
     <string name="home_loading_failed">더 불러오기 실패</string>
 
@@ -99,11 +99,11 @@
     <string name="organize_delete_confirmation">삭제할래요</string>
 
     <!-- ScreenshotOrganizeContent -->
-    <string name="storage_title">임시보관함</string>
-    <string name="storage_count_info">%d개의 스크린샷이 있어요</string>
+    <string name="storage_upload_title">모든 캡처</string>
+    <string name="storage_delete_title">캡처 정리</string>
     <string name="storage_login_required">로그인 후 이용하기</string>
     <string name="storage_delete_select_message">삭제할 이미지를 선택해주세요.</string>
-    <string name="storage_selection_count">%d/20</string>
+    <string name="storage_selection_count">업로드 %d/20</string>
 
     <!-- StartChooseScreen -->
     <string name="start_choose_title">시작하기 전에\n%d장의 스크린샷이 있어요</string>

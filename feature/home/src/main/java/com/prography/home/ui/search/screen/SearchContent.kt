@@ -113,9 +113,7 @@ fun SearchContent(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     UiEmptyState(
                         title = stringResource(id = UiR.string.empty_search_result_title),
-                        info = stringResource(id = UiR.string.empty_search_result_info),
-                        buttonText = "",
-                        onClick = { }
+                        info = stringResource(id = UiR.string.empty_search_result_info)
                     )
                 }
             }

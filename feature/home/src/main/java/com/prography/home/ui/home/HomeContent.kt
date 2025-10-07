@@ -136,9 +136,7 @@ fun HomeContent(
                 ) {
                     UiEmptyState(
                         title = stringResource(R.string.home_no_screenshot_title),
-                        info = stringResource(R.string.home_no_screenshot_info),
-                        buttonText = stringResource(R.string.home_go_to_storage),
-                        onClick = { onAction(HomeAction.NavigateToStorage) }
+                        info = stringResource(R.string.home_no_screenshot_info)
                     )
                 }
             }

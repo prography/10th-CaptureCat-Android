@@ -5,31 +5,34 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.util.permission.ScreenshotPermissionGate
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.prography.navigation.StorageMode
 
 @Composable
-fun ScreenshotGalleryScreen(
-    onNavigateUp: () -> Unit,
-    screenshotViewModel: ScreenshotViewModel
+fun SelectPictureScreen(
+    mode: StorageMode
 ) {
+
+    val viewModel: ScreenshotViewModel = hiltViewModel()
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    // Refresh screenshots when screen becomes visible
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME, lifecycleOwner) {
-        screenshotViewModel.refreshScreenshots()
+        viewModel.refreshScreenshots()
     }
 
     ScreenshotPermissionGate(
         onPermissionGranted = {
-            ScreenshotOrganizeScreen(viewModel = screenshotViewModel)
+            ScreenshotOrganizeScreen(viewModel = viewModel, mode = mode)
         },
         onPermissionJustGranted = {
-            screenshotViewModel.refreshScreenshots()
+            viewModel.refreshScreenshots()
         },
         onNavigateToSettings = {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

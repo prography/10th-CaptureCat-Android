@@ -130,6 +130,9 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
+            ScreenshotAction.Back -> {
+                navigationHelper.navigate(NavigationEvent.Up)
+            }
             ScreenshotAction.DeleteSelected -> {
                 updateState { copy(showDeleteDialog = true) }
             }

@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.search.screen.SearchScreen
-import com.prography.home.ui.storage.screen.ScreenshotGalleryScreen
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 
 @Composable
@@ -26,11 +25,6 @@ fun MainNavigationHost(
     ) {
         composable(BottomNavItem.Favorite.route) {
             FavoriteRoute()
-            /*
-            ScreenshotGalleryScreen(
-                onNavigateUp = { navController.navigateUp() },
-                screenshotViewModel = screenshotViewModel
-            )*/
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(
@@ -56,12 +50,6 @@ fun MainNavigationHost(
                         restoreState = true
                     }
                 }
-            )
-        }
-        composable("screenshot_gallery") {
-            ScreenshotGalleryScreen(
-                onNavigateUp = { navController.navigateUp() },
-                screenshotViewModel = screenshotViewModel
             )
         }
     }

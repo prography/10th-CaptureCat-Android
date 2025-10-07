@@ -82,8 +82,8 @@ fun HomeScreen(
             pagingItems = pagingItems
         )
         CaptureCatFab(
-            onUploadClick = { viewModel.sendAction(HomeAction.NavigateToStorage) },
-            onOrganizeClick = { viewModel.sendAction(HomeAction.NavigateToTagSetting) }
+            onUploadClick = { viewModel.sendAction(HomeAction.NavigateToStorageUpload) },
+            onOrganizeClick = { viewModel.sendAction(HomeAction.NavigateToStorageOrganize) }
         )
     }
 
@@ -100,6 +100,7 @@ fun HomeScreen(
         )
     }
 }
+
 
 // Navigation Helper Wrapper for Hilt injection
 @dagger.hilt.android.lifecycle.HiltViewModel

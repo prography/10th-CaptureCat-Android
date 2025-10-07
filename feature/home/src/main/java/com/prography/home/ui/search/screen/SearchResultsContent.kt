@@ -82,9 +82,7 @@ fun SearchResultsContent(
             state.searchResults.isEmpty() -> {
                 UiEmptyState(
                     title = stringResource(id = UiR.string.empty_search_result_title),
-                    info = stringResource(id = UiR.string.empty_search_result_info),
-                    buttonText = "",
-                    onClick = { onAction(SearchAction.NavigateToStorage) }
+                    info = stringResource(id = UiR.string.empty_search_result_info)
                 )
             }
 

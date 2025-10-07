@@ -19,6 +19,7 @@ import com.prography.home.ui.home.contract.HomeState
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
+import com.prography.navigation.StorageMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -101,8 +102,15 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.Favorite)
                 )
             }
-            HomeAction.NavigateToStorage -> {
-                emitEffect(HomeEffect.NavigateToStorage)
+            HomeAction.NavigateToStorageUpload -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Upload))
+                )
+            }
+            HomeAction.NavigateToStorageOrganize -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Organize))
+                )
             }
             HomeAction.NavigateToMyPage -> {
                 navigationHelper.navigate(

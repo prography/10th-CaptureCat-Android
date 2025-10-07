@@ -8,16 +8,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.home.ui.storage.contract.ScreenshotEffect
 import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.navigation.NavigationHelper
+import com.prography.navigation.StorageMode
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ScreenshotOrganizeScreen(
-    viewModel: ScreenshotViewModel
+    viewModel: ScreenshotViewModel,
+    mode : StorageMode
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    ScreenshotOrganizeContent(
+    ScreenshotStorageScreen(
         state = state,
-        onAction = { viewModel.sendAction(it) }
+        onAction = { viewModel.sendAction(it) },
+        mode = mode
     )
 }
