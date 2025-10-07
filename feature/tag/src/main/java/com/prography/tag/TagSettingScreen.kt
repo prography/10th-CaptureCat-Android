@@ -15,13 +15,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -403,6 +408,8 @@ fun TagInputWithRegister(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     val isError = errorMessage != null
 
     Column(modifier = modifier) {
@@ -443,7 +450,15 @@ fun TagInputWithRegister(
                             }
                             innerTextField()
                         }
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus(force = true)
+                            keyboard?.hide()
+                            onRegister()
+                        }
+                    ),
                 )
                 if (value.isNotEmpty()) {
                     Icon(
@@ -451,17 +466,19 @@ fun TagInputWithRegister(
                         contentDescription = "Clear",
                         tint = Secondary,
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(horizontal = 6.dp)
                             .size(20.dp)
                             .clickableWithoutRipple { onClear() }
                     )
                 }
                 Text(
                     text = "등록",
-                    color = Text03,
+                    color = if (isError) Gray04 else Text03,
                     style = body02Regular,
                     modifier = Modifier
                         .clickableWithoutRipple(enabled = value.isNotBlank() && !isError) {
+                            focusManager.clearFocus(force = true)
+                            keyboard?.hide()
                             onRegister()
                         }
                 )
