@@ -105,34 +105,6 @@ fun ScreenshotStorageScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            // Organize 전용 상단: 전체 선택
-            if (mode == StorageMode.Organize) {
-                item(span = { GridItemSpan(3) }) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        UiCheckBox(
-                            text = stringResource(R.string.common_all_select),
-                            isChecked = state.isAllSelected,
-                            onCheckedChange = {
-                                val action = if (state.isAllSelected) {
-                                    ScreenshotAction.CancelSelection
-                                } else {
-                                    val allIds = (0 until pagingItems.itemCount)
-                                        .mapNotNull { idx -> pagingItems[idx]?.id }
-                                    ScreenshotAction.SelectAll(allIds)
-                                }
-                                onAction(action)
-                            }
-                        )
-                    }
-                }
-            }
-
             // 아이템
             items(count = pagingItems.itemCount) { index ->
                 val screenshot = pagingItems[index] ?: return@items
@@ -313,6 +285,30 @@ private fun ScreenshotHeader(
 
         Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(color = Divider, thickness = 1.dp)
+
+        if (mode == StorageMode.Organize) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                UiCheckBox(
+                    text = stringResource(R.string.common_all_select),
+                    isChecked = state.isAllSelected,
+                    onCheckedChange = {
+                        val action = if (state.isAllSelected) {
+                            ScreenshotAction.CancelSelection
+                        } else {
+                            ScreenshotAction.SelectAll
+                        }
+                        onAction(action)
+                    }
+                )
+            }
+        }
     }
 }
 
