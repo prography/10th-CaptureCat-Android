@@ -22,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
@@ -71,6 +72,30 @@ class ScreenshotViewModel @Inject constructor(
         }
     }
 
+    private fun getAllScreenshotIdsFromMediaStore(): List<String> {
+        val result = mutableListOf<String>()
+        try {
+            val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val projection = arrayOf(MediaStore.Images.Media._ID)
+            val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = ?"
+            val selectionArgs = arrayOf("Screenshots")
+            val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
+
+            val cursor = app.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
+            cursor?.use {
+                val idColumn = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                while (it.moveToNext()) {
+                    val id = it.getLong(idColumn)
+                    result.add(id.toString())
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error fetching all screenshot IDs")
+        }
+        return result
+    }
+
+
     override fun handleAction(action: ScreenshotAction) {
         when (action) {
             is ScreenshotAction.ToggleSelect -> {
@@ -101,23 +126,25 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             is ScreenshotAction.SelectAll -> {
-                val allIds = action.allIds
-                val selectedIds = if (allIds.size <= 20) {
-                    allIds
-                } else {
-                    showToast("최대 20장까지 선택할 수 있어요.")
-                    allIds.take(20)
-                }
+                viewModelScope.launch(Dispatchers.IO) {
+                    // MediaStore에서 실제 모든 스크린샷 ID 읽기
+                    val allIds = getAllScreenshotIdsFromMediaStore()
 
-                updateState {
-                    copy(
-                        selectedItems = selectedIds.toSet(),
-                        selectedCount = selectedIds.size,
-                        isSelectionMode = selectedIds.isNotEmpty(),
-                        isAllSelected = selectedIds.size == allIds.size
-                    )
+                    withContext(Dispatchers.Main) {
+                        val selectedIds = allIds.takeIf { it.isNotEmpty() } ?: emptyList()
+                        updateState {
+                            copy(
+                                selectedItems = selectedIds.toSet(),
+                                selectedCount = selectedIds.size,
+                                isSelectionMode = selectedIds.isNotEmpty(),
+                                isAllSelected = true
+                            )
+                        }
+                        showToast("총 ${selectedIds.size}장의 스크린샷이 선택되었습니다.")
+                    }
                 }
             }
+
 
             ScreenshotAction.CancelSelection -> {
                 updateState {
@@ -130,6 +157,9 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
+            ScreenshotAction.Back -> {
+                navigationHelper.navigate(NavigationEvent.Up)
+            }
             ScreenshotAction.DeleteSelected -> {
                 updateState { copy(showDeleteDialog = true) }
             }

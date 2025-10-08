@@ -62,7 +62,7 @@
 
     <!-- HomeContent -->
     <string name="home_no_screenshot_title">No screenshots yet.</string>
-    <string name="home_no_screenshot_info">You can save screenshots from temporary storage!</string>
+    <string name="home_no_screenshot_info">Upload images to manage them in CaptureCat!</string>
     <string name="home_go_to_storage">Go to Temporary Storage</string>
     <string name="home_loading_failed">Failed to load more</string>
 
@@ -100,11 +100,11 @@
     <string name="organize_delete_confirmation">Delete this</string>
 
     <!-- ScreenshotOrganizeContent -->
-    <string name="storage_title">Drafts</string>
-    <string name="storage_count_info">You have %d screenshots</string>
+    <string name="storage_upload_title">All Captures</string>
+    <string name="storage_delete_title">Organize Captures</string>
     <string name="storage_login_required">Login to Continue</string>
     <string name="storage_delete_select_message">Please select images to delete.</string>
-    <string name="storage_selection_count">%d/20</string>
+    <string name="storage_selection_count"> Upload %d/20</string>
 
     <!-- StartChooseScreen -->
     <string name="start_choose_title">Before we start\nYou have %d screenshots</string>

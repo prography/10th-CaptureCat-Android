@@ -24,7 +24,7 @@ fun UiEmptyState(
     title: String,
     info: String,
     buttonText: String = stringResource(R.string.home_go_to_storage),
-    onClick: () -> Unit
+    onClick: (() -> Unit)? = null
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -49,9 +49,8 @@ fun UiEmptyState(
                 textAlign = TextAlign.Center
             )
 
-            if (buttonText.isNotBlank()) {
+            if (onClick != null) {
                 Spacer(modifier = Modifier.height(16.dp))
-
                 UiLabelAddButton(
                     text = buttonText,
                     onClick = onClick

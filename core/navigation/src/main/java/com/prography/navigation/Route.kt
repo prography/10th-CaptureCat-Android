@@ -20,6 +20,9 @@ sealed interface AppRoute : Route {
     data object Main : AppRoute
 
     @Serializable
+    data class Storage(val mode: StorageMode): AppRoute
+
+    @Serializable
     data class Organize(
         val screenshotIds: List<String> = emptyList(),
         val entryPoint: String = "unknown"

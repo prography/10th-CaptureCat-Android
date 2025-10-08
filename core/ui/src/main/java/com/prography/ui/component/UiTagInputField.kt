@@ -86,7 +86,7 @@ fun TagInputField(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val customTextSelectionColors = TextSelectionColors(
-                    handleColor = Gray10,
+                    handleColor = Secondary,
                     backgroundColor = PrimaryLow
                 )
 

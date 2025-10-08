@@ -14,6 +14,12 @@ import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -67,13 +73,19 @@ fun HomeScreen(
         viewModel.loadFavoriteImages()
     }
 
-    HomeContent(
-        state = state,
-        onAction = { action ->
-            viewModel.sendAction(action)
-        },
-        pagingItems = pagingItems
-    )
+    var isFabMenuOpen by remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+        HomeContent(
+            state = state,
+            onAction = { action -> viewModel.sendAction(action) },
+            pagingItems = pagingItems
+        )
+        CaptureCatFab(
+            onUploadClick = { viewModel.sendAction(HomeAction.NavigateToStorageUpload) },
+            onOrganizeClick = { viewModel.sendAction(HomeAction.NavigateToStorageOrganize) }
+        )
+    }
 
     // 로그인 유도 다이얼로그
     if (state.showLoginDialog) {
@@ -88,6 +100,7 @@ fun HomeScreen(
         )
     }
 }
+
 
 // Navigation Helper Wrapper for Hilt injection
 @dagger.hilt.android.lifecycle.HiltViewModel

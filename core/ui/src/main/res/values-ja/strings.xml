@@ -62,7 +62,7 @@
 
     <!-- HomeContent -->
     <string name="home_no_screenshot_title">まだスクリーンショットがありません。</string>
-    <string name="home_no_screenshot_info">一時保管庫からスクリーンショットを保存できます！</string>
+    <string name="home_no_screenshot_info">画像をアップロードすると、CaptureCatで管理できます！</string>
     <string name="home_go_to_storage">一時保管庫へ</string>
     <string name="home_loading_failed">読み込みに失敗しました</string>
 
@@ -100,11 +100,11 @@
     <string name="organize_delete_confirmation">削除する</string>
 
     <!-- ScreenshotOrganizeContent -->
-    <string name="storage_title">一時保管庫</string>
-    <string name="storage_count_info">%d個のスクリーンショットがあります</string>
+    <string name="storage_upload_title">すべてのキャプチャ</string>
+    <string name="storage_delete_title">キャプチャ整理</string>
     <string name="storage_login_required">ログインして続行</string>
     <string name="storage_delete_select_message">削除する画像を選択してください。</string>
-    <string name="storage_selection_count">%d/20</string>
+    <string name="storage_selection_count">アップロード %d/20</string>
 
     <!-- StartChooseScreen -->
     <string name="start_choose_title">始める前に\n%d枚のスクリーンショットがあります</string>
