@@ -4,7 +4,7 @@ package com.prography.ui.common
 sealed class UiEvent {
     object ShowLoading : UiEvent()
     object HideLoading : UiEvent()
-    data class ShowToast(val message: String, val type: ToastType = ToastType.Error) : UiEvent()
+    data class ShowToast(val message: String, val type: ToastType = ToastType.Default) : UiEvent()
 }
 
 enum class ToastType {

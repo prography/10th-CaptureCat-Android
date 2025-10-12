@@ -175,7 +175,7 @@ class OrganizeViewModel @Inject constructor(
                 copy(screenshots = updatedScreenshots)
             }
         } else if (currentTags.size >= 4) {
-            showToast("태그는 최대 4개까지 지정할 수 있어요.", ToastType.Default)
+            showToast("태그는 최대 4개까지 지정할 수 있어요.")
         } else {
             val newTagModel = TagModel(System.currentTimeMillis(), tagText)
             updateState {
