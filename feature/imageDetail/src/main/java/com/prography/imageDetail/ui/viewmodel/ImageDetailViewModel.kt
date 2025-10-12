@@ -268,10 +268,10 @@ class ImageDetailViewModel @Inject constructor(
             }
 
             ImageDetailAction.OnShowTagAddBottomSheet ->
-                updateState { copy(isTagAddBottomSheetVisible = true, pendingAddTags = emptyList()) }
+                updateState { copy(isTagAddBottomSheetVisible = true) }
 
             ImageDetailAction.OnHideTagAddBottomSheet ->
-                updateState { copy(isTagAddBottomSheetVisible = false, pendingAddTags = emptyList(), newTagText = "", tagErrorMessage = null) }
+                updateState { copy(isTagAddBottomSheetVisible = false, newTagText = "", tagErrorMessage = null) }
 
             ImageDetailAction.OnToggleUserTagsExpanded ->
                 updateState { copy(isUserTagsExpanded = !isUserTagsExpanded) }
@@ -289,9 +289,6 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }
 
-            is ImageDetailAction.OnNewTagTextChange ->
-                updateState { copy(newTagText = action.text, tagErrorMessage = null) }
-
             ImageDetailAction.OnAddNewTag -> { // 입력값을 바로 등록
                 val text = currentState.newTagText.trim()
                 val cur = currentState.currentScreenshot ?: return
@@ -307,37 +304,6 @@ class ImageDetailViewModel @Inject constructor(
                         .onFailure { updateState { copy(isLoading = false, tagErrorMessage = "태그 등록 실패") } }
                 }
             }
-
-            is ImageDetailAction.OnTogglePendingTag -> {
-                val cur = currentState.pendingAddTags.toMutableList()
-                if (cur.any { it.id == action.tag.id }) cur.removeAll { it.id == action.tag.id }
-                else {
-                    val base = currentState.currentScreenshot?.tags?.size ?: 0
-                    if (base + cur.size >= 4) return
-                    cur += action.tag
-                }
-                updateState { copy(pendingAddTags = cur) }
-            }
-
-            ImageDetailAction.OnConfirmPendingTags -> {
-                val cur = currentState.currentScreenshot ?: return
-                val room = 4 - cur.tags.size
-                val toAdd = currentState.pendingAddTags
-                    .filterNot { p -> cur.tags.any { it.id == p.id } }
-                    .take(room)
-                if (toAdd.isEmpty()) return
-                viewModelScope.launch {
-                    addTagsToScreenshotUseCase(cur.id, toAdd.map { it.name })
-                        .onSuccess { server ->
-                            val merged = cur.tags + server.map { TagModel(it.id, it.name) }
-                            applyTagChange(cur.copy(tags = merged))
-                            updateState { copy(isTagAddBottomSheetVisible = false, pendingAddTags = emptyList()) }
-                        }
-                        .onFailure { emitEffect(ImageDetailEffect.ShowError("태그 추가 실패")) }
-                }
-            }
-
-            is ImageDetailAction.OnTagDelete -> deleteTag(action.tag) // 기존 함수 재사용
         }
     }
 

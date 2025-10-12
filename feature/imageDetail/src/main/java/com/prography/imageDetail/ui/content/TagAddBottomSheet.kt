@@ -63,7 +63,7 @@ fun TagAddBottomSheet(
     ) {
         Column(
             Modifier
-              .fillMaxWidth()
+                .fillMaxWidth()
         ) {
 
             Column(
@@ -108,13 +108,9 @@ fun TagAddBottomSheet(
                         .heightIn(min = 36.dp * 2 + 8.dp)
                 ) {
                     state.currentScreenshot?.tags?.forEach { t ->
-                        UiTagSelectedChip(text = t.name, onDelete = {
-                            onAction(
-                                ImageDetailAction.OnTogglePendingTag(
-                                    t
-                                )
-                            )
-                        }
+                        UiTagSelectedChip(
+                            text = t.name,
+                            onDelete = { onAction(ImageDetailAction.OnTagDelete(t)) }
                         )
                     }
                 }
@@ -122,10 +118,9 @@ fun TagAddBottomSheet(
 
             UiBottomInputButton(
                 text = "저장하기",
-                enabled = state.pendingAddTags.isNotEmpty() || state.newTagText.isNotBlank(),
+                enabled = state.newTagText.isNotBlank(),
                 onClick = {
                     if (state.newTagText.isNotBlank()) onAction(ImageDetailAction.OnAddNewTag)
-                    else onAction(ImageDetailAction.OnConfirmPendingTags)
                 },
                 modifier = Modifier.fillMaxWidth()
             )

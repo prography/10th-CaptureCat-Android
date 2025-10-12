@@ -15,8 +15,7 @@ data class ImageDetailState(
     val isDeleteDialogVisible: Boolean = false,
     val newTagText: String = "",
     val tagErrorMessage: String? = null,
-    val isLoading: Boolean = false,
-    val pendingAddTags: List<TagModel> = emptyList()   // 2단계 시트에서 선택 중
+    val isLoading: Boolean = false
 )
 
 sealed class ImageDetailEffect {
@@ -42,8 +41,6 @@ sealed class ImageDetailAction {
     // 2단계(태그 추가) 시트
     data class OnNewTagTextChange(val text: String) : ImageDetailAction()
     object OnAddNewTag : ImageDetailAction() // 입력창에서 바로 추가
-    data class OnTogglePendingTag(val tag: TagModel) : ImageDetailAction()
-    object OnConfirmPendingTags : ImageDetailAction()
     object OnHideTagAddBottomSheet : ImageDetailAction()
 
     object OnDeleteScreenshot : ImageDetailAction()
