@@ -153,5 +153,8 @@ fun AppNavGraph(
         composable<AppRoute.TagSetting> {
             TagSettingRoute()
         }
+        composable<AppRoute.ImageDeleteSetting> {
+            ImageDetailSettingScreen()
+        }
     }
 }

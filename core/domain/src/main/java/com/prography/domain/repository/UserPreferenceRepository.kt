@@ -14,4 +14,7 @@ interface UserPreferenceRepository {
     val refreshToken: Flow<String?>
     suspend fun clearTokens()
     suspend fun saveTokens(access: String, refresh: String)
+
+    val isDeletePromptEnabled: Flow<Boolean>
+    suspend fun setDeletePromptEnabled(enabled: Boolean)
 }

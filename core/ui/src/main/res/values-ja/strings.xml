@@ -182,6 +182,12 @@
     <string name="setting_login_button">ログインする</string>
     <string name="setting_login_device_info">ログインすると、他のデバイスでも画像を管理できます</string>
 
+    <string name="image_delete_setting_title">画像削除の設定</string>
+    <string name="image_delete_setting_toggle_title">アップロード後に削除を確認する</string>
+    <string name="image_delete_setting_toggle_desc">CaptureCat へのアップロード完了後、ギャラリーから画像を削除するか確認のポップアップを表示します。</string>
+    <string name="image_delete_setting_note_1">· この設定をオンにしても、毎回手動で削除するか選択できます。</string>
+    <string name="image_delete_setting_note_2">· 削除した画像は「ゴミ箱」または「最近削除した項目」に30日間保管されます。</string>
+
     <!-- サービス情報とヘルプ -->
     <string name="setting_service_info">サービス情報</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>

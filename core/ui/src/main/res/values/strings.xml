@@ -168,6 +168,13 @@
     <!-- 설정 화면 타이틀 -->
     <string name="setting_title">마이</string>
 
+    <!-- 이미지 삭제 설정 -->
+    <string name="image_delete_setting_title">이미지 삭제 설정</string>
+    <string name="image_delete_setting_toggle_title">업로드 후 삭제 안내 팝업 설정</string>
+    <string name="image_delete_setting_toggle_desc">캡처캣에 업로드가 완료되면, 갤러리에서 이미지를\n삭제할지 팝업으로 안내해요.</string>
+    <string name="image_delete_setting_note_1">· 설정 후에도 삭제는 매번 직접 선택할 수 있어요.</string>
+    <string name="image_delete_setting_note_2">· 삭제된 이미지는 ‘휴지통’ 또는 ‘최근 삭제된 항목’에 30일간 보관돼요.</string>
+
     <!-- 게스트 모드 -->
     <string name="setting_guest_mode_message">현재 게스트 모드로 사용하고 있어요</string>
     <string name="setting_login_button">로그인하기</string>

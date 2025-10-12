@@ -215,6 +215,9 @@ private fun UserPreferenceSection(onAction: (SettingAction) -> Unit) {
     SettingMenuItem(text = stringResource(UiString.setting_tag_settings)) {
         onAction(SettingAction.OnTagSetting)
     }
+    SettingMenuItem(text = "이미지 삭제 설정") {
+        onAction(SettingAction.OnImageDeleteSetting)
+    }
     Spacer(modifier = Modifier.height(24.dp))
 }
 

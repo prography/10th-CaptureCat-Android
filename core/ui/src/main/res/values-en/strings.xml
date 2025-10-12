@@ -182,6 +182,12 @@
     <string name="setting_login_button">Log in</string>
     <string name="setting_login_device_info">When logged in, you can manage images on other devices too</string>
 
+    <string name="image_delete_setting_title">Image Deletion Settings</string>
+    <string name="image_delete_setting_toggle_title">Prompt to delete after upload</string>
+    <string name="image_delete_setting_toggle_desc">When the upload to CaptureCat finishes, we’ll show a prompt asking if you want to delete the image from your gallery.</string>
+    <string name="image_delete_setting_note_1">· You can still choose whether to delete each time, even with this setting on.</string>
+    <string name="image_delete_setting_note_2">· Deleted images are kept in “Trash” or “Recently Deleted” for 30 days.</string>
+
     <!-- Service Info and Help -->
     <string name="setting_service_info">Service Information</string>
     <string name="setting_privacy_policy">Privacy Policy</string>

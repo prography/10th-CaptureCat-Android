@@ -44,6 +44,11 @@ class SettingViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.TagSetting)
                 )
             }
+            SettingAction.OnImageDeleteSetting -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.ImageDeleteSetting)
+                )
+            }
             SettingAction.OnLogout -> {
                 updateState { copy(showLogoutDialog = false) }
                 logout()

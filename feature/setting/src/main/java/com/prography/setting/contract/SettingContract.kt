@@ -18,6 +18,7 @@ sealed class SettingAction {
     object OnBackPressed : SettingAction()
     object OnLogin : SettingAction()
     object OnTagSetting : SettingAction()
+    object OnImageDeleteSetting : SettingAction()
     object OnLogout : SettingAction()
     object OnNavigateToWithdraw : SettingAction()
     data class OnExternalLink(val url: String) : SettingAction()

@@ -17,6 +17,7 @@ object UserPreferenceKeys {
     val NICKNAME = stringPreferencesKey("nickname")
     val ACCESS_TOKEN = stringPreferencesKey("access_token")
     val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+    val DELETE_PROMPT_ENABLED = booleanPreferencesKey("delete_prompt_enabled")
 }
 
 class UserPreferenceDataStore(private val context: Context) {
@@ -55,5 +56,12 @@ class UserPreferenceDataStore(private val context: Context) {
             preferences.remove(UserPreferenceKeys.ACCESS_TOKEN)
             preferences.remove(UserPreferenceKeys.REFRESH_TOKEN)
         }
+    }
+
+    val isDeletePromptEnabled: Flow<Boolean> =
+        dataStore.data.map { it[UserPreferenceKeys.DELETE_PROMPT_ENABLED] ?: true } // 기본 ON
+
+    suspend fun setDeletePromptEnabled(enabled: Boolean) {
+        dataStore.edit { it[UserPreferenceKeys.DELETE_PROMPT_ENABLED] = enabled }
     }
 }

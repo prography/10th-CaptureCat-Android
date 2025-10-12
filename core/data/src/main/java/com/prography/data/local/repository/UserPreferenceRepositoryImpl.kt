@@ -36,4 +36,11 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     override suspend fun saveTokens(access: String, refresh: String) {
         userPrefs.saveTokens(access, refresh)
     }
+
+    override val isDeletePromptEnabled: Flow<Boolean>
+        get() = userPrefs.isDeletePromptEnabled
+
+    override suspend fun setDeletePromptEnabled(enabled: Boolean) {
+        userPrefs.setDeletePromptEnabled(enabled)
+    }
 }

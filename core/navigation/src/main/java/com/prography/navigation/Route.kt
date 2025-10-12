@@ -67,4 +67,7 @@ sealed interface AppRoute : Route {
 
     @Serializable
     data object TagSetting : AppRoute
+
+    @Serializable
+    data object ImageDeleteSetting : AppRoute
 }
