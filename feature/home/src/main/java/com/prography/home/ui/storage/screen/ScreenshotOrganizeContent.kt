@@ -290,7 +290,7 @@ private fun ScreenshotHeader(
                 )
             }
 
-            if (mode == StorageMode.Organize && state.totalCount > 0) {
+            if (mode == StorageMode.Organize && totalScreenshotCount > 0) {
                 Text(
                     text = stringResource(R.string.common_delete),
                     style = body02Regular,
@@ -303,7 +303,7 @@ private fun ScreenshotHeader(
         Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(color = Divider, thickness = 1.dp)
 
-        if (mode == StorageMode.Organize && state.totalCount > 0) {
+        if (mode == StorageMode.Organize && totalScreenshotCount > 0) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

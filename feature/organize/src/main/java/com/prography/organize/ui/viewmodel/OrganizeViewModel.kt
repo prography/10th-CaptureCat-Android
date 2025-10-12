@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.prography.domain.usecase.storage.SaveOrganizedIdsUseCase
+import com.prography.domain.usecase.user.GetDeletePromptSettingUseCase
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
@@ -36,6 +37,7 @@ class OrganizeViewModel @Inject constructor(
     private val getRecentTagsUseCase: GetRecentTagsUseCase,
     private val addRecentTagUseCase: AddRecentTagUseCase,
     private val saveOrganizedIdsUseCase: SaveOrganizedIdsUseCase,
+    private val getDeletePromptSettingUseCase: GetDeletePromptSettingUseCase,
     @ApplicationContext private val context: Context
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
@@ -107,6 +109,11 @@ class OrganizeViewModel @Inject constructor(
 
             OrganizeAction.OnCompletionNext -> {
                 // 완료 화면에서 다음 버튼 클릭 시 실제 완료 처리
+                emitEffect(OrganizeEffect.NavigateToComplete)
+            }
+
+            OrganizeAction.OnSystemDeleteFinished -> {
+                // 시스템 알럿이 종료되면 결과 무관하게 완료 네비게이션
                 emitEffect(OrganizeEffect.NavigateToComplete)
             }
         }
@@ -277,7 +284,7 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
-                // 정리 완료된 스크린샷 ID를 로컬에 저장
+                // 정리 완료된 스샷 ID 저장 (기존 로직 유지)
                 runCatching { saveOrganizedIdsUseCase(screenshotsToSave.map { it.id }) }
                     .onFailure { Timber.e(it, "Failed to persist organized ids") }
 
@@ -293,7 +300,20 @@ class OrganizeViewModel @Inject constructor(
                 )
 
                 hideLoading()
-                updateState { copy(showCompletionMessage = true) }
+
+                // ✅ 설정 확인 후 시스템 삭제 알럿 유도
+                val promptEnabled = getDeletePromptSettingUseCase().getOrElse { false }
+
+                Timber.d("promptEnabled: $promptEnabled")
+                if (promptEnabled) {
+                    // 현재 화면에 보이는 스크린샷들(정리한 것들)을 갤러리에서 삭제 요청
+                    val uris = screenshotsToSave.mapNotNull { it.uri as? Uri ?: runCatching { Uri.parse(it.uri.toString()) }.getOrNull() }
+                    emitEffect(OrganizeEffect.RequestSystemDelete(uris))
+                } else {
+                    // 기존 동작
+                    emitEffect(OrganizeEffect.NavigateToComplete)
+                }
+
             }.onFailure {
                 hideLoading()
                 showToast("스크린샷 업로드에 실패했습니다.")

@@ -1,5 +1,6 @@
 package com.prography.organize.ui.contract
 
+import android.net.Uri
 import com.prography.domain.model.TagModel
 import com.prography.organize.model.OrganizeScreenshotItem
 
@@ -21,6 +22,8 @@ sealed class OrganizeEffect {
     object NavigateUp : OrganizeEffect()
     object NavigateToComplete : OrganizeEffect()
     data class ShowAddTagBottomSheet(val screenshotId: String) : OrganizeEffect()
+
+    data class RequestSystemDelete(val uris: List<Uri>) : OrganizeEffect()
 }
 
 sealed class OrganizeAction {
@@ -36,5 +39,7 @@ sealed class OrganizeAction {
     data class OnAddTag(val screenshotId: String) : OrganizeAction()
     data class OnCreateNewTag(val screenshotId: String, val tagText: String) : OrganizeAction()
     data class OnPageChange(val newIndex: Int) : OrganizeAction()
+
     object OnSaveScreenshots : OrganizeAction()
+    object OnSystemDeleteFinished : OrganizeAction()
 }
