@@ -94,103 +94,120 @@ fun ScreenshotStorageScreen(
         }
     ) { innerPadding ->
 
-        // ✅ 스크롤 가능한 본문: 사진 목록
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .then(if (!state.isLoggedIn) Modifier.blur(12.dp) else Modifier),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            // 아이템
-            items(count = pagingItems.itemCount) { index ->
-                val screenshot = pagingItems[index] ?: return@items
-                val isSelected = state.selectedItems.contains(screenshot.id)
-                val isOrganized = state.organizedScreenshotIds.contains(screenshot.id)
-
+        when {
+            pagingItems.itemCount == 0 && pagingItems.loadState.refresh !is LoadState.Loading -> {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(
-                            width = 2.dp,
-                            color = if (isSelected) Color(0xCCFF6600) else Divider,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .fillMaxWidth()
-                        .aspectRatio(45f / 76f)
-                        .clickable {
-                            if (mode == StorageMode.Upload &&
-                                !isSelected &&
-                                state.selectedCount >= uploadMax
-                            ) return@clickable
-                            onAction(ScreenshotAction.ToggleSelect(screenshot.id))
-                        }
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(screenshot.uri),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                    UiEmptyState(
+                        title = "갤러리에 캡처 이미지가 없어요.",
+                        info  = "화면 캡처 후 이용해주세요."
                     )
+                }
+            }
+            else -> {
+                // ✅ 스크롤 가능한 본문: 사진 목록
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .then(if (!state.isLoggedIn) Modifier.blur(12.dp) else Modifier),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    // 아이템
+                    items(count = pagingItems.itemCount) { index ->
+                        val screenshot = pagingItems[index] ?: return@items
+                        val isSelected = state.selectedItems.contains(screenshot.id)
+                        val isOrganized = state.organizedScreenshotIds.contains(screenshot.id)
 
-                    Icon(
-                        painter = painterResource(
-                            id = if (isSelected)
-                                R.drawable.ic_check_box_able
-                            else
-                                R.drawable.ic_check_box_unchecked
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(4.dp),
-                        tint = Color.Unspecified
-                    )
-
-                    // Organize 모드일 때 상단 주황 띠
-                    if (mode == StorageMode.Organize && isOrganized && !isSelected) {
                         Box(
                             modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .border(
+                                    width = 2.dp,
+                                    color = if (isSelected) Color(0xCCFF6600) else Divider,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
                                 .fillMaxWidth()
-                                .height(4.dp)
-                                .align(Alignment.TopCenter)
-                                .background(Primary)
-                        )
-                    }
-                }
-            }
+                                .aspectRatio(45f / 76f)
+                                .clickable {
+                                    if (mode == StorageMode.Upload &&
+                                        !isSelected &&
+                                        state.selectedCount >= uploadMax
+                                    ) return@clickable
+                                    onAction(ScreenshotAction.ToggleSelect(screenshot.id))
+                                }
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(screenshot.uri),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
 
-            // append loading
-            if (pagingItems.loadState.append is LoadState.Loading) {
-                item(span = { GridItemSpan(3) }) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Primary)
-                    }
-                }
-            }
+                            Icon(
+                                painter = painterResource(
+                                    id = if (isSelected)
+                                        R.drawable.ic_check_box_able
+                                    else
+                                        R.drawable.ic_check_box_unchecked
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(4.dp),
+                                tint = Color.Unspecified
+                            )
 
-            // append error
-            if (pagingItems.loadState.append is LoadState.Error) {
-                item(span = { GridItemSpan(3) }) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.home_loading_failed),
-                            color = Color.Red,
-                            modifier = Modifier.clickable { pagingItems.retry() }
-                        )
+                            // Organize 모드일 때 상단 주황 띠
+                            if (mode == StorageMode.Organize && isOrganized && !isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp)
+                                        .align(Alignment.TopCenter)
+                                        .background(Primary)
+                                )
+                            }
+                        }
+                    }
+
+                    // append loading
+                    if (pagingItems.loadState.append is LoadState.Loading) {
+                        item(span = { GridItemSpan(3) }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Primary)
+                            }
+                        }
+                    }
+
+                    // append error
+                    if (pagingItems.loadState.append is LoadState.Error) {
+                        item(span = { GridItemSpan(3) }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_loading_failed),
+                                    color = Color.Red,
+                                    modifier = Modifier.clickable { pagingItems.retry() }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -273,7 +290,7 @@ private fun ScreenshotHeader(
                 )
             }
 
-            if (mode == StorageMode.Organize) {
+            if (mode == StorageMode.Organize && state.totalCount > 0) {
                 Text(
                     text = stringResource(R.string.common_delete),
                     style = body02Regular,
@@ -286,7 +303,7 @@ private fun ScreenshotHeader(
         Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(color = Divider, thickness = 1.dp)
 
-        if (mode == StorageMode.Organize) {
+        if (mode == StorageMode.Organize && state.totalCount > 0) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
