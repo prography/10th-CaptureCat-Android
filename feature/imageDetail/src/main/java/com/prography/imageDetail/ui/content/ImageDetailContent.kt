@@ -39,11 +39,11 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import com.prography.domain.model.TagModel
+import com.prography.ui.component.UiImageDetailTagChip
+import com.prography.ui.component.UnderlinedClickableText
 
 @OptIn(
-    ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class
 )
 @Composable
 fun ImageDetailContent(
@@ -147,11 +147,18 @@ fun ImageDetailContent(
             ModalBottomSheet(
                 onDismissRequest = { onAction(ImageDetailAction.OnHideTagEditBottomSheet) },
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                containerColor = Color.White,
-                tonalElevation = 0.dp,
-                dragHandle = null,
-                modifier = Modifier.imePadding()
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                dragHandle = {
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(
+                            Modifier
+                                .padding(top = 8.dp)
+                                .size(width = 40.dp, height = 4.dp)
+                                .background(Gray05.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
+                        )
+                    }
+                },
+                containerColor = Color.White
             ) {
                 TagEditBottomSheetContent(
                     state = state,
@@ -279,7 +286,10 @@ fun BottomActionBar(
                     painter = painterResource(id = R.drawable.ic_tag_edit),
                     contentDescription = stringResource(R.string.image_detail_tag_edit),
                     tint = PureWhite,
-                    modifier = Modifier.clickableWithoutRipple(enabled = true, onClick = onEditTagClick)
+                    modifier = Modifier.clickableWithoutRipple(
+                        enabled = true,
+                        onClick = onEditTagClick
+                    )
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -302,7 +312,10 @@ fun BottomActionBar(
                     painter = painterResource(id = R.drawable.ic_delete),
                     contentDescription = stringResource(R.string.common_delete),
                     tint = PureWhite,
-                    modifier = Modifier.clickableWithoutRipple(enabled = true, onClick = onDeleteClick)
+                    modifier = Modifier.clickableWithoutRipple(
+                        enabled = true,
+                        onClick = onDeleteClick
+                    )
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -322,8 +335,6 @@ private fun TagEditBottomSheetContent(
     onAction: (ImageDetailAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val focusRequester = remember { FocusRequester() }
-    val isMaxTagsReached = (state.currentScreenshot?.tags?.size ?: 0) >= 4
 
     // 키보드 상태 확인
     val ime = WindowInsets.ime
@@ -338,87 +349,141 @@ private fun TagEditBottomSheetContent(
             .padding(bottom = 0.dp) // 완료 버튼 여백
     ) {
         // 헤더
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 28.dp, bottom = 28.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 24.dp)
         ) {
-            Text(
-                text = stringResource(R.string.image_detail_tag_add),
-                style = headline03Bold,
-                color = Text01
-            )
+            // 왼쪽 아이콘
             Icon(
                 painter = painterResource(id = R.drawable.ic_close),
                 contentDescription = stringResource(R.string.common_close),
                 tint = Text01,
                 modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp)
                     .size(24.dp)
                     .clickableWithoutRipple { onAction(ImageDetailAction.OnHideTagEditBottomSheet) }
             )
+
+            // 중앙 텍스트
+            Text(
+                text = "태그 수정",
+                style = headline03Bold,
+                color = Text01,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
 
-        // 입력창
-        TagInputField(
-            value = state.newTagText,
-            onValueChange = {
-                if (!isMaxTagsReached) {
-                    onAction(ImageDetailAction.OnNewTagTextChange(it))
-                }
-            },
-            placeholder = stringResource(R.string.image_detail_tag_input_placeholder),
-            errorMessage = state.tagErrorMessage,
-            onClear = { onAction(ImageDetailAction.OnNewTagTextChange("")) },
+        // 등록된 태그
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .focusRequester(focusRequester),
-            enabled = !isMaxTagsReached,
-            onDone = {
-                onAction(ImageDetailAction.OnAddNewTag)
-                focusManager.clearFocus()
-            }
-        )
-
-        // 태그 목록 (입력창에 포커스 없고 키보드도 내려갔을 때만)
-        if (!imeVisible && state.currentScreenshot?.tags?.isNotEmpty() == true) {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.image_detail_added_tags),
-                        style = subhead01Bold,
-                        color = Text01
-                    )
-                    Text(
-                        text = stringResource(R.string.image_detail_tag_max_info),
-                        style = caption02Regular,
-                        color = Text03
+                Text(
+                    text = "등록된 태그",
+                    style = subhead01Bold,
+                    color = Text02
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "(${state.currentScreenshot?.tags?.size ?: 0}/4)",
+                    style = subhead01Bold,
+                    color = Text02
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 36.dp * 2 + 8.dp)
+            ) {
+                state.currentScreenshot?.tags?.forEach { tag ->
+                    UiTagSelectedChip(
+                        text = tag.name,
+                        onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
                     )
                 }
 
+                UiImageDetailTagChip(
+                    text = "추가하기 +",
+                    onClick = { onAction(ImageDetailAction.OnShowTagAddBottomSheet) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // 기존태그 보기
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "기존태그 보기",
+                    style = subhead01Bold,
+                    color = Text02
+                )
+
+                Row {
+                    UnderlinedClickableText(
+                        text = if (state.isUserTagsExpanded) "접기" else "더보기",
+                        onClick = { onAction(ImageDetailAction.OnToggleUserTagsExpanded) }
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_down),
+                        contentDescription = stringResource(R.string.common_search),
+                        tint = Gray05,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 기존태그 리스트
+            val registeredIds = state.currentScreenshot?.tags?.map { it.id }?.toSet() ?: emptySet()
+            val pool = if (state.isUserTagsExpanded) state.userTags else state.userTags.take(8)
+
+            if (state.currentScreenshot != null) {
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    state.currentScreenshot.tags.forEach { tag ->
-                        UiTagSelectedChip(
+                    pool.forEach { tag ->
+                        val disabled =
+                            tag.id in registeredIds || (state.currentScreenshot?.tags?.size
+                                ?: 0) >= 4
+                        UiImageDetailTagChip(
                             text = tag.name,
-                            onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
+                            enabled = !disabled,
+                            onClick = { onAction(ImageDetailAction.OnClickUserTag(tag)) }
                         )
                     }
                 }
+
+            } else {
+
+                Text("아직 등록된 태그가 없어요")
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -441,6 +506,7 @@ private fun TagEditBottomSheetContent(
         }
     }
 
-    // 강제 포커스 제거 (→ 사용자가 눌러야 키보드 뜸)
-    // 필요 시 직접 클릭으로 포커스 유도
+    if (state.isTagAddBottomSheetVisible) {
+        TagAddBottomSheet(state = state, onAction = onAction)
+    }
 }

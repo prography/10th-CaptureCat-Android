@@ -39,6 +39,7 @@ fun ImageDetailScreen(
             )
         )
         viewModel.initializeWithIds(screenshotIds, currentIndex)
+        viewModel.loadTags()
     }
 
     // Handle effects

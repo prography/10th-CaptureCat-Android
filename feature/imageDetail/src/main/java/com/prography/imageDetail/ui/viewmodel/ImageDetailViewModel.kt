@@ -9,6 +9,7 @@ import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
+import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
@@ -16,6 +17,7 @@ import com.prography.ui.BaseComposeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class ImageDetailViewModel @Inject constructor(
     private val updateScreenshotUseCase: UpdateScreenshotUseCase,
     private val deleteTagUseCase: DeleteTagUseCase,
     private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase,
+    private val getUserTagsUseCase: GetUserTagsUseCase,
     private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
     private val searchRefreshManager: com.prography.util.SearchRefreshManager
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
@@ -76,6 +79,15 @@ class ImageDetailViewModel @Inject constructor(
 
         // Then load all screenshots in background
         loadScreenshotsByIds()
+    }
+
+    fun loadTags() = viewModelScope.launch {
+        try {
+            getUserTagsUseCase().fold(
+                onSuccess = { tags -> updateState { copy(userTags = tags) } },
+                onFailure = { showToast("태그를 불러오는데 실패했습니다.") }
+            )
+        } catch (e: Exception) { showToast("태그를 불러오는데 실패했습니다.") }
     }
 
     private fun loadScreenshotById(screenshotId: String, index: Int) {
@@ -254,7 +266,93 @@ class ImageDetailViewModel @Inject constructor(
                 }
                 deleteCurrentScreenshot()
             }
+
+            ImageDetailAction.OnShowTagAddBottomSheet ->
+                updateState { copy(isTagAddBottomSheetVisible = true, pendingAddTags = emptyList()) }
+
+            ImageDetailAction.OnHideTagAddBottomSheet ->
+                updateState { copy(isTagAddBottomSheetVisible = false, pendingAddTags = emptyList(), newTagText = "", tagErrorMessage = null) }
+
+            ImageDetailAction.OnToggleUserTagsExpanded ->
+                updateState { copy(isUserTagsExpanded = !isUserTagsExpanded) }
+
+            is ImageDetailAction.OnClickUserTag -> { // 1단계에서 바로 추가
+                val cur = currentState.currentScreenshot ?: return
+                if (cur.tags.size >= 4 || cur.tags.any { it.id == action.tag.id }) return
+                viewModelScope.launch {
+                    addTagsToScreenshotUseCase(cur.id, listOf(action.tag.name))
+                        .onSuccess { server ->
+                            val added = server.firstOrNull() ?: return@onSuccess
+                            applyTagChange(cur.copy(tags = cur.tags + TagModel(added.id, added.name)))
+                        }
+                        .onFailure { emitEffect(ImageDetailEffect.ShowError("태그 추가 실패")) }
+                }
+            }
+
+            is ImageDetailAction.OnNewTagTextChange ->
+                updateState { copy(newTagText = action.text, tagErrorMessage = null) }
+
+            ImageDetailAction.OnAddNewTag -> { // 입력값을 바로 등록
+                val text = currentState.newTagText.trim()
+                val cur = currentState.currentScreenshot ?: return
+                if (text.isEmpty() || cur.tags.any { it.name.equals(text, true) } || cur.tags.size >= 4) return
+                updateState { copy(isLoading = true) }
+                viewModelScope.launch {
+                    addTagsToScreenshotUseCase(cur.id, listOf(text))
+                        .onSuccess { server ->
+                            val added = server.firstOrNull() ?: return@onSuccess
+                            applyTagChange(cur.copy(tags = cur.tags + TagModel(added.id, added.name)))
+                            updateState { copy(newTagText = "") }
+                        }
+                        .onFailure { updateState { copy(isLoading = false, tagErrorMessage = "태그 등록 실패") } }
+                }
+            }
+
+            is ImageDetailAction.OnTogglePendingTag -> {
+                val cur = currentState.pendingAddTags.toMutableList()
+                if (cur.any { it.id == action.tag.id }) cur.removeAll { it.id == action.tag.id }
+                else {
+                    val base = currentState.currentScreenshot?.tags?.size ?: 0
+                    if (base + cur.size >= 4) return
+                    cur += action.tag
+                }
+                updateState { copy(pendingAddTags = cur) }
+            }
+
+            ImageDetailAction.OnConfirmPendingTags -> {
+                val cur = currentState.currentScreenshot ?: return
+                val room = 4 - cur.tags.size
+                val toAdd = currentState.pendingAddTags
+                    .filterNot { p -> cur.tags.any { it.id == p.id } }
+                    .take(room)
+                if (toAdd.isEmpty()) return
+                viewModelScope.launch {
+                    addTagsToScreenshotUseCase(cur.id, toAdd.map { it.name })
+                        .onSuccess { server ->
+                            val merged = cur.tags + server.map { TagModel(it.id, it.name) }
+                            applyTagChange(cur.copy(tags = merged))
+                            updateState { copy(isTagAddBottomSheetVisible = false, pendingAddTags = emptyList()) }
+                        }
+                        .onFailure { emitEffect(ImageDetailEffect.ShowError("태그 추가 실패")) }
+                }
+            }
+
+            is ImageDetailAction.OnTagDelete -> deleteTag(action.tag) // 기존 함수 재사용
         }
+    }
+
+    private fun applyTagChange(updated: UiScreenshotModel) {
+        screenshotCache[updated.id] = updated
+        updateState {
+            copy(
+                screenshots = screenshots.map { if (it.id == updated.id) updated else it },
+                currentScreenshot = updated,
+                isLoading = false,
+                tagErrorMessage = null
+            )
+        }
+        hasDataChanges = true
+        notifySearchRefresh()
     }
 
     private fun updateScreenshotsListAtIndex(index: Int, screenshot: UiScreenshotModel?) {

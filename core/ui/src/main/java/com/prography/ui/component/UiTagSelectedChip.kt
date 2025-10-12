@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.prography.ui.R
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.PureWhite
+import com.prography.ui.theme.Secondary
 import com.prography.ui.theme.subhead02Bold
 
 @Composable
@@ -34,7 +35,7 @@ fun UiTagSelectedChip(
     Box(
         modifier = modifier
             .background(
-                color = Primary,
+                color = Secondary,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp, vertical = 10.5.dp),
