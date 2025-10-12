@@ -56,7 +56,6 @@ fun TagInputField(
     onValueChange: (String) -> Unit,
     placeholder: String = stringResource(R.string.image_detail_tag_input_placeholder),
     errorMessage: String? = null,
-    onClear: () -> Unit = {},
     onDone: () -> Unit = {},
     modifier: Modifier = Modifier,
     enabled: Boolean = true
@@ -133,7 +132,9 @@ fun TagInputField(
                             modifier = Modifier
                                 .padding(horizontal = 4.dp)
                                 .size(20.dp)
-                                .clickableWithoutRipple { onClear() }
+                                .clickableWithoutRipple {
+                                    onValueChange("")
+                                }
                         )
                     }
                 }
@@ -164,7 +165,6 @@ fun TagInputPreview_Default() {
     TagInputField(
         value = "",
         onValueChange = {},
-        onClear = {}
     )
 }
 
@@ -174,7 +174,6 @@ fun TagInputPreview_Typing() {
     TagInputField(
         value = "일상",
         onValueChange = {},
-        onClear = {}
     )
 }
 
@@ -185,6 +184,5 @@ fun TagInputPreview_Error() {
         value = "여행",
         onValueChange = {},
         errorMessage = "동일한 태그가 이미 존재합니다.",
-        onClear = {}
     )
 }

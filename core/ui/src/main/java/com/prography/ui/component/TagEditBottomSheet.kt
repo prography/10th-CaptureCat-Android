@@ -96,11 +96,9 @@ fun TagEditBottomSheet(
                 )
             }
 
-            // 👉 TagInputField 안에 BasicTextField를 쓰고 있으니 focusRequester만 걸어주면 됨
             TagInputField(
                 value = text,
                 onValueChange = { text = it },
-                onClear = { text = "" },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)

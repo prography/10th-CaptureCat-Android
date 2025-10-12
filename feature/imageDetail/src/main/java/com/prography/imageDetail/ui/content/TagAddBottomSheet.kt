@@ -95,7 +95,8 @@ fun TagAddBottomSheet(
                 TagInputField(
                     value = state.newTagText,
                     onValueChange = { onAction(ImageDetailAction.OnNewTagTextChange(it)) },
-                    onDone = { onAction(ImageDetailAction.OnAddNewTag) }
+                    onDone = { onAction(ImageDetailAction.OnAddNewTag) },
+                    errorMessage = state.tagErrorMessage
                 )
 
                 Spacer(Modifier.height(12.dp))

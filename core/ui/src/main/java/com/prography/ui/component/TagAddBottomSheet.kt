@@ -89,7 +89,6 @@ fun TagAddBottomSheet(
                 TagInputField(
                     value = text,
                     onValueChange = { text = it },
-                    onClear = { text = "" },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester)

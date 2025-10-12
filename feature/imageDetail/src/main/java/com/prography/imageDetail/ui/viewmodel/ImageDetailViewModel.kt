@@ -9,16 +9,19 @@ import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
+import com.prography.domain.usecase.tag.AddRecentTagUseCase
 import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.IOException
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +33,7 @@ class ImageDetailViewModel @Inject constructor(
     private val addTagsToScreenshotUseCase: AddTagsToScreenshotUseCase,
     private val getUserTagsUseCase: GetUserTagsUseCase,
     private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
+    private val addRecentTagUseCase: AddRecentTagUseCase,
     private val searchRefreshManager: com.prography.util.SearchRefreshManager
 ) : BaseComposeViewModel<ImageDetailState, ImageDetailEffect, ImageDetailAction>(
     initialState = ImageDetailState()
@@ -238,10 +242,6 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }
 
-            ImageDetailAction.OnAddNewTag -> {
-                addNewTag()
-            }
-
             ImageDetailAction.OnDeleteScreenshot -> {
                 updateState {
                     copy(isDeleteDialogVisible = true)
@@ -289,19 +289,53 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }
 
-            ImageDetailAction.OnAddNewTag -> { // 입력값을 바로 등록
+            ImageDetailAction.OnAddNewTag -> {
                 val text = currentState.newTagText.trim()
                 val cur = currentState.currentScreenshot ?: return
-                if (text.isEmpty() || cur.tags.any { it.name.equals(text, true) } || cur.tags.size >= 4) return
-                updateState { copy(isLoading = true) }
+
+                // ✅ 입력값 비었을 때
+                if (text.isEmpty()) {
+                    updateState { copy(tagErrorMessage = "태그를 입력해주세요.") }
+                    return
+                }
+
+                // ✅ 중복일 때
+                if (cur.tags.any { it.name.equals(text, true) }) {
+                    updateState { copy(tagErrorMessage = "이미 등록된 태그입니다.") }
+                    return
+                }
+
+                // ✅ 최대 개수 초과
+                if (cur.tags.size >= 4) {
+                    updateState { copy(tagErrorMessage = "태그는 최대 4개까지 등록할 수 있습니다.") }
+                    return
+                }
+
+                updateState { copy(isLoading = true, tagErrorMessage = null) }
+
                 viewModelScope.launch {
                     addTagsToScreenshotUseCase(cur.id, listOf(text))
                         .onSuccess { server ->
                             val added = server.firstOrNull() ?: return@onSuccess
                             applyTagChange(cur.copy(tags = cur.tags + TagModel(added.id, added.name)))
                             updateState { copy(newTagText = "") }
+
+                            addRecentTagUseCase(listOf(text))
+                                .catch { Timber.e(it, "Failed to save selected tags") }
+                                .onCompletion {
+                                    MixpanelUtil.track(
+                                        "click_register_frequent_tag",
+                                        mapOf("selected_tags" to listOf(text))
+                                    )
+                                    Timber.d("Selected tags saved: $text")
+                                }
+                                .launchIn(viewModelScope)
                         }
-                        .onFailure { updateState { copy(isLoading = false, tagErrorMessage = "태그 등록 실패") } }
+                        .onFailure {
+                            updateState {
+                                copy(isLoading = false, tagErrorMessage = "태그 등록에 실패했습니다.")
+                            }
+                        }
                 }
             }
         }
@@ -476,6 +510,7 @@ class ImageDetailViewModel @Inject constructor(
                             tagErrorMessage = null
                         )
                     }
+
                 } else {
                     updateState {
                         copy(
