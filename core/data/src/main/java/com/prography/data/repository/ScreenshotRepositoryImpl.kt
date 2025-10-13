@@ -216,40 +216,37 @@ class ScreenshotRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getFavoriteImages(page: Int, size: Int): Result<List<UiScreenshotModel>> {
+    override suspend fun getFavoriteImages(page: Int, size: Int, tagId: Int): Result<List<UiScreenshotModel>> {
         return modeExecutor.executeWithMode(
             localAction = {
-                // 로컬 모드: 로컬 DB에서 즐겨찾기 이미지를 페이징하여 가져오기
-                Timber.d("GetFavoriteImages - Local mode: page=$page, size=$size")
                 try {
-                    val allScreenshots = localDataSource.getScreenshots().first()
-                    val favoriteScreenshots = allScreenshots.filter { it.isBookmarked }
-
-                    // 페이징 처리
-                    val offset = page * size
-                    val pagedFavorites = favoriteScreenshots
-                        .drop(offset)
-                        .take(size)
-
-                    Timber.d("GetFavoriteImages - Local result: ${pagedFavorites.size} items (total: ${favoriteScreenshots.size})")
-                    Result.success(pagedFavorites)
+                    val paged = localDataSource.getBookmarkedPagedFiltered(tagId, page, size)
+                    Timber.d("GetFavoriteImages - Local result: ${paged.size} items (page=$page, size=$size, tagId=$tagId)")
+                    Result.success(paged)
                 } catch (e: Exception) {
                     Timber.e(e, "GetFavoriteImages - Local mode failure")
                     Result.failure(e)
                 }
             },
             remoteAction = {
-                // 서버 모드: 서버에서 즐겨찾기 이미지 가져오기
-                Timber.d("GetFavoriteImages - Remote mode: page=$page, size=$size")
-                remoteDataSource.getFavoriteImages(page, size)
+                // 서버 모드는 기존 그대로
+                remoteDataSource.getFavoriteImages(page, size, tagId)
             }
         )
     }
+
 
     override suspend fun getMostUsedTags(size: Int): List<TagWithCount> {
         return modeExecutor.executeWithModeAndFallback(
             localAction = { localDataSource.getMostUsedTags(size) },
             remoteAction = { remoteDataSource.getMostUsedTags(size) }
+        )
+    }
+
+    override suspend fun getFavoriteTags(size: Int): List<TagWithCount> {
+        return modeExecutor.executeWithModeAndFallback(
+            localAction = { localDataSource.getFavoriteTags(size) },
+            remoteAction = { remoteDataSource.getFavoriteTags(size) }
         )
     }
 

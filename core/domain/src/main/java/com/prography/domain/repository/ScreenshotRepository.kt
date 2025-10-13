@@ -28,8 +28,10 @@ interface ScreenshotRepository {
         tagNames: List<String>
     ): Result<List<TagModel>>
     suspend fun toggleBookmark(screenshotId: String, isBookmarked: Boolean)
-    suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
+    suspend fun getFavoriteImages(page: Int = 0, size: Int = 10, tagId: Int = 0): Result<List<UiScreenshotModel>>
     suspend fun getMostUsedTags(size: Int): List<TagWithCount>
+    suspend fun getFavoriteTags(size: Int = 10): List<TagWithCount>
+
     suspend fun searchImagesByTags(
         tagNames: List<String>,
         page: Int = 0,

@@ -8,7 +8,6 @@ import androidx.paging.cachedIn
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
-import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.model.UiScreenshotModel
@@ -29,7 +28,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
-    private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
@@ -148,28 +146,6 @@ class HomeViewModel @Inject constructor(
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.TagSetting)
                 )
-            }
-        }
-    }
-
-    fun loadFavoriteImages() {
-        viewModelScope.launch {
-            try {
-                getFavoriteImagesUseCase(page = 0, size = 10).fold(
-                    onSuccess = { favoriteImages ->
-                        Timber.d("HomeViewModel - Favorite images loaded: ${favoriteImages.size} items")
-                        updateState {
-                            copy(favoriteScreenshots = favoriteImages)
-                        }
-                    },
-                    onFailure = { exception ->
-                        Timber.e(exception, "HomeViewModel - Failed to load favorite images")
-                        emitEffect(HomeEffect.ShowError("Failed to load favorite images: ${exception.message}"))
-                    }
-                )
-            } catch (e: Exception) {
-                Timber.e(e, "HomeViewModel - Exception while loading favorite images")
-                emitEffect(HomeEffect.ShowError("Failed to load favorite images: ${e.message}"))
             }
         }
     }

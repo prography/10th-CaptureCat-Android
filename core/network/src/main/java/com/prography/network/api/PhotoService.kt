@@ -63,6 +63,14 @@ interface PhotoService {
     @GET("v1/bookmarks/images")
     suspend fun getFavoriteImages(
         @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10,
+        @Query("tagId") tagId: Int
+    ): NetworkState<ApiListResponse<PhotoResponse>>
+
+
+    @GET("v1/bookmarks/images")
+    suspend fun getFavoriteImages(
+        @Query("page") page: Int = 0,
         @Query("size") size: Int = 10
     ): NetworkState<ApiListResponse<PhotoResponse>>
 
@@ -91,6 +99,12 @@ interface PhotoService {
 
     @GET("v1/tags/most-used")
     suspend fun getMostUsedTags(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): NetworkState<ApiListResponse<TagResponse>>
+
+    @GET("v1/bookmarks/tags")
+    suspend fun getFavoriteTags(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10
     ): NetworkState<ApiListResponse<TagResponse>>
