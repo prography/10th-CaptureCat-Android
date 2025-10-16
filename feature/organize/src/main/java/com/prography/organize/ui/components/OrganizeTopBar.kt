@@ -27,6 +27,9 @@ import com.prography.ui.component.UiButtonText
 import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
+import com.prography.ui.theme.Text03
+import com.prography.ui.theme.headline02Bold
+import com.prography.ui.theme.headline02Regular
 import com.prography.ui.theme.headline03Bold
 import com.prography.ui.theme.headline03Regular
 import com.prography.ui.theme.subhead01Bold
@@ -35,8 +38,7 @@ import com.prography.ui.theme.subhead01Bold
 fun OrganizeTopBar(
     currentIndex: Int,
     totalCount: Int,
-    onNavigateUp: () -> Unit,
-    onComplete: () -> Unit
+    onNavigateUp: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -44,8 +46,6 @@ fun OrganizeTopBar(
             .statusBarsPadding()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)
     ) {
-
-
         // 제목
         Row(
             modifier = Modifier.align(Alignment.CenterStart)
@@ -59,19 +59,17 @@ fun OrganizeTopBar(
                     .clickable { onNavigateUp() }
             )
             Text(
-                text = if (currentIndex == 0) "태그하기 ${totalCount}" else "태그하기 $currentIndex/$totalCount",
-                style = headline03Bold,
+                text = "태그하기",
+                style = headline02Bold,
                 color = Text01
             )
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = if (currentIndex == 0) "$totalCount" else "$currentIndex/$totalCount",
+                style = headline02Regular,
+                color = Text03
+            )
         }
-
-        // 완료 버튼
-        UiButtonText(
-            text = stringResource(com.prography.ui.R.string.common_save),
-            onClick = { onComplete()},
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-        )
     }
 }
 
@@ -83,7 +81,6 @@ fun OrganizeTopBarBatchModePreview() {
         currentIndex = 0, // 한번에 모드일 때는 0
         totalCount = 15,
         onNavigateUp = { },
-        onComplete = { }
     )
 }
 
@@ -94,6 +91,5 @@ fun OrganizeTopBarSingleModePreview() {
         currentIndex = 3, // 한장씩 모드일 때는 현재 페이지
         totalCount = 8,
         onNavigateUp = { },
-        onComplete = { }
     )
 }

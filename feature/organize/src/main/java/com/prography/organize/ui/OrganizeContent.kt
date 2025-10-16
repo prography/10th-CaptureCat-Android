@@ -1,13 +1,17 @@
 package com.prography.organize.ui
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +31,18 @@ import com.prography.organize.ui.components.*
 import com.prography.organize.ui.contract.OrganizeAction
 import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
+import com.prography.ui.component.ButtonSize
+import com.prography.ui.component.UiBottomInputButton
+import com.prography.ui.component.UiLabelAddButton
+import com.prography.ui.component.UiTagSelectedChip
 import com.prography.ui.theme.Gray03
+import com.prography.ui.theme.Gray04
+import com.prography.ui.theme.Gray05
+import com.prography.ui.theme.Primary
 import com.prography.ui.theme.Text01
+import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body02Regular
-import com.prography.ui.theme.subhead02Bold
+import com.prography.ui.theme.subhead01Bold
 
 @Composable
 fun OrganizeContent(
@@ -50,10 +62,8 @@ fun OrganizeContent(
                 state.currentIndex + 1 else 0,
             totalCount = state.screenshots.size,
             onNavigateUp = { onAction(OrganizeAction.OnNavigateUp) },
-            onComplete = { onAction(OrganizeAction.OnSaveScreenshots) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -67,7 +77,7 @@ fun OrganizeContent(
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Box(
             modifier = Modifier
@@ -80,7 +90,6 @@ fun OrganizeContent(
                         OrganizeStackedCards(
                             screenshots = state.screenshots
                         )
-                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
 
@@ -90,8 +99,8 @@ fun OrganizeContent(
                             state = pagerState,
                             modifier = Modifier.fillMaxSize(),
                             key = { index -> state.screenshots.getOrNull(index)?.id ?: index },
-                            pageSpacing = 16.dp,
-                            contentPadding = PaddingValues(horizontal = 50.dp)
+                            pageSpacing = 12.dp,
+                            contentPadding = PaddingValues(horizontal = 77.dp)
                         ) { page ->
                             state.screenshots.getOrNull(page)?.let { screenshot ->
                                 OrganizeImageCard(
@@ -111,9 +120,29 @@ fun OrganizeContent(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(66.dp))
                     }
                 }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(37.dp))
+
+        // 현재 선택된 state.availableTags.map { it.name }, 이것만 보여주는 것 필요.
+        // 없을 경우 추가하기 + 버튼
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 36.dp * 2 + 8.dp),
+        ) {
+
+            val screenshotId = getCurrentScreenshotId()
+            state.availableTags?.forEach { tag ->
+                UiTagSelectedChip(
+                    text = tag.name,
+                    onDelete = { onAction(OrganizeAction.OnTagToggle(screenshotId, tag.name)) }
+                )
             }
         }
 
@@ -135,6 +164,15 @@ fun OrganizeContent(
                 }
             )
         }
+
+        UiLabelAddButton(
+            onClick = { onAction(OrganizeAction.OnSaveScreenshots) },
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .fillMaxWidth(),
+            text = "저장하기",
+            size = ButtonSize.LARGE
+        )
     }
 }
 
@@ -148,35 +186,32 @@ fun OrganizeStackedCards(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 18.dp)
     ) {
         // 뒤 배경용 그라디언트 카드
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 50.dp)
+                .padding(horizontal = 77.dp)
                 .aspectRatio(0.65f)
                 .graphicsLayer {
                     translationX = with(density) { 1.dp.toPx() }
                     translationY = with(density) { 1.dp.toPx() }
                     scaleX = 1f
                     scaleY = 1f
-                    alpha = 0.92f
-                    rotationZ = -8f
+                    alpha = 0.96f
+                    rotationZ = -4f
                 },
-            shape = RoundedCornerShape(26.dp),
+            shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFA5AEBF),
-                                Color(0xFF4D5159)
-                            )
-                        )
+                    .background(Gray04)
+                    .border(
+                        width = 1.dp,
+                        color = com.prography.ui.theme.Divider,
+                        shape = RoundedCornerShape(10.dp)
                     )
             )
         }
@@ -185,9 +220,9 @@ fun OrganizeStackedCards(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 50.dp)
+                .padding(horizontal = 77.dp)
                 .aspectRatio(0.65f),
-            shape = RoundedCornerShape(26.dp),
+            shape = RoundedCornerShape(4.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -208,76 +243,59 @@ fun OrganizeModeToggle(
     onModeChange: (OrganizeMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .background(
-                color = Gray03,
-                shape = RoundedCornerShape(9.dp)
-            )
-            .padding(2.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { onModeChange(OrganizeMode.BATCH) }
-                .then(
-                    if (currentMode == OrganizeMode.BATCH) {
-                        Modifier.shadow(
-                            elevation = 4.dp,
-                            shape = RoundedCornerShape(7.dp),
-                            spotColor = Color.Black.copy(0.25f)
-                        )
-                    } else {
-                        Modifier
-                    }
-                )
-                .background(
-                    color = if (currentMode == OrganizeMode.BATCH) Color.White else Color.Transparent,
-                    shape = RoundedCornerShape(7.dp)
-                )
-                .padding(horizontal = 34.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(com.prography.ui.R.string.organize_mode_batch),
-                style = if (currentMode == OrganizeMode.BATCH) subhead02Bold else body02Regular,
-                color = if (currentMode == OrganizeMode.BATCH) Text01 else Color.Gray
-            )
-        }
+    val tabs = listOf(
+        OrganizeMode.BATCH to stringResource(com.prography.ui.R.string.organize_mode_batch),
+        OrganizeMode.SINGLE to stringResource(com.prography.ui.R.string.organize_mode_single)
+    )
+    val selectedIndex = tabs.indexOfFirst { it.first == currentMode }.coerceAtLeast(0)
 
-        Box(
-            modifier = Modifier
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { onModeChange(OrganizeMode.SINGLE) }
-                .then(
-                    if (currentMode == OrganizeMode.SINGLE) {
-                        Modifier.shadow(
-                            elevation = 4.dp,
-                            shape = RoundedCornerShape(7.dp),
-                            spotColor = Color.Black.copy(0.25f)
-                        )
-                    } else {
-                        Modifier
-                    }
+    Column(modifier = modifier.padding(horizontal = 16.dp)) {
+        TabRow(
+            selectedTabIndex = selectedIndex,
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = Color.Transparent,
+            divider = {},
+            indicator = { positions ->
+                val pos = positions[selectedIndex]
+                Box(
+                    Modifier
+                        .tabIndicatorOffset(pos)
+                        .fillMaxWidth()
+                        .padding()
+                        .height(3.dp)
+                        .background(Primary, RoundedCornerShape(1.5.dp))
                 )
-                .background(
-                    color = if (currentMode == OrganizeMode.SINGLE) Color.White else Color.Transparent,
-                    shape = RoundedCornerShape(7.dp)
-                )
-                .padding(horizontal = 34.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
+            }
         ) {
-            Text(
-                text = stringResource(com.prography.ui.R.string.organize_mode_single),
-                style = if (currentMode == OrganizeMode.SINGLE) subhead02Bold else body02Regular,
-                color = if (currentMode == OrganizeMode.SINGLE) Text01 else Color.Gray
-            )
+            tabs.forEachIndexed { index, (mode, label) ->
+                val selected = index == selectedIndex
+                val color by animateColorAsState(
+                    targetValue = if (selected) Primary else Text03,
+                    label = "tabColor"
+                )
+
+                val interactionSource = remember { MutableInteractionSource() }
+
+                Tab(
+                    selected = selected,
+                    onClick = { onModeChange(mode) },
+                    selectedContentColor = Primary,
+                    unselectedContentColor = Color.Transparent,
+                    modifier = Modifier.weight(1f)
+                        .indication(interactionSource, null),
+                    interactionSource = interactionSource
+                ) {
+                    Box(Modifier.padding(vertical = 10.dp)) {
+                        Text(
+                            text = label,
+                            style = subhead01Bold,
+                            color = color
+                        )
+                    }
+                }
+            }
         }
+        HorizontalDivider(thickness = 1.dp, color = com.prography.ui.theme.Divider)
     }
 }
 

@@ -29,12 +29,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.prography.domain.usecase.storage.SaveOrganizedIdsUseCase
+import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.domain.usecase.user.GetDeletePromptSettingUseCase
+import java.io.IOException
 
 @HiltViewModel
 class OrganizeViewModel @Inject constructor(
     private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase,
-    private val getRecentTagsUseCase: GetRecentTagsUseCase,
+    private val getUserTagsUseCase: GetUserTagsUseCase,
     private val addRecentTagUseCase: AddRecentTagUseCase,
     private val saveOrganizedIdsUseCase: SaveOrganizedIdsUseCase,
     private val getDeletePromptSettingUseCase: GetDeletePromptSettingUseCase,
@@ -329,21 +331,27 @@ class OrganizeViewModel @Inject constructor(
         )
     }
 
+
     private fun loadRecentTags() {
         viewModelScope.launch {
             try {
-                val recentTags = getRecentTagsUseCase().first()
-                if (recentTags.isNotEmpty()) {
-                    updateState { copy(availableTags = recentTags) }
-                    Timber.d("Loaded recent tags: $recentTags")
-                } else {
-                    // 기본 태그 사용
-                    updateState { copy(availableTags = getAvailableTags()) }
-                }
+                getUserTagsUseCase().fold(
+                    onSuccess = { tags ->
+                        updateState { copy(availableTags = tags) }
+                    },
+                    onFailure = { e ->
+                        val errorMessage = when (e) {
+                            is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
+                            else -> "태그를 불러오는데 실패했습니다: ${e.message}"
+                        }
+                        updateState { copy(availableTags = getAvailableTags()) }
+                        showToast(errorMessage)
+                    }
+                )
             } catch (e: Exception) {
-                Timber.e(e, "Failed to load recent tags")
-                // 기본 태그 사용
+                val errorMessage = "태그를 불러오는데 실패했습니다: ${e.message}"
                 updateState { copy(availableTags = getAvailableTags()) }
+                showToast(errorMessage)
             }
         }
     }

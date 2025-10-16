@@ -16,11 +16,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.component.UiImageDetailTagChip
 import com.prography.ui.component.UiTagChip
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.Gray04
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.Text03
+import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.caption02Regular
 import com.prography.ui.theme.subhead01Bold
 
@@ -54,14 +56,14 @@ fun OrganizeBottomControls(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(com.prography.ui.R.string.organize_recent_tags),
+                text = "최근 추가한 태그",
                 style = subhead01Bold,
                 color = Text01
             )
 
             Text(
                 text = stringResource(com.prography.ui.R.string.common_add),
-                style = caption02Regular,
+                style = body02Regular,
                 color = Text03,
                 modifier = Modifier.clickableWithoutRipple { onAddTag() }
             )
@@ -78,9 +80,9 @@ fun OrganizeBottomControls(
             }
 
             items(sortedTags) { tagText ->
-                UiTagChip(
+                UiImageDetailTagChip(
                     text = tagText,
-                    isSelected = selectedTags.contains(tagText),
+                    enabled = selectedTags.contains(tagText),
                     onClick = {
                         onTagToggle(tagText)
                     }

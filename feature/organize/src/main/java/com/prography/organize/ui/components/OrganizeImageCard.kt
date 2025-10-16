@@ -40,6 +40,8 @@ import coil3.compose.rememberAsyncImagePainter
 import com.prography.organize.R
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.ui.component.clickableWithoutRipple
+import com.prography.ui.theme.headline02Bold
+import com.prography.ui.theme.headline03Bold
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 
@@ -106,7 +108,7 @@ fun OrganizeImageCard(
                 .aspectRatio(0.65f)
                 .graphicsLayer {
                     translationY = offsetY
-                    alpha = deleteAlpha * if (isCurrentPage) 1f else 0.5f
+                    alpha = deleteAlpha * if (isCurrentPage) 1f else 0.7f
                     scaleY = pageScale * deleteScale
                 }
                 .pointerInput(Unit) {
@@ -146,7 +148,7 @@ fun OrganizeImageCard(
                     }
                 }
             ,
-            shape = RoundedCornerShape(26.dp),
+            shape = RoundedCornerShape(4.dp),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Box(
@@ -154,10 +156,10 @@ fun OrganizeImageCard(
                     .border(
                         width = 1.dp,
                         color = com.prography.ui.theme.Divider,
-                        shape = RoundedCornerShape(size = 26.dp)
+                        shape = RoundedCornerShape(size = 4.dp)
                     )
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(26.dp))
+                    .clip(RoundedCornerShape(4.dp))
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(screenshot.uri),
@@ -169,16 +171,17 @@ fun OrganizeImageCard(
                 Icon(
                     painter = painterResource(
                         if (screenshot.isFavorite) {
-                            com.prography.ui.R.drawable.ic_favorite_checked
+                            com.prography.ui.R.drawable.ic_tab_favorite_checked
                         } else {
-                            com.prography.ui.R.drawable.ic_favorite_unchecked
+                            com.prography.ui.R.drawable.ic_tab_favorite_unchecked
                         }
                     ),
                     contentDescription = if (screenshot.isFavorite) "즐겨찾기 해제" else "즐겨찾기 추가",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
+                        .align(Alignment.BottomStart)
+                        .padding(start = 16.dp, bottom = 12.dp)
+                        .size(24.dp)
                         .clickableWithoutRipple {
                             onFavoriteToggle(!screenshot.isFavorite)
                         }
@@ -221,11 +224,8 @@ fun OrganizeImageCard(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stringResource(com.prography.ui.R.string.organize_delete_confirmation),
-                            style = TextStyle(
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                lineHeight = 28.sp,
-                                fontFamily = FontFamily(Font(com.prography.ui.R.font.pretendard_semibold))
+                            style = headline03Bold.copy(
+                                color = Color.White
                             )
                         )
                     }
