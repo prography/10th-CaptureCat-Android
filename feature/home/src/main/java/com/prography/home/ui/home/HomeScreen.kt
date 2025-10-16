@@ -66,13 +66,6 @@ fun HomeScreen(
         }
     }
 
-    // 화면 재접근 시 Paging3 새로고침
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME, lifecycleOwner) {
-        pagingItems.refresh()
-        viewModel.loadFavoriteImages()
-    }
-
     var isFabMenuOpen by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize()) {

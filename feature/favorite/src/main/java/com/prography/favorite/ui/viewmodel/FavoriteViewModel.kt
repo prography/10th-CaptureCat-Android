@@ -1,11 +1,16 @@
 package com.prography.favorite.ui.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.prography.domain.model.TagModel
 import com.prography.favorite.ui.contract.FavoriteAction
 import com.prography.favorite.ui.contract.FavoriteEffect
 import com.prography.favorite.ui.contract.FavoriteState
+import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
+import com.prography.domain.usecase.screenshot.GetFavoriteTagsUseCase
+import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
+import com.prography.domain.usecase.screenshot.SearchFavoriteImagesByTagUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
@@ -19,61 +24,89 @@ import javax.inject.Inject
 class FavoriteViewModel @Inject constructor(
     private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
     private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
+    private val getFavoriteTagsUseCase: GetFavoriteTagsUseCase,
+    private val searchFavoriteImagesByTagUseCase: SearchFavoriteImagesByTagUseCase,
     private val navigationHelper: NavigationHelper
-) : BaseComposeViewModel<FavoriteState, FavoriteEffect, FavoriteAction>(
-    initialState = FavoriteState()
-) {
+) : BaseComposeViewModel<FavoriteState, FavoriteEffect, FavoriteAction>(FavoriteState()) {
 
-    init {
-        sendAction(FavoriteAction.LoadFavoriteScreenshots)
-    }
+    init { sendAction(FavoriteAction.LoadFavoriteScreenshots) }
 
     override fun handleAction(action: FavoriteAction) {
         when (action) {
             FavoriteAction.LoadFavoriteScreenshots -> loadFavoriteScreenshots()
             is FavoriteAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
             is FavoriteAction.OnToggleFavorite -> handleToggleFavorite(action.screenshot)
-            FavoriteAction.OnNavigateUp -> {
-                navigationHelper.navigate(NavigationEvent.Up)
-            }
+            is FavoriteAction.OnTagSelected -> applyTagFilter(action.tag)
+            FavoriteAction.NavigateToTagSetting -> navigationHelper.navigate(NavigationEvent.To(AppRoute.TagSetting))
+            FavoriteAction.OnNavigateUp -> navigationHelper.navigate(NavigationEvent.Up)
         }
     }
 
     private fun loadFavoriteScreenshots() {
         viewModelScope.launch {
-            try {
-                updateState { copy(isLoading = true) }
+            updateState { copy(isLoading = true) }
 
-                getFavoriteImagesUseCase().onSuccess { favoriteScreenshots ->
-                    updateState {
-                        copy(
-                            favoriteScreenshots = favoriteScreenshots,
-                            hasData = favoriteScreenshots.isNotEmpty(),
-                            isLoading = false
-                        )
-                    }
-                }.onFailure { exception ->
-                    updateState { copy(isLoading = false) }
-                    showToast("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.")
+            getFavoriteImagesUseCase().onSuccess { favorites ->
+                val tags = runCatching { getFavoriteTagsUseCase(10) }.getOrElse { emptyList() }
+                val selectedTag = currentState.selectedTag
+                val displayed = filterByTag(favorites, selectedTag)
+
+                updateState {
+                    copy(
+                        favoriteScreenshots = favorites,
+                        displayedScreenshots = displayed,
+                        popularTags = tags,
+                        hasData = favorites.isNotEmpty(),
+                        isLoading = false
+                    )
                 }
-            } catch (e: Exception) {
+            }.onFailure {
                 updateState { copy(isLoading = false) }
                 showToast("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.")
             }
         }
     }
 
-    private fun handleScreenshotClick(clickedScreenshot: UiScreenshotModel) {
-        val currentFavorites = currentState.favoriteScreenshots
-        val currentIndex = currentFavorites.indexOf(clickedScreenshot)
+    private fun applyTagFilter(tag: TagModel?) {
+        viewModelScope.launch {
+            updateState { copy(selectedTag = tag, isFiltering = true) }
 
-        if (currentIndex != -1) {
-            val screenshotIds = currentFavorites.map { it.id }
+            val result = if (tag == null) {
+                getFavoriteImagesUseCase()
+            } else {
+                tag.id?.let { searchFavoriteImagesByTagUseCase(tagId = it.toInt()) }
+            }
+
+            result?.onSuccess { favorites ->
+                updateState {
+                    copy(
+                        displayedScreenshots = favorites,
+                        isFiltering = false
+                    )
+                }
+            }?.onFailure {
+                updateState { copy(isFiltering = false) }
+                showToast("태그 필터링 중 오류가 발생했습니다.")
+            }
+        }
+    }
+
+    private fun filterByTag(all: List<UiScreenshotModel>, tag: TagModel?): List<UiScreenshotModel> {
+        return when {
+            tag == null -> all
+            else -> all.filter { it.tags.any { t -> t.name == tag.name } }
+        }
+    }
+
+    private fun handleScreenshotClick(clicked: UiScreenshotModel) {
+        val list = currentState.displayedScreenshots
+        val idx = list.indexOf(clicked)
+        if (idx != -1) {
             navigationHelper.navigate(
                 NavigationEvent.To(
                     AppRoute.ImageDetail(
-                        screenshotIds = screenshotIds,
-                        currentIndex = currentIndex,
+                        screenshotIds = list.map { it.id },
+                        currentIndex = idx,
                         entryPoint = "favorite_detail"
                     )
                 )
@@ -85,7 +118,6 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 toggleBookmarkUseCase(screenshot.id, false)
-                // 성공 시 데이터 새로고침
                 loadFavoriteScreenshots()
             } catch (e: Exception) {
                 showToast("즐겨찾기 해제 중 오류가 발생했습니다.")
@@ -93,3 +125,4 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 }
+

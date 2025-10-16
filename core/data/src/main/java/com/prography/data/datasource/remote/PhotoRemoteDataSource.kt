@@ -17,12 +17,13 @@ interface PhotoRemoteDataSource {
     suspend fun deleteScreenshot(screenshotId: String): Result<Unit>
     suspend fun addBookmark(imageId: String): Result<Unit>
     suspend fun removeBookmark(imageId: String): Result<Unit>
-    suspend fun getFavoriteImages(page: Int = 0, size: Int = 10): Result<List<UiScreenshotModel>>
+    suspend fun getFavoriteImages(page: Int = 0, size: Int = 10, tagId: Int = 0): Result<List<UiScreenshotModel>>
     suspend fun addTagsToScreenshot(
         screenshotId: String,
         tagNames: List<String>
     ): Result<List<TagModel>>
     suspend fun getMostUsedTags(size: Int): Result<List<TagWithCount>>
+    suspend fun getFavoriteTags(size: Int): Result<List<TagWithCount>>
     suspend fun completeTutorial(): Result<Unit>
     suspend fun searchImagesByTags(
         tagNames: List<String>,

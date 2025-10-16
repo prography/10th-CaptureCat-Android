@@ -27,4 +27,7 @@ interface ScreenshotDao {
 
     @Query("DELETE FROM screenshots")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM screenshots WHERE isBookmarked = 1")
+    fun getBookmarked(): Flow<List<ScreenshotEntity>>
 }

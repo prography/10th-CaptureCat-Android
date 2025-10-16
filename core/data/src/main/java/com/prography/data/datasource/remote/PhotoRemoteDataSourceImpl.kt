@@ -22,7 +22,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import androidx.core.net.toUri
 import com.prography.domain.model.TagModel
 
 class PhotoRemoteDataSourceImpl @Inject constructor(
@@ -89,7 +88,9 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                 uploadItems
             )
             val uploadItemsPart = MultipartBody.Part.createFormData(
-                "uploadItems", "uploadItems.json", uploadItemsJson.toRequestBody("application/json".toMediaType())
+                "uploadItems",
+                "uploadItems.json",
+                uploadItemsJson.toRequestBody("application/json".toMediaType())
             )
 
 
@@ -123,7 +124,8 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                     }
 
                     val requestFile = bytes.toRequestBody(contentType.toMediaType())
-                    val filePart = MultipartBody.Part.createFormData("files", finalFileName, requestFile)
+                    val filePart =
+                        MultipartBody.Part.createFormData("files", finalFileName, requestFile)
                     fileParts.add(filePart)
 
                     Timber.d("Added file part for: $finalFileName")
@@ -209,6 +211,7 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                 } ?: emptyList()
                 Result.success(tagModels)
             }
+
             is NetworkState.Failure -> {
                 Result.failure(Exception(networkState.error ?: "태그 추가 실패"))
             }
@@ -338,10 +341,19 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFavoriteImages(page: Int, size: Int): Result<List<UiScreenshotModel>> {
+    override suspend fun getFavoriteImages(
+        page: Int,
+        size: Int,
+        tagId: Int
+    ): Result<List<UiScreenshotModel>> {
         Timber.d("Calling photoService.getFavoriteImages(page=$page, size=$size)")
 
-        return when (val networkState = photoService.getFavoriteImages(page, size)) {
+        return when (
+            val networkState = if (tagId == 0)
+                photoService.getFavoriteImages(page, size)
+            else
+                photoService.getFavoriteImages(page, size, tagId)
+        ) {
             is NetworkState.Success -> {
                 Timber.d("Favorite images API Response: ${networkState.body}")
                 val favoriteImages =
@@ -377,6 +389,40 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
                     TagWithCount(
                         tag = tagResponse.name,
                         count = 0 // 
+                    )
+                } ?: emptyList()
+                Timber.d("Converted most used tags: ${tags.size} items")
+                Result.success(tags)
+            }
+
+            is NetworkState.Failure -> {
+                Timber.e("Most used tags API Failure: ${networkState.error}")
+                Result.failure(Exception("API 호출 실패: ${networkState.error}"))
+            }
+
+            is NetworkState.NetworkError -> {
+                Timber.e("Most used tags Network Error: ${networkState.error}")
+                Result.failure(networkState.error)
+            }
+
+            is NetworkState.UnknownError -> {
+                Timber.e("Most used tags Unknown Error: ${networkState.errorState}")
+                Result.failure(networkState.t ?: Exception(networkState.errorState))
+            }
+        }
+    }
+
+    override suspend fun getFavoriteTags(size: Int): Result<List<TagWithCount>> {
+        Timber.d("Calling photoService.getMostUsedTags(size=$size)")
+
+        return when (val networkState = photoService.getFavoriteTags(size = size)) {
+            is NetworkState.Success -> {
+                Timber.d("Most used tags API Response: ${networkState.body}")
+                val tags = networkState.body.data?.items?.map { tagResponse ->
+                    TagWithCount(
+                        id = tagResponse.id.toInt(),
+                        tag = tagResponse.name,
+                        count = 0 //
                     )
                 } ?: emptyList()
                 Timber.d("Converted most used tags: ${tags.size} items")
@@ -682,11 +728,13 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
             getCurrentDate()
         }
     }
+
     private fun sanitizeFileName(fileName: String): String {
         return fileName
             .replace(" ", "_") // 공백 제거
             .replace(Regex("[^A-Za-z0-9_.-]"), "") // 영문, 숫자, _, ., - 제외 전부 제거
     }
+
     private fun getCurrentDate(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return formatter.format(Date())

@@ -112,6 +112,51 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         return mostUsedTags
     }
 
+    override suspend fun getFavoriteTags(size: Int): List<TagWithCount> {
+        val screenshots = dao.getBookmarked().firstOrNull()?.map { it.toDomain() }.orEmpty()
+
+        val tagCounts = screenshots.asSequence()
+            .flatMap { it.tags.asSequence() }
+            .groupingBy { it.name }
+            .eachCount()
+
+        return tagCounts.entries.asSequence()
+            .sortedByDescending { it.value }
+            .take(size)
+            .map { TagWithCount(0, it.key, it.value) }
+            .toList()
+    }
+
+    override suspend fun getBookmarkedPagedFiltered(
+        tagId: Int,
+        page: Int,
+        size: Int
+    ): List<UiScreenshotModel> {
+        // 1) 즐겨찾기만 읽기
+        val favorites = dao.getBookmarked().firstOrNull()
+            ?.map { it.toDomain() }
+            .orEmpty()
+
+        // 2) tagId 필터 (tagId == 0이면 필터 생략)
+        val filtered = if (tagId == 0) {
+            favorites
+        } else {
+            favorites.filter { sc ->
+                sc.tags.any { t -> t.id?.toInt() == tagId }
+            }
+        }
+
+        // 3) 페이징
+        val start = page * size
+        val end = (start + size).coerceAtMost(filtered.size)
+        return if (start in 0..filtered.lastIndex || (start == 0 && filtered.isEmpty())) {
+            filtered.subList(start, end)
+        } else {
+            emptyList()
+        }
+    }
+
+
     override suspend fun searchImagesByTags(
         tagNames: List<String>,
         page: Int,
