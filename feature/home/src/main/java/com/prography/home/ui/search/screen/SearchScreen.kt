@@ -58,7 +58,7 @@ fun SearchScreen(
 
     // 5) 화면 전환 없이 “상태 기반” UI
     when (stage) {
-        SearchStage.HOME -> {
+        SearchStage.HOME, SearchStage.AUTOCOMPLETE -> {
             SearchContent(
                 state = searchState,
                 onAction = { action ->
@@ -75,30 +75,10 @@ fun SearchScreen(
                             searchResultsViewModel.sendAction(SearchAction.AddTag(action.tag))
                         }
 
-                        // 기타(SearchBar 입력 등)
-                        else -> searchViewModel.sendAction(action)
-                    }
-                },
-                modifier = modifier
-            )
-        }
-
-        SearchStage.AUTOCOMPLETE -> {
-            // SearchContent 자체가 자동완성 리스트/빈 상태를 모두 처리
-            SearchContent(
-                state = searchState,
-                onAction = { action ->
-                    when (action) {
-                        // 자동완성 탭 → 태그 추가 → 결과 화면으로 (상태로 전환)
-                        is SearchAction.AddTag -> {
-                            searchViewModel.sendAction(action)
-                            searchResultsViewModel.sendAction(SearchAction.AddTag(action.tag))
-                        }
-
                         // 취소/뒤로 → 홈
-                        SearchAction.NavigateToStorage -> onNavigateToStorage()
                         SearchAction.ClearSearch -> goHome()
 
+                        // 기타(SearchBar 입력 등)
                         else -> searchViewModel.sendAction(action)
                     }
                 },
