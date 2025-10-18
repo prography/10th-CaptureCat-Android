@@ -137,7 +137,6 @@ fun OrganizeContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(36.dp) // 한 줄 높이
                 .padding(end = 16.dp, bottom = 16.dp)
                 .horizontalScroll(rememberScrollState())
         ) {
