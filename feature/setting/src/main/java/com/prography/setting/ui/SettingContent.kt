@@ -117,7 +117,10 @@ fun SettingContent(
             item {
                 HelpSection(
                     isLoggedIn = state.isLoggedIn,
-                    onChannel = { /* TODO */ },
+                    onChannel = {
+                        val intent = Intent(Intent.ACTION_VIEW, "https://pf.kakao.com/_AKjvn".toUri())
+                        context.startActivity(intent)
+                    },
                     onReset = { onAction(SettingAction.OnClickReset) },
                     onLogout = { onAction(SettingAction.OnClickLogout) },
                     onWithdraw = { onAction(SettingAction.OnClickWithdraw) }
