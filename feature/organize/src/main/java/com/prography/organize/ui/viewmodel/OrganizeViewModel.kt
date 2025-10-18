@@ -165,23 +165,36 @@ class OrganizeViewModel @Inject constructor(
         val hadTag = currentTags.any { it.name == tagText }
         if (hadTag) {
             updateState {
+                // 1) 스샷들에서 태그 제거
                 val updatedScreenshots = when (organizeMode) {
                     OrganizeMode.BATCH -> {
-                        screenshots.map { screenshot ->
-                            val updatedTags = screenshot.tags.filterNot { it.name == tagText }
-                            screenshot.copy(tags = updatedTags)
+                        screenshots.map { sc ->
+                            val updatedTags = sc.tags.filterNot { it.name.equals(tagText, ignoreCase = true) }
+                            sc.copy(tags = updatedTags)
                         }
                     }
                     OrganizeMode.SINGLE -> {
-                        screenshots.map { screenshot ->
-                            if (screenshot.id == screenshotId) {
-                                val updatedTags = screenshot.tags.filterNot { it.name == tagText }
-                                screenshot.copy(tags = updatedTags)
-                            } else screenshot
+                        screenshots.map { sc ->
+                            if (sc.id == screenshotId) {
+                                val updatedTags = sc.tags.filterNot { it.name.equals(tagText, ignoreCase = true) }
+                                sc.copy(tags = updatedTags)
+                            } else sc
                         }
                     }
                 }
-                copy(screenshots = updatedScreenshots)
+
+                // 2) 해당 태그가 더 이상 어떤 스샷에서도 안 쓰이면 availableTags에서도 제거
+                val tagStillUsed = updatedScreenshots.any { sc ->
+                    sc.tags.any { it.name.equals(tagText, ignoreCase = true) }
+                }
+                val updatedAvailable =
+                    if (tagStillUsed) availableTags
+                    else availableTags.filterNot { it.name.equals(tagText, ignoreCase = true) }
+
+                copy(
+                    screenshots = updatedScreenshots,
+                    availableTags = updatedAvailable
+                )
             }
         } else if (currentTags.size >= 4) {
             showToast("태그는 최대 4개까지 지정할 수 있어요.")
@@ -190,23 +203,35 @@ class OrganizeViewModel @Inject constructor(
             updateState {
                 val updatedScreenshots = when (organizeMode) {
                     OrganizeMode.BATCH -> {
-                        screenshots.map { screenshot ->
-                            if (screenshot.tags.any { it.name == tagText }) screenshot
-                            else screenshot.copy(tags = screenshot.tags + newTagModel)
+                        screenshots.map { sc ->
+                            if (sc.tags.any { it.name.equals(tagText, ignoreCase = true) }) sc
+                            else sc.copy(tags = sc.tags + newTagModel)
                         }
                     }
                     OrganizeMode.SINGLE -> {
-                        screenshots.map { screenshot ->
-                            if (screenshot.id == screenshotId && !screenshot.tags.any { it.name == tagText }) {
-                                screenshot.copy(tags = screenshot.tags + newTagModel)
-                            } else screenshot
+                        screenshots.map { sc ->
+                            if (sc.id == screenshotId && sc.tags.none { it.name.equals(tagText, ignoreCase = true) }) {
+                                sc.copy(tags = sc.tags + newTagModel)
+                            } else sc
                         }
                     }
                 }
-                copy(screenshots = updatedScreenshots)
+
+                // 추가 시 availableTags 맨 앞에(또는 치환) 반영 – 기존 로직 유지/강화
+                val updatedAvailable =
+                    if (availableTags.any { it.name.equals(newTagModel.name, ignoreCase = true) }) {
+                        availableTags.map { if (it.name.equals(newTagModel.name, ignoreCase = true)) newTagModel else it }
+                            .distinctBy { it.name.lowercase() }
+                    } else listOf(newTagModel) + availableTags
+
+                copy(
+                    screenshots = updatedScreenshots,
+                    availableTags = updatedAvailable
+                )
             }
         }
     }
+
 
 
     private fun canAttach(sc: OrganizeScreenshotItem, name: String): Boolean =
@@ -222,12 +247,15 @@ class OrganizeViewModel @Inject constructor(
                 // 서버/레포 성공 시 TagModel 반환 (Flow<TagModel>의 첫 값)
                 addRecentTagUseCase(t).first()
             }.onSuccess { saved ->
-                // 1) availableTags 반영 (기존 동일 name 있으면 치환, 없으면 맨 앞 추가)
                 updateState {
-                    val newAvailable = if (availableTags.any { it.name.equals(saved.name, true) }) {
-                        availableTags.map { if (it.name.equals(saved.name, true)) saved else it }
-                            .distinctBy { it.name.lowercase() }
-                    } else listOf(saved) + availableTags
+                    val newAvailable = run {
+                        val idx = availableTags.indexOfFirst { it.name.equals(saved.name, ignoreCase = true) }
+                        if (idx >= 0) {
+                            availableTags.toMutableList().apply { set(idx, saved) }.toList()
+                        } else {
+                            availableTags + saved
+                        }
+                    }
 
                     // 2) 스크린샷들에 실제 태그 부착 (mode에 따라 대상 달라짐)
                     val newScreenshots = when (organizeMode) {

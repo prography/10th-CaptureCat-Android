@@ -82,7 +82,7 @@ fun OrganizeBottomControls(
             items(sortedTags) { tagText ->
                 UiImageDetailTagChip(
                     text = tagText,
-                    enabled = selectedTags.contains(tagText),
+                    enabled = !selectedTags.contains(tagText),
                     onClick = {
                         onTagToggle(tagText)
                     }

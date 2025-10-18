@@ -130,7 +130,7 @@ fun OrganizeContent(
         // 현재 선택된 state.availableTags.map { it.name }, 이것만 보여주는 것 필요.
         // 없을 경우 추가하기 + 버튼
 
-        FlowRow(
+        Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,10 +138,13 @@ fun OrganizeContent(
         ) {
 
             val screenshotId = getCurrentScreenshotId()
-            state.availableTags?.forEach { tag ->
+            val selectedTags: List<String> =
+                getCurrentScreenshotTags() // 현재(싱글/배치 컨텍스트)의 부착 태그 이름 리스트
+
+            selectedTags.forEach { name ->
                 UiTagSelectedChip(
-                    text = tag.name,
-                    onDelete = { onAction(OrganizeAction.OnTagToggle(screenshotId, tag.name)) }
+                    text = name,
+                    onDelete = { onAction(OrganizeAction.OnTagToggle(screenshotId, name)) }
                 )
             }
         }
@@ -281,7 +284,8 @@ fun OrganizeModeToggle(
                     onClick = { onModeChange(mode) },
                     selectedContentColor = Primary,
                     unselectedContentColor = Color.Transparent,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .indication(interactionSource, null),
                     interactionSource = interactionSource
                 ) {
