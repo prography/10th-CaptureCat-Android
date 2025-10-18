@@ -1,9 +1,10 @@
 package com.prography.home.ui.search.contract
 
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
+
+enum class SearchStage { HOME, AUTOCOMPLETE, RESULTS }
 
 // Define UI State
 data class SearchState(

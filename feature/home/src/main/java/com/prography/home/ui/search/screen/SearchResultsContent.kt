@@ -47,20 +47,8 @@ fun SearchResultsContent(
     onAction: (SearchAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val searchRefreshManager: SearchRefreshManager =
-        hiltViewModel<SearchRefreshWrapper>().searchRefreshManager
-    var lastProcessedTime by remember { mutableLongStateOf(0L) }
-
     LaunchedEffect(Unit) {
-        searchRefreshManager.refreshEvent.collect {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastProcessedTime > 1000) {
-                lastProcessedTime = currentTime
-                if (state.selectedTags.isNotEmpty()) {
-                    onAction(SearchAction.RefreshSearchResults)
-                }
-            }
-        }
+        onAction(SearchAction.RefreshSearchResults)
     }
 
     Column(

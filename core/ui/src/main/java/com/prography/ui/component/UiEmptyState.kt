@@ -36,7 +36,7 @@ fun UiEmptyState(
             Text(
                 text = title,
                 style = headline02Bold,
-                color = Text02,
+                color = Text03,
                 textAlign = TextAlign.Center
             )
 
