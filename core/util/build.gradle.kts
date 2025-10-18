@@ -13,4 +13,5 @@ dependencies {
     implementation(libs.mixpanel)
     implementation(libs.app.update.ktx)
     implementation (libs.kotlinx.coroutines.play.services)
+    implementation (libs.review.ktx)
 }

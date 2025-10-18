@@ -1,5 +1,6 @@
 package com.prography.setting.ui
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -30,8 +31,11 @@ import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.*
 import com.prography.ui.R.string as UiString
 import androidx.core.net.toUri
+import com.prography.util.update.AppReviewHelper
 import com.prography.util.update.AppUpdateHelper
 import com.prography.util.update.VersionUtils
+import com.prography.util.update.findActivity
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
@@ -41,6 +45,7 @@ fun SettingContent(
 ) {
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val updateAvailable = rememberMarketUpdateState()
     val versionName = VersionUtils.getInstalledVersionName(context)
 
@@ -93,7 +98,18 @@ fun SettingContent(
                     onTerms = {
                         onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
                     },
-                    onReview = { /* TODO */ },
+                    onReview = {
+                        val activity = context.findActivity()
+                        if (activity != null) {
+                            scope.launch {
+                                // 실패해도 조용히 넘김 (API 권장)
+                                AppReviewHelper.showInAppReview(activity)
+                            }
+                        } else {
+                            // 프리뷰/특수 컨텍스트 등 Activity 없으면 스토어로 폴백
+                            openPlayStore(context)
+                        }
+                    },
                     onUpdate = { openPlayStore(context) },
                     updateAvailable = updateAvailable
                 )
