@@ -30,19 +30,19 @@ import com.prography.ui.component.UiPrimaryButton
 import com.prography.ui.theme.*
 import com.prography.ui.R.string as UiString
 import androidx.core.net.toUri
+import com.prography.util.update.AppUpdateHelper
+import com.prography.util.update.VersionUtils
+import timber.log.Timber
 
 @Composable
 fun SettingContent(
     state: SettingState,
     onAction: (SettingAction) -> Unit
 ) {
+
     val context = LocalContext.current
-    val versionName = remember {
-        try {
-            val pi = context.packageManager.getPackageInfo(context.packageName, 0)
-            pi.versionName ?: "-"
-        } catch (_: Exception) { "-" }
-    }
+    val updateAvailable = rememberMarketUpdateState()
+    val versionName = VersionUtils.getInstalledVersionName(context)
 
     Column(
         modifier = Modifier
@@ -94,7 +94,8 @@ fun SettingContent(
                         onAction(SettingAction.OnExternalLink("https://ujins.notion.site/1ff6b91b83f580519258d2256a319737"))
                     },
                     onReview = { /* TODO */ },
-                    onUpdate = { openPlayStore(context) }
+                    onUpdate = { openPlayStore(context) },
+                    updateAvailable = updateAvailable
                 )
             }
             item {
@@ -227,7 +228,8 @@ private fun ServiceInfoSection(
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
     onReview: () -> Unit,
-    onUpdate: () -> Unit
+    onUpdate: () -> Unit,
+    updateAvailable: Boolean
 ) {
     SettingTitleMenuItem(text = stringResource(UiString.setting_service_info))
 
@@ -235,14 +237,18 @@ private fun ServiceInfoSection(
     SettingMenuItem(text = stringResource(UiString.setting_terms_of_service), onClick = onTerms)
     SettingMenuItem(text = stringResource(UiString.setting_app_review), onClick = onReview)
 
+    val trailing: @Composable () -> Unit = if (updateAvailable) {
+        { UpdateBadge(onClick = onUpdate) }
+    } else {
+        { Text(text = "최신 버전", style = body01Regular, color = Text03) }
+    }
+
     SettingMenuItem(
         text = stringResource(UiString.setting_version_info, versionName),
-        trailing = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                UpdateBadge(onClick = onUpdate)
-            }
-        },
-        onClick = onUpdate
+        trailing = trailing,
+        onClick = {
+            if (updateAvailable) onUpdate()
+        }
     )
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -338,6 +344,20 @@ private fun SettingTitleMenuItem(text: String) {
             .background(Gray02)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     )
+}
+
+
+@Composable
+fun rememberMarketUpdateState(): Boolean {
+    val context = LocalContext.current
+    var updateAvailable by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        updateAvailable = AppUpdateHelper.isUpdateAvailable(context)
+        Timber.d("updateAvailable $updateAvailable")
+    }
+
+    return updateAvailable
 }
 
 /* -------------------- 뱃지 & 유틸 -------------------- */

@@ -11,4 +11,6 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(libs.android.permissions)
     implementation(libs.mixpanel)
+    implementation(libs.app.update.ktx)
+    implementation (libs.kotlinx.coroutines.play.services)
 }

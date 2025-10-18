@@ -227,12 +227,6 @@ class SplashActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun getStoreVersion(): String {
-        // TODO: 실제로는 스토어 스크래핑 또는 전용 API로 가져와야 함
-        // 지금은 Remote Config의 값을 임시로 사용
-        return FirebaseRemoteConfig.getInstance().getString("android_min_supported_version")
-    }
-
     private fun compareVersionNames(current: String, minimum: String): Boolean {
         val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
         val minimumParts = minimum.split(".").map { it.toIntOrNull() ?: 0 }
