@@ -4,11 +4,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -32,6 +34,7 @@ import com.prography.organize.ui.contract.OrganizeAction
 import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
 import com.prography.ui.component.ButtonSize
+import com.prography.ui.component.UiAddTagChip
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.component.UiTagSelectedChip
@@ -127,24 +130,34 @@ fun OrganizeContent(
 
         Spacer(modifier = Modifier.height(37.dp))
 
-        // 현재 선택된 state.availableTags.map { it.name }, 이것만 보여주는 것 필요.
         // 없을 경우 추가하기 + 버튼
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 36.dp * 2 + 8.dp),
+                .height(36.dp) // 한 줄 높이
+                .padding(end = 16.dp, bottom = 16.dp)
+                .horizontalScroll(rememberScrollState())
         ) {
 
             val screenshotId = getCurrentScreenshotId()
-            val selectedTags: List<String> =
-                getCurrentScreenshotTags() // 현재(싱글/배치 컨텍스트)의 부착 태그 이름 리스트
+            val selectedTags: List<String> = getCurrentScreenshotTags()
+            val count = selectedTags.size
 
             selectedTags.forEach { name ->
                 UiTagSelectedChip(
                     text = name,
                     onDelete = { onAction(OrganizeAction.OnTagToggle(screenshotId, name)) }
+                )
+            }
+            if (count < 4) {
+                val addLabel = if (count == 0) "추가하기 +" else "+"
+
+                UiAddTagChip(
+                    label = addLabel,
+                    onClick = { onAction(OrganizeAction.OnAddTag(screenshotId)) }
                 )
             }
         }
@@ -160,10 +173,6 @@ fun OrganizeContent(
                 onTagToggle = { tagText ->
                     val screenshotId = getCurrentScreenshotId()
                     onAction(OrganizeAction.OnTagToggle(screenshotId, tagText))
-                },
-                onAddTag = {
-                    val screenshotId = getCurrentScreenshotId()
-                    onAction(OrganizeAction.OnAddTag(screenshotId))
                 }
             )
         }

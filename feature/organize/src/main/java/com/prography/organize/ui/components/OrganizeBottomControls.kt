@@ -30,8 +30,7 @@ import com.prography.ui.theme.subhead01Bold
 fun OrganizeBottomControls(
     availableTags: List<String> = emptyList(),
     selectedTags: List<String> = emptyList(),
-    onTagToggle: (String) -> Unit = {},
-    onAddTag: () -> Unit = {}
+    onTagToggle: (String) -> Unit = {}
 ) {
     // 기본 태그들 (예시 데이터) - availableTags가 비어있을 때만 사용
     val defaultAvailableTags = listOf(
@@ -52,20 +51,12 @@ fun OrganizeBottomControls(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "최근 추가한 태그",
                 style = subhead01Bold,
                 color = Text01
-            )
-
-            Text(
-                text = stringResource(com.prography.ui.R.string.common_add),
-                style = body02Regular,
-                color = Text03,
-                modifier = Modifier.clickableWithoutRipple { onAddTag() }
             )
         }
 
@@ -112,7 +103,6 @@ fun OrganizeBottomControlsWidePreview() {
     OrganizeBottomControls(
         availableTags = customAvailableTags,
         selectedTags = customSelectedTags,
-        onTagToggle = { tagText -> println("Toggle tag: $tagText") },
-        onAddTag = { println("Add new tag") }
+        onTagToggle = { tagText -> println("Toggle tag: $tagText") }
     )
 }

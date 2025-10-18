@@ -177,7 +177,7 @@ fun OrganizeImageCard(
                         }
                     ),
                     contentDescription = if (screenshot.isFavorite) "즐겨찾기 해제" else "즐겨찾기 추가",
-                    tint = Color.Unspecified,
+                    tint =  if (screenshot.isFavorite) Color.White else Color.Unspecified,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(start = 16.dp, bottom = 12.dp)
