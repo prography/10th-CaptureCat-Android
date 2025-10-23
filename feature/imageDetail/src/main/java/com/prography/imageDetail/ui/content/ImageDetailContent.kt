@@ -252,11 +252,13 @@ fun ChipSection(
 
         Icon(
             painter = painterResource(
-                id = if (isFavorite) R.drawable.ic_favorite_check else R.drawable.ic_favorite_uncheck
+                id = if (isFavorite) R.drawable.ic_tab_favorite_checked else R.drawable.ic_tab_favorite_unchecked
             ),
             contentDescription = stringResource(R.string.favorite_icon),
-            tint = Color.Unspecified,
-            modifier = Modifier.clickable { onFavoriteToggle() }
+            tint = Color.White,
+            modifier = Modifier
+                .clickable { onFavoriteToggle() }
+                .size(24.dp)
         )
     }
 }

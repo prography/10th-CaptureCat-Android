@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.screenshot.BulkInsertScreenshotUseCase
 import com.prography.domain.usecase.tag.AddRecentTagUseCase
-import com.prography.domain.usecase.tag.GetRecentTagsUseCase
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.organize.model.OrganizeScreenshotItem
 import com.prography.organize.ui.contract.OrganizeAction
