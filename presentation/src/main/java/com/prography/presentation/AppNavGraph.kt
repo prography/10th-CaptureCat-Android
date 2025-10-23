@@ -1,3 +1,6 @@
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +31,13 @@ import android.net.Uri
 import android.provider.Settings
 import com.prography.home.ui.storage.screen.SelectPictureScreen
 import com.prography.tag.navigation.TagSettingRoute
+
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
 
 @Composable
 fun AppNavGraph(
@@ -68,12 +78,14 @@ fun AppNavGraph(
             StartRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.StartTag> {
+            val activity = LocalContext.current.findActivity()
+
             com.android.start.StartTagScreen(
                 onFinishSelection = { selectedTags ->
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.StartPermission))
                 },
                 onNavigateBack = {
-                    navigationHelper.navigate(NavigationEvent.Up)
+                    activity?.finishAffinity()
                 }
             )
         }
