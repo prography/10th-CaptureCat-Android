@@ -26,19 +26,15 @@ class WithdrawViewModel @Inject constructor(
             is WithdrawAction.SelectReason -> updateState { copy(selectedReason = action.reason) }
             WithdrawAction.ClickContinue -> {
                 val selectedReason = uiState.value.selectedReason
-                if (selectedReason != null) {
-                    viewModelScope.launch {
-                        withdrawUseCase(selectedReason).onSuccess {
-                            Timber.d("회원탈퇴 성공 - 데이터 초기화 시작")
+                viewModelScope.launch {
+                    withdrawUseCase(selectedReason).onSuccess {
+                        Timber.d("회원탈퇴 성공 - 데이터 초기화 시작")
 
-                            clearUserData()
-                            updateState { copy(showWithdrawDialog = true) }
-                        }.onFailure {
-                            showToast("회원탈퇴에 실패했습니다.")
-                        }
+                        clearUserData()
+                        updateState { copy(showWithdrawDialog = true) }
+                    }.onFailure {
+                        showToast("회원탈퇴에 실패했습니다.")
                     }
-                } else {
-                    showToast("탈퇴 이유를 선택해주세요.")
                 }
             }
             WithdrawAction.ConfirmWithdraw -> {

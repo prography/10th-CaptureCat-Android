@@ -111,11 +111,11 @@ fun WithdrawScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        UiPrimaryButton(
+        UiLabelAddButton(
             text = stringResource(com.prography.ui.R.string.common_continue),
-            fontSize = 14.sp,
+            size = ButtonSize.LARGE,
+            type = ButtonType.DEFAULT,
             onClick = { viewModel.sendAction(WithdrawAction.ClickContinue) },
-            state = if (state.selectedReason != null) ButtonState.Enabled else ButtonState.Disabled,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))

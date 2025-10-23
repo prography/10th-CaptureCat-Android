@@ -19,6 +19,15 @@ class SocialLoginUseCase @Inject constructor(
         accessToken: String? = null
     ): Result<Pair<LoginNavigationResult, LoginResult>> {
         return authRepository.socialLogin(provider, idToken, accessToken).mapCatching { loginResult ->
+
+            // 이메일이 이미 등록된 경우 계정 연동 필요
+            if (loginResult.isEmailAlreadyRegistered) {
+                return@mapCatching LoginNavigationResult.ShowAccountLinkDialog(
+                    existingProvider = loginResult.existingProvider ?: "",
+                    linkToken = loginResult.linkToken ?: ""
+                ) to loginResult
+            }
+
             val hasSeenLocalStartTag = getStartTagScreenShownUseCase().first()
 
             val navigationResult = when {
@@ -53,10 +62,49 @@ class SocialLoginUseCase @Inject constructor(
             navigationResult to loginResult
         }
     }
+
+    suspend fun linkAccounts(
+        provider: String,
+        idToken: String,
+        linkToken: String,
+        accessToken: String? = null
+    ): Result<Pair<LoginNavigationResult, LoginResult>> {
+        return authRepository.linkAccount(provider, idToken, linkToken, accessToken)
+            .mapCatching { loginResult ->
+                val hasSeenLocalStartTag = getStartTagScreenShownUseCase().first()
+
+                val navigationResult = when {
+                    !hasSeenLocalStartTag && !loginResult.tutorialCompleted -> {
+                        LoginNavigationResult.NavigateToStartTag
+                    }
+
+                    hasSeenLocalStartTag -> {
+                        if (!loginResult.tutorialCompleted)
+                            completeTutorialUseCase()
+
+                        val localScreenshots = getAllLocalScreenshotsUseCase().first()
+                        if (localScreenshots.isEmpty()) {
+                            LoginNavigationResult.NavigateToHome
+                        } else {
+                            LoginNavigationResult.NavigateToUpload
+                        }
+                    }
+
+                    else -> {
+                        LoginNavigationResult.NavigateToHome
+                    }
+                }
+                navigationResult to loginResult
+            }
+    }
 }
 
 sealed class LoginNavigationResult {
     object NavigateToStartTag : LoginNavigationResult()
     object NavigateToHome : LoginNavigationResult()
     object NavigateToUpload : LoginNavigationResult()
+    data class ShowAccountLinkDialog(
+        val existingProvider: String,
+        val linkToken: String
+    ) : LoginNavigationResult()
 }

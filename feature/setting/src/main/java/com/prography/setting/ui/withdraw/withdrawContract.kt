@@ -1,7 +1,7 @@
 package com.prography.setting.ui.withdraw
 
 data class WithdrawState(
-    val selectedReason: String? = null,
+    val selectedReason: String = "",
     val showWithdrawDialog: Boolean = false
 )
 

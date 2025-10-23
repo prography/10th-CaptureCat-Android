@@ -75,6 +75,8 @@ class LoginViewModel @Inject constructor(
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
                     }
+
+                    is LoginNavigationResult.ShowAccountLinkDialog -> TODO()
                 }
             }.onFailure {
                 hideLoading()
@@ -118,6 +120,8 @@ class LoginViewModel @Inject constructor(
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
                     }
+
+                    is LoginNavigationResult.ShowAccountLinkDialog -> TODO()
                 }
             }.onFailure {
                 hideLoading()
