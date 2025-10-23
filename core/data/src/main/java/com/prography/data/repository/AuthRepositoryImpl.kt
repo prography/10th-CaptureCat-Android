@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
@@ -78,22 +79,52 @@ class AuthRepositoryImpl @Inject constructor(
                 }
             } else if (response.code() == 409) {
                 // 409 ALREADY_REGISTERED_EMAIL 응답 처리
-                val responseBody = response.body()?.data
-                Timber.d("DEBUG: 409 응답 - 이메일 중복, responseBody: $responseBody")
+                val raw = response.errorBody()?.string() // ⚠️ string()은 1회성
+                Timber.d("DEBUG: 409 error body -> $raw")
 
-                Result.success(
+                // 기본값
+                var provider: String? = null
+                var linkToken: String? = null
+                var message: String? = null
+                var email: String? = null
+                var nickname: String? = null
+                var tutorialCompleted: Boolean = false
+
+                if (!raw.isNullOrEmpty()) {
+                    try {
+                        val json = JSONObject(raw)
+                        val data = json.optJSONObject("data")
+                        val err  = json.optJSONObject("error")
+
+                        provider = data?.optString("provider", null)
+                        linkToken = if (data?.isNull("linkToken") == false) data.optString("linkToken", null) else null
+
+                        message = err?.optString("message", null)
+
+                        // 서버가 에러 응답에 사용자 정보도 넣어주는 경우가 있다면(없으면 기본값 유지)
+                        email = json.optString("email", null).takeIf { it?.isNotBlank() == true }
+                        nickname = json.optString("nickname", null).takeIf { it?.isNotBlank() == true }
+                        tutorialCompleted = json.optBoolean("tutorialCompleted", false)
+
+                        Timber.d("provider=$provider, message=$message, linkToken=$linkToken")
+                    } catch (e: Exception) {
+                        Timber.e(e, "errorBody 파싱 실패")
+                    }
+                }
+
+                return Result.success(
                     LoginResult(
-                        email = responseBody?.email ?: "",
-                        nickname = responseBody?.nickname ?: "",
-                        tutorialCompleted = responseBody?.tutorialCompleted ?: false,
+                        email = email ?: "",
+                        nickname = nickname ?: "",
+                        tutorialCompleted = tutorialCompleted,
                         isEmailAlreadyRegistered = true,
-                        existingProvider = responseBody?.existingProvider,
-                        linkToken = responseBody?.linkToken
+                        existingProvider = provider,
+                        linkToken = linkToken
                     )
                 )
             } else {
                 Timber.d("DEBUG: 응답 실패 - code: ${response.code()}, message: ${response.message()}")
-                Result.failure(Exception("로그인에 실패했습니다"))
+                return Result.failure(Exception("로그인에 실패했습니다"))
             }
         } catch (e: Exception) {
             Timber.d("DEBUG: 예외 발생 - ${e.message}")
@@ -104,7 +135,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun linkAccount(
         provider: String,
         idToken: String,
-        linkToken: String,
+        linkToken: String?,
         accessToken: String?
     ): Result<LoginResult> {
         return try {

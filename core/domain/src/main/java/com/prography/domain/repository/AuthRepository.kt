@@ -13,7 +13,7 @@ interface AuthRepository {
     suspend fun linkAccount(
         provider: String,
         idToken: String,
-        linkToken: String,
+        linkToken: String?,
         accessToken: String? = null
     ): Result<LoginResult>
 

@@ -63,10 +63,10 @@ class SocialLoginUseCase @Inject constructor(
         }
     }
 
-    suspend fun linkAccounts(
+    suspend operator fun invoke(
         provider: String,
         idToken: String,
-        linkToken: String,
+        linkToken: String?,
         accessToken: String? = null
     ): Result<Pair<LoginNavigationResult, LoginResult>> {
         return authRepository.linkAccount(provider, idToken, linkToken, accessToken)

@@ -5,6 +5,8 @@ import com.kakao.sdk.user.UserApiClient
 import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginEffect
 import com.prography.auth.route.screen.contract.LoginState
+import com.prography.auth.route.screen.contract.PendingAuth
+import com.prography.auth.route.screen.contract.PendingLink
 import com.prography.domain.usecase.auth.LoginNavigationResult
 import com.prography.domain.usecase.auth.SocialLoginUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
@@ -33,7 +35,9 @@ class LoginViewModel @Inject constructor(
         when (action) {
             LoginAction.ClickKakao -> emitEffect(LoginEffect.StartKakaoLogin)
             LoginAction.ClickGoogle -> emitEffect(LoginEffect.StartGoogleLogin)
-            LoginAction.ClickSkip -> handleSkipAction()
+            LoginAction.ClickSkip   -> handleSkipAction()
+            LoginAction.AccountLinkConfirm -> confirmAccountLink()
+            LoginAction.AccountLinkDismiss -> updateState { copy(pendingLink = null) }
         }
     }
 
@@ -54,7 +58,7 @@ class LoginViewModel @Inject constructor(
     fun handleGoogleLoginSuccess(idToken: String, userId: String) {
         viewModelScope.launch {
             showLoading()
-            socialLoginUseCase("google", idToken).onSuccess { (navigationResult, loginResult) ->
+            socialLoginUseCase(provider = "google", idToken = idToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
 
                 // Mixpanel 사용자 식별 - Google User ID 사용
@@ -76,7 +80,17 @@ class LoginViewModel @Inject constructor(
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
                     }
 
-                    is LoginNavigationResult.ShowAccountLinkDialog -> TODO()
+                    is LoginNavigationResult.ShowAccountLinkDialog -> {
+                        updateState {
+                            copy(
+                                pendingAuth = PendingAuth("google", idToken, null),
+                                pendingLink = PendingLink(
+                                    existingProvider = loginResult.existingProvider,
+                                    linkToken = loginResult.linkToken
+                                )
+                            )
+                        }
+                    }
                 }
             }.onFailure {
                 hideLoading()
@@ -99,7 +113,7 @@ class LoginViewModel @Inject constructor(
             val kakaoUserId = user.id.toString()
             Timber.d("user ${user.id} ${user}")
 
-            socialLoginUseCase("kakao", idToken, accessToken).onSuccess { (navigationResult, loginResult) ->
+            socialLoginUseCase(provider = "kakao", idToken = idToken, accessToken = accessToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
 
                 MixpanelUtil.identify(kakaoUserId)
@@ -121,12 +135,60 @@ class LoginViewModel @Inject constructor(
                         navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
                     }
 
-                    is LoginNavigationResult.ShowAccountLinkDialog -> TODO()
+                    is LoginNavigationResult.ShowAccountLinkDialog -> {
+                        updateState {
+                            copy(
+                                pendingAuth = PendingAuth("kakao", idToken, accessToken),
+                                pendingLink = PendingLink(
+                                    existingProvider = loginResult.existingProvider,
+                                    linkToken = loginResult.linkToken
+                                )
+                            )
+                        }
+                    }
                 }
             }.onFailure {
                 hideLoading()
                 showToast("카카오 로그인 중 오류가 발생했습니다")
             }
+        }
+    }
+
+    private fun confirmAccountLink() = viewModelScope.launch {
+        val pa = uiState.value.pendingAuth
+        val pl = uiState.value.pendingLink
+        if (pa == null || pl == null) {
+            updateState { copy(pendingLink = null) }; return@launch
+        }
+
+        showLoading()
+        socialLoginUseCase(
+            idToken = pa.idToken,
+            provider = pa.provider,
+            accessToken = pa.accessToken,
+            linkToken = pl.linkToken
+        ).onSuccess { (nav, _) ->
+            updateState { copy(pendingLink = null) }
+            hideLoading()
+            when (nav) {
+                LoginNavigationResult.NavigateToStartTag ->
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
+
+                LoginNavigationResult.NavigateToHome ->
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+
+                LoginNavigationResult.NavigateToUpload ->
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))
+
+                is LoginNavigationResult.ShowAccountLinkDialog -> {
+                    updateState {
+                        copy(pendingLink = PendingLink(nav.existingProvider, nav.linkToken))
+                    }
+                }
+            }
+        }.onFailure {
+            hideLoading()
+            showToast("계정 통합에 실패했어요")
         }
     }
 

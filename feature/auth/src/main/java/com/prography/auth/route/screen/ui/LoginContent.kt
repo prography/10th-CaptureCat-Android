@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.prography.auth.route.screen.contract.LoginAction
 import com.prography.auth.route.screen.contract.LoginState
 import com.prography.ui.R
+import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UnderlinedClickableText
 import com.prography.ui.theme.subhead01Bold
 
@@ -95,6 +96,16 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
             }
         }
     }
+
+    UiCommonDialog(
+        title = "기존에 사용하던 계정이 있어요",
+        message = "이미 ${getProviderDisplayName(state.pendingLink?.existingProvider ?: "")}로 간편 가입이 되어 있어요.\n${getProviderDisplayName(state.pendingLink?.existingProvider ?: "")} 계정과 ${getProviderDisplayName(state.pendingAuth?.provider ?: "")} 계정을 하나로 통합할까요?",
+        leftButtonText = "닫기",
+        rightButtonText = "계정 통합",
+        onDismiss = { onAction(LoginAction.AccountLinkDismiss) },
+        onConfirm = {  onAction(LoginAction.AccountLinkConfirm) },
+        isVisible = state.isLinkDialogVisible
+    )
 }
 
 @Composable
@@ -155,6 +166,15 @@ fun GoogleLoginButton(onClick: () -> Unit) {
                 style = subhead01Bold
             )
         }
+    }
+}
+
+private fun getProviderDisplayName(provider: String): String {
+    return when (provider.lowercase()) {
+        "kakao" -> "카카오"
+        "google" -> "구글"
+        "apple" -> "애플"
+        else -> provider
     }
 }
 
