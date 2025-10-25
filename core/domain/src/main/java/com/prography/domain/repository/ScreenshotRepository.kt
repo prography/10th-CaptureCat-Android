@@ -1,6 +1,5 @@
 package com.prography.domain.repository
 
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel

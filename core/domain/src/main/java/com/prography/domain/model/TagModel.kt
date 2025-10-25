@@ -10,8 +10,3 @@ data class TagWithCount(
     val tag: String,
     val count: Int
 )
-
-data class AutocompleteTagModel(
-    val id: Int,
-    val name: String
-)

@@ -1,6 +1,5 @@
 package com.prography.data.datasource.remote
 
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.UiScreenshotModel

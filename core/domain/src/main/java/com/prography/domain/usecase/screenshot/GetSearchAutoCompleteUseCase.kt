@@ -1,6 +1,5 @@
 package com.prography.domain.usecase.screenshot
 
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.TagModel
 import com.prography.domain.repository.ScreenshotRepository
 import javax.inject.Inject

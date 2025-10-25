@@ -4,7 +4,6 @@ import com.prography.data.datasource.local.ScreenshotLocalDataSource
 import com.prography.data.datasource.remote.PhotoRemoteDataSource
 import com.prography.data.util.RepositoryModeExecutor
 import com.prography.datastore.user.UserPreferenceDataStore
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
 import com.prography.domain.model.TagModel

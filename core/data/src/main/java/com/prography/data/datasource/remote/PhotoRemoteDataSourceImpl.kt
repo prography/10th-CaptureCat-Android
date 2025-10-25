@@ -5,7 +5,6 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import com.prography.data.mapper.toUiScreenshotModel
 import com.prography.data.mapper.toUiScreenshotModels
-import com.prography.domain.model.AutocompleteTagModel
 import com.prography.domain.model.UiScreenshotModel
 import com.prography.domain.model.TagWithCount
 import com.prography.network.api.PhotoService
