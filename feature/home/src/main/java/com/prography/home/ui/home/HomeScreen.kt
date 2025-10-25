@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.prography.ui.component.UiCommonDialog
 import androidx.core.net.toUri
+import com.prography.util.MixpanelUtil
 
 @Composable
 fun HomeScreen(
@@ -41,6 +42,7 @@ fun HomeScreen(
 
     // 처음 접근 시 로그인 상태 체크 및 인기 태그 로드
     LaunchedEffect(Unit) {
+        MixpanelUtil.track("view_home")
         viewModel.checkLoginStatusOnFirstAccess()
         viewModel.loadMostUsedTags()
     }

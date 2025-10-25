@@ -19,6 +19,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.navigation.StorageMode
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -101,11 +102,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
             HomeAction.NavigateToStorageUpload -> {
+                MixpanelUtil.track("image_fab_click", mapOf("fab_image_upload" to "캡처 업로드"))
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Upload))
                 )
             }
             HomeAction.NavigateToStorageOrganize -> {
+                MixpanelUtil.track("image_fab_click", mapOf("fab_image_delete" to "캡처 정리"))
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Organize))
                 )
@@ -140,6 +143,8 @@ class HomeViewModel @Inject constructor(
                 dismissErrorReportBanner()
             }
             is HomeAction.OnTabSelected -> {
+                MixpanelUtil.track("tag_tab_click", mapOf("tab_name" to action.tabTag))
+                MixpanelUtil.track("tag_tab_click", mapOf("page_type" to "home"))
                 searchImagesByTag(action.tabTag)
             }
             HomeAction.NavigateToTagSetting -> {

@@ -16,6 +16,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,7 +37,11 @@ class FavoriteViewModel @Inject constructor(
             FavoriteAction.LoadFavoriteScreenshots -> loadFavoriteScreenshots()
             is FavoriteAction.OnScreenshotClick -> handleScreenshotClick(action.screenshot)
             is FavoriteAction.OnToggleFavorite -> handleToggleFavorite(action.screenshot)
-            is FavoriteAction.OnTagSelected -> applyTagFilter(action.tag)
+            is FavoriteAction.OnTagSelected -> {
+                MixpanelUtil.track("tag_tab_click", mapOf("tab_name" to (action.tag?.name ?: "전체")))
+                MixpanelUtil.track("tag_tab_click", mapOf("page_type" to "favorite"))
+                applyTagFilter(action.tag)
+            }
             FavoriteAction.NavigateToTagSetting -> navigationHelper.navigate(NavigationEvent.To(AppRoute.TagSetting))
             FavoriteAction.OnNavigateUp -> navigationHelper.navigate(NavigationEvent.Up)
         }

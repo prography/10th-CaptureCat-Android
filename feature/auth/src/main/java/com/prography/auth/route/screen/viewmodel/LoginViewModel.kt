@@ -61,7 +61,7 @@ class LoginViewModel @Inject constructor(
             socialLoginUseCase(provider = "google", idToken = idToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
 
-                // Mixpanel 사용자 식별 - Google User ID 사용
+                setRecentLoginProvider(LoginProvider.GOOGLE)
                 MixpanelUtil.identify(userId)
 
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "google"))
@@ -115,7 +115,7 @@ class LoginViewModel @Inject constructor(
 
             socialLoginUseCase(provider = "kakao", idToken = idToken, accessToken = accessToken).onSuccess { (navigationResult, loginResult) ->
                 hideLoading()
-
+                setRecentLoginProvider(LoginProvider.KAKAO)
                 MixpanelUtil.identify(kakaoUserId)
 
                 MixpanelUtil.track("complete_login", mapOf("login_method" to "kakao"))
