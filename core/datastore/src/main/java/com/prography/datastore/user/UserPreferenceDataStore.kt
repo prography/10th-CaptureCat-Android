@@ -18,6 +18,7 @@ object UserPreferenceKeys {
     val ACCESS_TOKEN = stringPreferencesKey("access_token")
     val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     val DELETE_PROMPT_ENABLED = booleanPreferencesKey("delete_prompt_enabled")
+    val KEY_RECENT_LOGIN = stringPreferencesKey("recent_login_provider")
 }
 
 class UserPreferenceDataStore(private val context: Context) {
@@ -63,5 +64,12 @@ class UserPreferenceDataStore(private val context: Context) {
 
     suspend fun setDeletePromptEnabled(enabled: Boolean) {
         dataStore.edit { it[UserPreferenceKeys.DELETE_PROMPT_ENABLED] = enabled }
+    }
+
+    val recentLoginProviderName: Flow<String?> =
+        dataStore.data.map { pref -> pref[UserPreferenceKeys.KEY_RECENT_LOGIN] }
+
+    suspend fun setRecentLoginProviderName(name: String) {
+        dataStore.edit { it[UserPreferenceKeys.KEY_RECENT_LOGIN] = name }
     }
 }

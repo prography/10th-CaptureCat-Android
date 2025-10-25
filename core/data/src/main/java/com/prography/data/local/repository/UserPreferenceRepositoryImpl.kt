@@ -2,6 +2,7 @@ package com.prography.data.local.repository
 
 import com.prography.datastore.user.UserPreferenceDataStore
 import com.prography.datastore.user.UserPreferenceKeys
+import com.prography.domain.model.LoginProvider
 import com.prography.domain.repository.UserPreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -42,5 +43,18 @@ class UserPreferenceRepositoryImpl @Inject constructor(
 
     override suspend fun setDeletePromptEnabled(enabled: Boolean) {
         userPrefs.setDeletePromptEnabled(enabled)
+    }
+
+    override val recentLoginProvider: Flow<LoginProvider> =
+        userPrefs.recentLoginProviderName.map { name ->
+            when (name) {
+                "KAKAO" -> LoginProvider.KAKAO
+                "GOOGLE" -> LoginProvider.GOOGLE
+                else    -> LoginProvider.NONE
+            }
+        }
+
+    override suspend fun setRecentLoginProvider(provider: LoginProvider) {
+        userPrefs.setRecentLoginProviderName(provider.name)
     }
 }

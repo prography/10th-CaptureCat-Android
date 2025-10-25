@@ -1,5 +1,6 @@
 package com.prography.domain.repository
 
+import com.prography.domain.model.LoginProvider
 import kotlinx.coroutines.flow.Flow
 
 
@@ -17,4 +18,7 @@ interface UserPreferenceRepository {
 
     val isDeletePromptEnabled: Flow<Boolean>
     suspend fun setDeletePromptEnabled(enabled: Boolean)
+
+    val recentLoginProvider: Flow<LoginProvider>
+    suspend fun setRecentLoginProvider(provider: LoginProvider)
 }

@@ -1,6 +1,9 @@
 package com.prography.auth.route.screen.contract
 
+import com.prography.domain.model.LoginProvider
+
 data class LoginState(
+    val recentLoginProvider: LoginProvider = LoginProvider.NONE,
     val pendingAuth: PendingAuth? = null,
     val pendingLink: PendingLink? = null
 ) {

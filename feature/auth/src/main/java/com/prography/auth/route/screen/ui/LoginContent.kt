@@ -2,6 +2,7 @@ package com.prography.auth.route.screen.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import com.prography.auth.route.screen.contract.LoginState
 import com.prography.ui.R
 import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UnderlinedClickableText
+import com.prography.ui.theme.Primary
 import com.prography.ui.theme.subhead01Bold
 
 @Composable
@@ -89,8 +92,14 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                KakaoLoginButton { onAction(LoginAction.ClickKakao) }
-                GoogleLoginButton { onAction(LoginAction.ClickGoogle) }
+                KakaoLoginButton(
+                    isRecent = state.recentLoginProvider == com.prography.domain.model.LoginProvider.KAKAO,
+                    onClick = { onAction(LoginAction.ClickKakao) }
+                )
+                GoogleLoginButton(
+                    isRecent = state.recentLoginProvider == com.prography.domain.model.LoginProvider.GOOGLE,
+                    onClick = { onAction(LoginAction.ClickGoogle) }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 AgreementText()
             }
@@ -109,61 +118,65 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
 }
 
 @Composable
-fun KakaoLoginButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEE500)),
-        contentPadding = PaddingValues(horizontal = 20.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+private fun RecentBadge(modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .background(Primary, RoundedCornerShape(4.dp))
+            .padding(horizontal = 12.5.dp, vertical = 8.dp), contentAlignment = Alignment.Center
+    ) { Text("최근 로그인", color = Color.White, fontSize = 12.sp) }
+}
+
+
+@Composable
+fun KakaoLoginButton(isRecent: Boolean, onClick: () -> Unit) {
+    Box {
+        Button(
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFEE500)),
+            contentPadding = PaddingValues(horizontal = 20.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_kakao_login),
-                contentDescription = stringResource(R.string.cd_kakao_login_icon),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(18.dp)
-            )
-            Text(
-                text = stringResource(R.string.login_kakao),
-                color = Color.Black,
-                style = subhead01Bold
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Image(painterResource(R.drawable.ic_kakao_login), contentDescription = stringResource(R.string.cd_kakao_login_icon), modifier = Modifier.size(18.dp))
+                Text(text = stringResource(R.string.login_kakao), color = Color.Black, style = subhead01Bold)
+            }
+        }
+        if (isRecent) {
+            RecentBadge(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .offset(x = (-16).dp, y = (-24).dp)
             )
         }
     }
 }
 
 @Composable
-fun GoogleLoginButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .border(1.dp, Color(0xFF747775), shape = RoundedCornerShape(4.dp))
-            .fillMaxWidth()
-            .height(48.dp),
-        shape = RoundedCornerShape(4.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        contentPadding = PaddingValues(horizontal = 20.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+fun GoogleLoginButton(isRecent: Boolean, onClick: () -> Unit) {
+    Box {
+        Button(
+            onClick = onClick,
+            modifier = Modifier
+                .border(1.dp, Color(0xFF747775), RoundedCornerShape(4.dp))
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(4.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            contentPadding = PaddingValues(horizontal = 20.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_google_login),
-                contentDescription = stringResource(R.string.cd_google_login_icon),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(18.dp)
-            )
-            Text(
-                text = stringResource(R.string.login_google),
-                color = Color.Black,
-                style = subhead01Bold
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Image(painterResource(R.drawable.ic_google_login), contentDescription = stringResource(R.string.cd_google_login_icon), modifier = Modifier.size(18.dp))
+                Text(text = stringResource(R.string.login_google), color = Color.Black, style = subhead01Bold)
+            }
+        }
+        if (isRecent) {
+            RecentBadge(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .offset(x = 12.dp, y = (-16).dp)
             )
         }
     }

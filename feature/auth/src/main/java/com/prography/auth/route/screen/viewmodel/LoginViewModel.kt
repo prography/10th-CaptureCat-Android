@@ -7,9 +7,12 @@ import com.prography.auth.route.screen.contract.LoginEffect
 import com.prography.auth.route.screen.contract.LoginState
 import com.prography.auth.route.screen.contract.PendingAuth
 import com.prography.auth.route.screen.contract.PendingLink
+import com.prography.domain.model.LoginProvider
 import com.prography.domain.usecase.auth.LoginNavigationResult
 import com.prography.domain.usecase.auth.SocialLoginUseCase
+import com.prography.domain.usecase.user.GetRecentLoginProviderUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
+import com.prography.domain.usecase.user.SetRecentLoginProviderUseCase
 import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
@@ -17,6 +20,8 @@ import com.prography.ui.BaseComposeViewModel
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -26,10 +31,18 @@ import timber.log.Timber
 class LoginViewModel @Inject constructor(
     private val socialLoginUseCase: SocialLoginUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
+    private val getRecentLoginProvider: GetRecentLoginProviderUseCase,
+    private val setRecentLoginProvider: SetRecentLoginProviderUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<LoginState, LoginEffect, LoginAction>(
     initialState = LoginState()
 ) {
+
+    init {
+        getRecentLoginProvider()
+            .onEach { provider -> updateState { copy(recentLoginProvider = provider) } }
+            .launchIn(viewModelScope)
+    }
 
     override fun handleAction(action: LoginAction) {
         when (action) {
