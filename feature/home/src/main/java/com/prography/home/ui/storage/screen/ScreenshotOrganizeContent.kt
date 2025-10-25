@@ -166,8 +166,7 @@ fun ScreenshotStorageScreen(
                                     tint = Color.Unspecified
                                 )
 
-                                // Organize 모드일 때 상단 주황 띠
-                                if (mode == StorageMode.Organize && isOrganized && !isSelected) {
+                                if (isOrganized && !isSelected) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
