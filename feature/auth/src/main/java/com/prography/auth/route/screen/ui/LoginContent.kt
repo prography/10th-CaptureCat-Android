@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
@@ -36,6 +37,7 @@ import com.prography.ui.R
 import com.prography.ui.component.UiCommonDialog
 import com.prography.ui.component.UnderlinedClickableText
 import com.prography.ui.theme.Primary
+import com.prography.ui.theme.caption02Regular
 import com.prography.ui.theme.subhead01Bold
 
 @Composable
@@ -119,11 +121,44 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
 
 @Composable
 private fun RecentBadge(modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .background(Primary, RoundedCornerShape(4.dp))
-            .padding(horizontal = 12.5.dp, vertical = 8.dp), contentAlignment = Alignment.Center
-    ) { Text("최근 로그인", color = Color.White, fontSize = 12.sp) }
+
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // 🟧 상단 네모
+        Box(
+            modifier = Modifier
+                .background(Primary, RoundedCornerShape(4.dp))
+                .padding(horizontal = 12.5.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("최근 로그인", color = Color.White, style = caption02Regular)
+        }
+
+        val TriangleShape = GenericShape { size, _ ->
+            val w = size.width
+            val h = size.height
+            val r = 4.dp.value
+
+            moveTo(0f, 0f)
+            lineTo(w / 2f - r, h - r)
+            quadraticTo(
+                w / 2f, h,
+                w / 2f + r, h - r
+            )
+            lineTo(w, 0f)
+            close()
+        }
+
+        Box(
+            modifier = Modifier
+                .offset(y = (-1).dp)
+                .size(width = 12.dp, height = 8.dp)
+                .background(Primary, TriangleShape)
+        )
+    }
 }
 
 
@@ -176,7 +211,7 @@ fun GoogleLoginButton(isRecent: Boolean, onClick: () -> Unit) {
             RecentBadge(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .offset(x = 12.dp, y = (-16).dp)
+                    .offset(x = (-16).dp, y = (-24).dp)
             )
         }
     }
