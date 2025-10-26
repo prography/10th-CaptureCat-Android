@@ -102,13 +102,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
             HomeAction.NavigateToStorageUpload -> {
-                MixpanelUtil.track("image_fab_click", mapOf("fab_image_upload" to "캡처 업로드"))
+                MixpanelUtil.track("image_fab_click", mapOf("page_type" to "캡처 업로드"))
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Upload))
                 )
             }
             HomeAction.NavigateToStorageOrganize -> {
-                MixpanelUtil.track("image_fab_click", mapOf("fab_image_delete" to "캡처 정리"))
+                MixpanelUtil.track("image_fab_click", mapOf("page_type" to "캡처 정리"))
                 navigationHelper.navigate(
                     NavigationEvent.To(AppRoute.Storage(mode = StorageMode.Organize))
                 )

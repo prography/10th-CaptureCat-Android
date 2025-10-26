@@ -18,6 +18,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -161,6 +162,7 @@ class ScreenshotViewModel @Inject constructor(
                 navigationHelper.navigate(NavigationEvent.Up)
             }
             ScreenshotAction.DeleteSelected -> {
+                MixpanelUtil.track("image_delete_click")
                 updateState { copy(showDeleteDialog = true) }
             }
 
@@ -182,6 +184,7 @@ class ScreenshotViewModel @Inject constructor(
             }
 
             ScreenshotAction.OrganizeSelected -> {
+                MixpanelUtil.track("image_upload_click")
                 val selectedIds = currentState.selectedItems.toList()
                 if (selectedIds.isEmpty()) {
                     showToast("정리할 스크린샷을 선택해주세요")
