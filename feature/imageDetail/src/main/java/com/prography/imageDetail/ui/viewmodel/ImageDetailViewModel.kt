@@ -11,6 +11,7 @@ import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.domain.usecase.tag.AddRecentTagUseCase
 import com.prography.domain.usecase.tag.GetUserTagsUseCase
+import com.prography.imageDetail.ui.content.Sheet
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
@@ -213,22 +214,6 @@ class ImageDetailViewModel @Inject constructor(
                 toggleFavorite()
             }
 
-            ImageDetailAction.OnShowTagEditBottomSheet -> {
-                updateState {
-                    copy(isTagEditBottomSheetVisible = true)
-                }
-            }
-
-            ImageDetailAction.OnHideTagEditBottomSheet -> {
-                updateState {
-                    copy(
-                        isTagEditBottomSheetVisible = false,
-                        newTagText = "",
-                        tagErrorMessage = null // 바텀시트 닫을 때 에러 메시지도 초기화
-                    )
-                }
-            }
-
             is ImageDetailAction.OnTagDelete -> {
                 deleteTag(action.tag)
             }
@@ -267,18 +252,17 @@ class ImageDetailViewModel @Inject constructor(
                 deleteCurrentScreenshot()
             }
 
-            ImageDetailAction.OnShowTagAddBottomSheet ->
-                updateState { copy(isTagAddBottomSheetVisible = true) }
-
-            ImageDetailAction.OnHideTagAddBottomSheet ->
-                updateState { copy(isTagAddBottomSheetVisible = false, newTagText = "", tagErrorMessage = null) }
-
             ImageDetailAction.OnToggleUserTagsExpanded ->
                 updateState { copy(isUserTagsExpanded = !isUserTagsExpanded) }
 
             is ImageDetailAction.OnClickUserTag -> { // 1단계에서 바로 추가
                 val cur = currentState.currentScreenshot ?: return
-                if (cur.tags.size >= 4 || cur.tags.any { it.id == action.tag.id }) return
+                Timber.d("cur.tags.size ${cur.tags.size}")
+                if (cur.tags.size >= 4) {
+                    showToast("태그는 최대 4개까지 등록할 수 있습니다.")
+                    return
+                }
+                if(cur.tags.any { it.id == action.tag.id }) return
                 viewModelScope.launch {
                     addTagsToScreenshotUseCase(cur.id, listOf(action.tag.name))
                         .onSuccess { server ->
@@ -336,6 +320,26 @@ class ImageDetailViewModel @Inject constructor(
                                 copy(isLoading = false, tagErrorMessage = "태그 등록에 실패했습니다.")
                             }
                         }
+                }
+            }
+
+            ImageDetailAction.HideSheet ->{
+                updateState {
+                    copy(
+                        currentSheet = Sheet.None,
+                        tagErrorMessage = null // 열었을 때 남아있던 에러 초기화
+                    )
+                }
+            }
+            is ImageDetailAction.ShowSheet -> {
+                if (action.sheet == Sheet.Edit) {
+                    loadTags()
+                }
+                updateState {
+                    copy(
+                        currentSheet = action.sheet,
+                        tagErrorMessage = null // 화면 전환 시 에러 메시지 리셋
+                    )
                 }
             }
         }

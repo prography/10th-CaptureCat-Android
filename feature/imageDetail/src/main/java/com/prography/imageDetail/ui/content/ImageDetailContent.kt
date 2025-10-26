@@ -1,5 +1,7 @@
 package com.prography.imageDetail.ui.content
 
+import TagEditContent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +43,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import com.prography.domain.model.TagModel
 import com.prography.ui.component.UiImageDetailTagChip
 import com.prography.ui.component.UnderlinedClickableText
+import timber.log.Timber
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -138,16 +141,23 @@ fun ImageDetailContent(
             }
 
             BottomActionBar(
-                onEditTagClick = { onAction(ImageDetailAction.OnShowTagEditBottomSheet) },
+                onEditTagClick = { onAction(ImageDetailAction.ShowSheet(Sheet.Edit)) },
                 onDeleteClick = { onAction(ImageDetailAction.OnDeleteScreenshot) }
             )
         }
 
-        if (state.isTagEditBottomSheetVisible) {
+
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+        if (state.currentSheet != Sheet.None) {
             ModalBottomSheet(
-                onDismissRequest = { onAction(ImageDetailAction.OnHideTagEditBottomSheet) },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                onDismissRequest = {
+                    when (state.currentSheet) {
+                        Sheet.Add -> onAction(ImageDetailAction.ShowSheet(Sheet.Edit))
+                        Sheet.Edit -> onAction(ImageDetailAction.HideSheet)
+                        else -> onAction(ImageDetailAction.HideSheet)
+                    }
+                },
                 dragHandle = {
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Box(
@@ -158,12 +168,15 @@ fun ImageDetailContent(
                         )
                     }
                 },
+                sheetState = sheetState,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 containerColor = Color.White
             ) {
-                TagEditBottomSheetContent(
-                    state = state,
-                    onAction = onAction
-                )
+                when (state.currentSheet) {
+                    Sheet.Edit -> TagEditContent(state, onAction)
+                    Sheet.Add  -> TagAddContent(state, onAction)
+                    else -> {}
+                }
             }
         }
 
@@ -330,185 +343,4 @@ fun BottomActionBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
-@Composable
-private fun TagEditBottomSheetContent(
-    state: ImageDetailState,
-    onAction: (ImageDetailAction) -> Unit
-) {
-    val focusManager = LocalFocusManager.current
-
-    // 키보드 상태 확인
-    val ime = WindowInsets.ime
-    val density = LocalDensity.current
-    val imeVisible by remember {
-        derivedStateOf { ime.getBottom(density) > 0 }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 0.dp) // 완료 버튼 여백
-    ) {
-        // 헤더
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp)
-        ) {
-            // 왼쪽 아이콘
-            Icon(
-                painter = painterResource(id = R.drawable.ic_close),
-                contentDescription = stringResource(R.string.common_close),
-                tint = Text01,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 16.dp)
-                    .size(24.dp)
-                    .clickableWithoutRipple { onAction(ImageDetailAction.OnHideTagEditBottomSheet) }
-            )
-
-            // 중앙 텍스트
-            Text(
-                text = "태그 수정",
-                style = headline03Bold,
-                color = Text01,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
-        // 등록된 태그
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "등록된 태그",
-                    style = subhead01Bold,
-                    color = Text02
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "(${state.currentScreenshot?.tags?.size ?: 0}/4)",
-                    style = subhead01Bold,
-                    color = Text02
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 36.dp * 2 + 8.dp)
-            ) {
-                state.currentScreenshot?.tags?.forEach { tag ->
-                    UiTagSelectedChip(
-                        text = tag.name,
-                        onDelete = { onAction(ImageDetailAction.OnTagDelete(tag)) }
-                    )
-                }
-
-                UiImageDetailTagChip(
-                    text = "추가하기 +",
-                    onClick = { onAction(ImageDetailAction.OnShowTagAddBottomSheet) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 기존태그 보기
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "기존태그 보기",
-                    style = subhead01Bold,
-                    color = Text02
-                )
-
-                Row {
-                    UnderlinedClickableText(
-                        text = if (state.isUserTagsExpanded) "접기" else "더보기",
-                        onClick = { onAction(ImageDetailAction.OnToggleUserTagsExpanded) }
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_down),
-                        contentDescription = stringResource(R.string.common_search),
-                        tint = Gray05,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 기존태그 리스트
-            val registeredIds = state.currentScreenshot?.tags?.map { it.id }?.toSet() ?: emptySet()
-            val pool = if (state.isUserTagsExpanded) state.userTags else state.userTags.take(8)
-
-            if (state.currentScreenshot != null) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    pool.forEach { tag ->
-                        val disabled =
-                            tag.id in registeredIds || (state.currentScreenshot?.tags?.size
-                                ?: 0) >= 4
-                        UiImageDetailTagChip(
-                            text = tag.name,
-                            enabled = !disabled,
-                            onClick = { onAction(ImageDetailAction.OnClickUserTag(tag)) }
-                        )
-                    }
-                }
-
-            } else {
-
-                Text("아직 등록된 태그가 없어요")
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (imeVisible) {
-            UiBottomInputButton(
-                text = stringResource(R.string.common_complete),
-                enabled = state.newTagText.isNotBlank(),
-                onClick = {
-                    if (state.newTagText.isNotBlank()) {
-                        onAction(ImageDetailAction.OnAddNewTag)
-                        focusManager.clearFocus()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .imePadding()
-            )
-        }
-    }
-
-    if (state.isTagAddBottomSheetVisible) {
-        TagAddBottomSheet(state = state, onAction = onAction)
-    }
-}
+sealed interface Sheet { data object None: Sheet; data object Edit: Sheet; data object Add: Sheet }
