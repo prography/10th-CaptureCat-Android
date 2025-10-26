@@ -57,6 +57,8 @@ import com.prography.ui.component.clickableWithoutRipple
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import com.prography.home.ui.home.component.ErrorReportBanner
+import com.prography.home.ui.home.component.FabShadowLayers
+import com.prography.home.ui.home.component.multiShadow
 import com.prography.ui.theme.Divider
 import com.prography.ui.theme.Gray02
 import com.prography.ui.theme.Text02
@@ -469,12 +471,7 @@ fun CaptureCatFab(
             modifier = Modifier
                 .padding(end = 20.dp, bottom = 20.dp)
                 .size(50.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    spotColor = Color(0x1A000000),
-                    ambientColor = Color(0x1A000000),
-                    shape = RoundedCornerShape(25.dp)
-                )
+                .multiShadow(layers = FabShadowLayers, radius = 25.dp)
                 .background(bgColor, RoundedCornerShape(25.dp))
                 .clickableWithoutRipple { expanded = !expanded },
             contentAlignment = Alignment.Center
