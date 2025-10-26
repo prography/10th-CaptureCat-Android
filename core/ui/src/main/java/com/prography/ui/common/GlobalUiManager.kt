@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.prography.ui.theme.Error
 import com.prography.ui.theme.OverlayDim
 import com.prography.ui.theme.Primary
@@ -79,41 +81,47 @@ fun GlobalUiHandler() {
     LaunchedEffect(toastMessage) {
         if (toastMessage != null) {
             showToast = true
-            kotlinx.coroutines.delay(2000)
+            kotlinx.coroutines.delay(1700)
             showToast = false
             kotlinx.coroutines.delay(300) // 애니메이션 끝나고 메시지 제거
             toastMessage = null
         }
     }
+    Popup(
+        properties = PopupProperties(focusable = false)
+    )
+    {
+        AnimatedVisibility(
+            visible = showToast,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            toastMessage?.let { message ->
 
-    AnimatedVisibility(
-        visible = showToast,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        toastMessage?.let { message ->
-            Box(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Column(
+
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 26.dp)
-                        .background(OverlayDim, shape = RoundedCornerShape(6.dp))
-                        .padding(horizontal = 20.dp, vertical = 15.5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .navigationBarsPadding()
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    Text(
-                        text = message,
-                        style = subhead02Bold,
-                        color = when (toastType) {
-                            ToastType.Default -> Color.White
-                            ToastType.Error -> Error
-                        }
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, bottom = 26.dp)
+                            .background(OverlayDim, shape = RoundedCornerShape(6.dp))
+                            .padding(horizontal = 20.dp, vertical = 15.5.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = message,
+                            style = subhead02Bold,
+                            color = when (toastType) {
+                                ToastType.Default -> Color.White
+                                ToastType.Error -> Error
+                            }
+                        )
+                    }
                 }
             }
         }
