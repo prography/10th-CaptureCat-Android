@@ -103,7 +103,7 @@ fun OrganizeContent(
                             modifier = Modifier.fillMaxSize(),
                             key = { index -> state.screenshots.getOrNull(index)?.id ?: index },
                             pageSpacing = 12.dp,
-                            contentPadding = PaddingValues(horizontal = 77.dp)
+                            contentPadding = PaddingValues(horizontal = 70.dp)
                         ) { page ->
                             state.screenshots.getOrNull(page)?.let { screenshot ->
                                 OrganizeImageCard(
@@ -202,7 +202,7 @@ fun OrganizeStackedCards(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 77.dp)
+                .padding(horizontal = 70.dp)
                 .aspectRatio(0.65f)
                 .graphicsLayer {
                     translationX = with(density) { 1.dp.toPx() }
@@ -231,7 +231,7 @@ fun OrganizeStackedCards(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 77.dp)
+                .padding(horizontal = 70.dp)
                 .aspectRatio(0.65f),
             shape = RoundedCornerShape(4.dp),
             elevation = CardDefaults.cardElevation(4.dp)
