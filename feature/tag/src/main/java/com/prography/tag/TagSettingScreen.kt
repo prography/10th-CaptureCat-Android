@@ -217,7 +217,7 @@ private fun EmptyTagState(
         Text(
             text = "등록된 태그가 없어요.",
             style = headline02Bold,
-            color = Text02,
+            color = Text03,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(4.dp))

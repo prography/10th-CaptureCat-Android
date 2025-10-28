@@ -88,7 +88,7 @@ val subhead03Bold = TextStyle(
 // Body
 val body01Regular = TextStyle(
     fontSize = 16.sp,
-    lineHeight = 24.sp,
+    lineHeight = 26.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
     letterSpacing = 0.sp

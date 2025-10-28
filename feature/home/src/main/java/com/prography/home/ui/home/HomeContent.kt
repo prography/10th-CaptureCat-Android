@@ -65,7 +65,6 @@ import com.prography.ui.theme.Text02
 import com.prography.ui.theme.Text03
 import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.subhead01Bold
-import com.prography.ui.theme.subhead02Bold
 
 @Composable
 fun HomeContent(
@@ -374,12 +373,12 @@ fun TagChip(
             modifier = modifier
                 .clickableWithoutRipple { onClick() }
                 .padding(top = 2.dp, bottom = 10.dp),
-            style = subhead02Bold,
-            color = if (isSelected) Primary else Text03,
+            style = subhead01Bold,
+            color = if (isSelected) Color(0xFFF05F00) else Text03,
         )
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            color = if (isSelected) Primary else Color.Transparent,
+            color = if (isSelected) Color(0xFFF05F00) else Color.Transparent,
             thickness = 3.dp
         )
     }
