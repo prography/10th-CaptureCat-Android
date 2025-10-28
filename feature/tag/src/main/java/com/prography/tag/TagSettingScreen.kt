@@ -75,6 +75,7 @@ fun TagSettingScreen(
         onDeleteTag = { tag ->
             when (tag) {
                 "_SELECTED_" -> viewModel.handleAction(TagSettingAction.DeleteSelectedTags)
+                "_ALL_" -> viewModel.handleAction(TagSettingAction.SelectAllTags)
             }
         },
         onTagAdd = { inputTag -> viewModel.handleAction(TagSettingAction.AddInputTag(inputTag)) },
@@ -220,7 +221,7 @@ private fun EmptyTagState(
             color = Text03,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "태그로 분류하면 원하는 이미지를\n" +
                     "쉽게 찾을 수 있어요!",
@@ -284,7 +285,7 @@ private fun TagList(
         ) {
             EditModeBottomBar(
                 enabled = selectedTags.isNotEmpty(),
-                onDelete = { onDeleteTag("") },
+                onDelete = { onDeleteTag("_ALL_") },
                 onDeleteSelected = { onDeleteTag("_SELECTED_") },
                 modifier = Modifier
                     .fillMaxWidth()
