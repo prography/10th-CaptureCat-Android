@@ -362,21 +362,13 @@ class OrganizeViewModel @Inject constructor(
     private fun loadRecentTags() {
         viewModelScope.launch {
             try {
-                getUserTagsUseCase().fold(
-                    onSuccess = { tags ->
-                        updateState { copy(availableTags = tags) }
-                    },
-                    onFailure = { e ->
-                        val errorMessage = when (e) {
-                            is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
-                            else -> "태그를 불러오는데 실패했습니다: ${e.message}"
-                        }
-                        updateState { copy(availableTags = getAvailableTags()) }
-                        showToast(errorMessage)
-                    }
-                )
+                val tags = getUserTagsUseCase().first()
+                updateState { copy(availableTags = tags) }
             } catch (e: Exception) {
-                val errorMessage = "태그를 불러오는데 실패했습니다: ${e.message}"
+                val errorMessage = when (e) {
+                    is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
+                    else -> "태그를 불러오는데 실패했습니다: ${e}"
+                }
                 updateState { copy(availableTags = getAvailableTags()) }
                 showToast(errorMessage)
             }

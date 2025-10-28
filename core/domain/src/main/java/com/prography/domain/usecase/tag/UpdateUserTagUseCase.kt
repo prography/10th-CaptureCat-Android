@@ -8,6 +8,6 @@ class UpdateUserTagUseCase @Inject constructor(
     private val tagRepository: TagRepository
 ) {
     suspend operator fun invoke(tagId: Long, newTagName: String): Result<TagModel> {
-        return tagRepository.updateUserTagOnServer(tagId, newTagName)
+        return tagRepository.updateUserTag(tagId, newTagName)
     }
 }

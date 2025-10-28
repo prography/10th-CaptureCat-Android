@@ -1,10 +1,9 @@
 package com.android.start
 
 import androidx.lifecycle.viewModelScope
-import com.prography.domain.usecase.tag.AddRecentTagsUseCase
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
 import com.prography.domain.usecase.auth.CompleteTutorialUseCase
-import com.prography.domain.usecase.tag.AddRecentTagUseCase
+import com.prography.domain.usecase.tag.AddUserTagUseCase
 import com.prography.ui.BaseComposeViewModel
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +28,7 @@ sealed class StartTagAction {
 
 @HiltViewModel
 class StartTagViewModel @Inject constructor(
-    private val addRecentTagUseCase: AddRecentTagUseCase,
+    private val addUserTagUseCase: AddUserTagUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
     private val completeTutorialUseCase: CompleteTutorialUseCase
 ) : BaseComposeViewModel<StartTagState, Nothing, StartTagAction>(
@@ -81,13 +80,13 @@ class StartTagViewModel @Inject constructor(
 
     fun saveSelectedTags(tags: List<String>) {
         if (tags.isEmpty()) return
-
+        Timber.d("saveSelectedTags $tags")
         viewModelScope.launch {
-            addRecentTagUseCase(tags)
+            addUserTagUseCase(tags)
                 .catch { Timber.e(it, "Failed to save selected tags") }
-                .onCompletion {
+                .collect { savedTagModels ->
+                    Timber.d("Saved TagModels: $savedTagModels")
                     MixpanelUtil.track("click_register_frequent_tag", mapOf("selected_tags" to tags))
-                    Timber.d("Selected tags saved: $tags")
                 }
         }
     }

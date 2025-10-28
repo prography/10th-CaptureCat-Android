@@ -88,11 +88,12 @@ class ImageDetailViewModel @Inject constructor(
 
     fun loadTags() = viewModelScope.launch {
         try {
-            getUserTagsUseCase().fold(
-                onSuccess = { tags -> updateState { copy(userTags = tags) } },
-                onFailure = { showToast("태그를 불러오는데 실패했습니다.") }
-            )
-        } catch (e: Exception) { showToast("태그를 불러오는데 실패했습니다.") }
+            getUserTagsUseCase().collect { tags ->
+                updateState { copy(userTags = tags) }
+            }
+        } catch (e: Exception) {
+            showToast("태그를 불러오는데 실패했습니다.")
+        }
     }
 
     private fun loadScreenshotById(screenshotId: String, index: Int) {

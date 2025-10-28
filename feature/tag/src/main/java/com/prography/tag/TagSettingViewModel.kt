@@ -72,44 +72,24 @@ class TagSettingViewModel @Inject constructor(
             updateState { copy(isLoading = true) }
 
             try {
-                getUserTagsUseCase().fold(
-                    onSuccess = { tags ->
-                        updateState {
-                            copy(
-                                tags = tags,
-                                tagCount = tags.size,
-                                isLoading = false,
-                                errorMessage = null
-                            )
-                        }
-                        hideLoading()
-                    },
-                    onFailure = { e ->
-                        val errorMessage = when (e) {
-                            is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
-                            else -> "태그를 불러오는데 실패했습니다: ${e.message}"
-                        }
-                        updateState {
-                            copy(
-                                isLoading = false,
-                                errorMessage = errorMessage
-                            )
-                        }
-                        hideLoading()
-                        showToast(errorMessage)
-                    }
-                )
-            } catch (e: Exception) {
-                val errorMessage = "태그를 불러오는데 실패했습니다: ${e.message}"
+                val tags = getUserTagsUseCase().first()
                 updateState {
                     copy(
+                        tags = tags,
+                        tagCount = tags.size,
                         isLoading = false,
-                        errorMessage = errorMessage
+                        errorMessage = null
                     )
                 }
-                hideLoading()
+            } catch (e: Exception) {
+                val errorMessage = when (e) {
+                    is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
+                    else -> "태그를 불러오는데 실패했습니다: ${e.message}"
+                }
+                updateState { copy(isLoading = false, errorMessage = errorMessage) }
                 showToast(errorMessage)
-                Timber.e(e, "Exception while loading tags")
+            } finally {
+                hideLoading()
             }
         }
     }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 private val Context.tagDataStore by preferencesDataStore(name = "tag_prefs")
@@ -31,13 +32,14 @@ class TagDataStore(private val context: Context) {
 
     suspend fun addRecentTag(tag: String) {
         dataStore.edit { preferences ->
+
+            Timber.d("addUserTag Datasource $tag")
             val currentTagsString = preferences[TagPreferenceKeys.RECENT_TAGS] ?: ""
             val currentTags = if (currentTagsString.isBlank()) {
                 emptyList()
             } else {
                 currentTagsString.split(separator).filter { it.isNotBlank() }
             }
-
             // 새로운 태그를 맨 앞에 추가하고 중복 제거
             val updatedTags = listOf(tag) + currentTags.filter { it != tag }
 

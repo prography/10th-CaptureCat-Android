@@ -19,7 +19,7 @@ class TagRepositoryImpl @Inject constructor(
 
     private val modeExecutor = RepositoryModeExecutor(userPrefs)
 
-    override suspend fun getRecentTags(): Flow<List<TagModel>> {
+    override suspend fun getUserTags(): Flow<List<TagModel>> {
         return modeExecutor.executeWithMode(
             localAction = { localDataSource.getRecentTags() },
             remoteAction = {
@@ -40,6 +40,7 @@ class TagRepositoryImpl @Inject constructor(
     override suspend fun addUserTag(tag: String): Flow<TagModel> {
         return modeExecutor.executeWithMode(
             localAction = {
+                Timber.d("TagRepositoryImpl - addUserTag - Local mode: adding $tag")
                 localDataSource.addUserTag(tag)
             },
             remoteAction = {
@@ -63,20 +64,7 @@ class TagRepositoryImpl @Inject constructor(
         localDataSource.clearRecentTags()
     }
 
-    override suspend fun getUserTags(): List<TagModel> {
-        return remoteDataSource.getUserTags().getOrElse { emptyList() }
-    }
-
-    override suspend fun getUserTagsFromServer(): Result<List<TagModel>> {
-        return remoteDataSource.getUserTags()
-    }
-
-    override suspend fun updateUserTag(tagId: Long, newTagName: String) {
-        // 향후 로컬 캐시가 도입되면 동기화 로직 추가 예정
-        remoteDataSource.updateUserTag(tagId, newTagName)
-    }
-
-    override suspend fun updateUserTagOnServer(tagId: Long, newTagName: String): Result<TagModel> {
+    override suspend fun updateUserTag(tagId: Long, newTagName: String): Result<TagModel> {
         return remoteDataSource.updateUserTag(tagId, newTagName)
     }
 
