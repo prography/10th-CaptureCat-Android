@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -143,7 +144,11 @@ fun TagEditContent(
                         painter = painterResource(id = com.prography.ui.R.drawable.ic_keyboard_arrow_down),
                         contentDescription = stringResource(com.prography.ui.R.string.common_search),
                         tint = Gray05,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier
+                            .size(16.dp)
+                            .graphicsLayer {
+                                rotationZ = if (state.isUserTagsExpanded) 180f else 0f
+                            }
                     )
                 }
             }
