@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.prography.imageDetail.ui.content.Sheet
 import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailState
+import com.prography.ui.component.TagChipState
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.UiImageDetailTagChip
 import com.prography.ui.component.UiTagSelectedChip
@@ -116,7 +117,8 @@ fun TagEditContent(
                     )
                 }
                 UiImageDetailTagChip(
-                    text = "추가하기 +",
+                    text = "추가하기",
+                    state = TagChipState.ADD,
                     onClick = { onAction(ImageDetailAction.ShowSheet(Sheet.Add)) }
                 )
             }
@@ -160,7 +162,7 @@ fun TagEditContent(
                         val disabled = tag.id in registeredIds
                         UiImageDetailTagChip(
                             text = tag.name,
-                            enabled = !disabled,
+                            state = if (disabled) TagChipState.DISABLED else TagChipState.ENABLED,
                             onClick = { onAction(ImageDetailAction.OnClickUserTag(tag)) }
                         )
                     }

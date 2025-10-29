@@ -38,12 +38,7 @@ import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.component.DeleteConfirmDialog
 import com.prography.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import com.prography.domain.model.TagModel
-import com.prography.ui.component.UiImageDetailTagChip
-import com.prography.ui.component.UnderlinedClickableText
-import timber.log.Timber
 
 @OptIn(
     ExperimentalMaterial3Api::class,

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.component.TagChipState
 import com.prography.ui.component.UiImageDetailTagChip
 import com.prography.ui.theme.Text01
 import com.prography.ui.theme.subhead01Bold
@@ -53,9 +54,10 @@ fun OrganizeBottomControls(
             }
 
             items(sortedTags) { tagText ->
+                val disabled = selectedTags.contains(tagText)
                 UiImageDetailTagChip(
                     text = tagText,
-                    enabled = !selectedTags.contains(tagText),
+                    state = if (disabled) TagChipState.DISABLED else TagChipState.ENABLED,
                     onClick = {
                         onTagToggle(tagText)
                     }

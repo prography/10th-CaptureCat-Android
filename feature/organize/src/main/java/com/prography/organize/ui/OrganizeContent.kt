@@ -33,6 +33,7 @@ import com.prography.organize.ui.components.*
 import com.prography.organize.ui.contract.OrganizeAction
 import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
+import com.prography.ui.component.AddTagChipState
 import com.prography.ui.component.ButtonSize
 import com.prography.ui.component.UiAddTagChip
 import com.prography.ui.component.UiBottomInputButton
@@ -152,10 +153,10 @@ fun OrganizeContent(
                 )
             }
             if (count < 4) {
-                val addLabel = if (count == 0) "추가하기 +" else "+"
+                val chipState = if (count == 0) AddTagChipState.FIRST else AddTagChipState.NORMAL
 
                 UiAddTagChip(
-                    label = addLabel,
+                    state = chipState,
                     onClick = { onAction(OrganizeAction.OnAddTag(screenshotId)) }
                 )
             }
