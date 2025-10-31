@@ -8,6 +8,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.prography.ui.R
 
@@ -17,7 +18,11 @@ val headline01Bold = TextStyle(
     lineHeight = 32.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val headline01Regular = TextStyle(
@@ -25,7 +30,11 @@ val headline01Regular = TextStyle(
     lineHeight = 32.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val headline02Bold = TextStyle(
@@ -33,7 +42,11 @@ val headline02Bold = TextStyle(
     lineHeight = 28.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val headline02Regular = TextStyle(
@@ -41,7 +54,11 @@ val headline02Regular = TextStyle(
     lineHeight = 28.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val headline03Bold = TextStyle(
@@ -49,7 +66,11 @@ val headline03Bold = TextStyle(
     lineHeight = 26.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val headline03Regular = TextStyle(
@@ -57,7 +78,11 @@ val headline03Regular = TextStyle(
     lineHeight = 26.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 // Subhead
@@ -66,7 +91,11 @@ val subhead01Bold = TextStyle(
     lineHeight = 24.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val subhead02Bold = TextStyle(
@@ -74,7 +103,11 @@ val subhead02Bold = TextStyle(
     lineHeight = 22.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val subhead03Bold = TextStyle(
@@ -82,7 +115,11 @@ val subhead03Bold = TextStyle(
     lineHeight = 20.sp,
     fontWeight = FontWeight.Bold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 // Body
@@ -91,7 +128,11 @@ val body01Regular = TextStyle(
     lineHeight = 26.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val body02Regular = TextStyle(
@@ -99,7 +140,11 @@ val body02Regular = TextStyle(
     lineHeight = 22.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 // Caption
@@ -108,7 +153,11 @@ val caption01SemiBold = TextStyle(
     lineHeight = 20.sp,
     fontWeight = FontWeight.SemiBold,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 val caption02Regular = TextStyle(
@@ -116,5 +165,9 @@ val caption02Regular = TextStyle(
     lineHeight = 20.sp,
     fontWeight = FontWeight.Normal,
     fontFamily = myFontFamily,
-    letterSpacing = 0.sp
+    letterSpacing = 0.sp,
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
