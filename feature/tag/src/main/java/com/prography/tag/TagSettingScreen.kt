@@ -221,7 +221,7 @@ private fun EmptyTagState(
             color = Text03,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "태그로 분류하면 원하는 이미지를\n" +
                     "쉽게 찾을 수 있어요!",
