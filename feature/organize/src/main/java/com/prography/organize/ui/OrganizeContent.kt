@@ -95,7 +95,7 @@ fun OrganizeContent(
                             screenshots = state.screenshots,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 70.dp)
+                                .aspectRatio(0.65f, matchHeightConstraintsFirst = true)
                         )
                     }
                 }
@@ -107,7 +107,7 @@ fun OrganizeContent(
                                 .fillMaxSize(),
                             key = { index -> state.screenshots.getOrNull(index)?.id ?: index },
                             pageSpacing = 12.dp,
-                            contentPadding = PaddingValues(horizontal = 70.dp)
+                            contentPadding = PaddingValues(horizontal = 65.dp)
                         ) { page ->
                             state.screenshots.getOrNull(page)?.let { screenshot ->
                                 OrganizeImageCard(
@@ -119,7 +119,7 @@ fun OrganizeContent(
                                     onDelete = { onAction(OrganizeAction.OnScreenshotDelete(screenshot.id)) },
                                     modifier = Modifier
                                         .fillMaxHeight()   // ← 한 페이지 아이템이 높이를 가득 채움
-                                        .fillMaxWidth()    //   (너비는 contentPadding으로 제어)
+                                        .aspectRatio(0.65f, matchHeightConstraintsFirst = true)
                                 )
                             }
                         }
