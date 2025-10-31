@@ -94,7 +94,7 @@
     <string name="organize_mode_batch">All at once</string>
     <string name="organize_mode_single">One by one</string>
     <string name="organize_screenshot">Screenshot</string>
-    <string name="organize_recent_tags">Recently added tags</string>
+    <string name="organize_recent_tags">All tags</string>
     <string name="organize_completion_title">%d screenshots organized!</string>
     <string name="organize_completion_info">Favorite screenshots can be\nseen more often on the home screen.</string>
     <string name="organize_delete_confirmation">Delete this</string>

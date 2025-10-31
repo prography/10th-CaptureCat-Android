@@ -37,7 +37,7 @@ fun OrganizeBottomControls(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "최근 추가한 태그",
+                text = "모든 태그",
                 style = subhead01Bold,
                 color = Text01
             )

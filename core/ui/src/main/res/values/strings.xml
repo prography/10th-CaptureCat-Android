@@ -93,7 +93,7 @@
     <string name="organize_mode_batch">한번에</string>
     <string name="organize_mode_single">한장씩</string>
     <string name="organize_screenshot">스크린샷</string>
-    <string name="organize_recent_tags">최근 추가한 태그</string>
+    <string name="organize_recent_tags">모든 태그</string>
     <string name="organize_completion_title">%d장 정리 완료!</string>
     <string name="organize_completion_info">즐겨찾기한 스크린샷은\n홈에서 더 자주 만날 수 있어요.</string>
     <string name="organize_delete_confirmation">삭제할래요</string>
