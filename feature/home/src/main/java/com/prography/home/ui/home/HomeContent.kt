@@ -347,7 +347,7 @@ fun TabSection(
 
         // 고정된 태그 설정 아이콘
         Icon(
-            painter = painterResource(id = R.drawable.ic_home_tag_tab),
+            painter = painterResource(id = R.drawable.ic_tab_section),
             contentDescription = "태그 설정",
             tint = Color.Unspecified,
             modifier = Modifier

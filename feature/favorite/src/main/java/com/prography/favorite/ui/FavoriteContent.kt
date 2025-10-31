@@ -206,7 +206,7 @@ private fun FavoriteTabSection(
         )
 
         Icon(
-            painter = painterResource(id = UiR.drawable.ic_home_tag_tab),
+            painter = painterResource(id = UiR.drawable.ic_tab_section),
             contentDescription = "태그 설정",
             tint = Color.Unspecified,
             modifier = Modifier.clickableWithoutRipple { onTagSettingClick() }
