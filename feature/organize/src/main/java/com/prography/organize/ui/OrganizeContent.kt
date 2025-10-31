@@ -92,16 +92,19 @@ fun OrganizeContent(
                 OrganizeMode.BATCH -> {
                     if (state.screenshots.isNotEmpty()) {
                         OrganizeStackedCards(
-                            screenshots = state.screenshots
+                            screenshots = state.screenshots,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 70.dp)
                         )
                     }
                 }
-
                 OrganizeMode.SINGLE -> {
                     if (state.screenshots.isNotEmpty()) {
                         HorizontalPager(
                             state = pagerState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize(),
                             key = { index -> state.screenshots.getOrNull(index)?.id ?: index },
                             pageSpacing = 12.dp,
                             contentPadding = PaddingValues(horizontal = 70.dp)
@@ -111,16 +114,12 @@ fun OrganizeContent(
                                     screenshot = screenshot,
                                     isCurrentPage = page == pagerState.currentPage,
                                     onFavoriteToggle = { isFavorite ->
-                                        onAction(
-                                            OrganizeAction.OnFavoriteToggle(
-                                                screenshot.id,
-                                                isFavorite
-                                            )
-                                        )
+                                        onAction(OrganizeAction.OnFavoriteToggle(screenshot.id, isFavorite))
                                     },
-                                    onDelete = {
-                                        onAction(OrganizeAction.OnScreenshotDelete(screenshot.id))
-                                    }
+                                    onDelete = { onAction(OrganizeAction.OnScreenshotDelete(screenshot.id)) },
+                                    modifier = Modifier
+                                        .fillMaxHeight()   // ← 한 페이지 아이템이 높이를 가득 채움
+                                        .fillMaxWidth()    //   (너비는 contentPadding으로 제어)
                                 )
                             }
                         }
@@ -190,21 +189,17 @@ fun OrganizeContent(
 
 @Composable
 fun OrganizeStackedCards(
-    screenshots: List<OrganizeScreenshotItem>
+    screenshots: List<OrganizeScreenshotItem>,
+    modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
     val screenshot = screenshots.firstOrNull() ?: return
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = modifier)  {
         // 뒤 배경용 그라디언트 카드
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 70.dp)
-                .aspectRatio(0.65f)
                 .graphicsLayer {
                     translationX = with(density) { 1.dp.toPx() }
                     translationY = with(density) { 1.dp.toPx() }
@@ -231,9 +226,7 @@ fun OrganizeStackedCards(
         // 실제 이미지 카드
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 70.dp)
-                .aspectRatio(0.65f),
+                .fillMaxSize(),
             shape = RoundedCornerShape(4.dp),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {

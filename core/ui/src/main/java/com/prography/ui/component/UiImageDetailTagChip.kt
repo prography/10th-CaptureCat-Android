@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.prography.ui.R
 import com.prography.ui.theme.*
 
@@ -52,7 +53,7 @@ fun UiImageDetailTagChip(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { onClick() }
-            .padding(horizontal = 16.dp, vertical = 10.5.dp),
+            .padding(horizontal = 16.dp, vertical = 5.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -61,7 +62,7 @@ fun UiImageDetailTagChip(
         ) {
             Text(
                 text = text,
-                style = body02Regular,
+                style = body02Regular.copy(lineHeight = 28.sp),
                 color = textColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

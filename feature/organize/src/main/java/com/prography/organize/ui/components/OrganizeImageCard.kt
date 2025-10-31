@@ -50,7 +50,8 @@ fun OrganizeImageCard(
     screenshot: OrganizeScreenshotItem,
     isCurrentPage: Boolean = true,
     onFavoriteToggle: (Boolean) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    modifier: Modifier
 ) {
     var offsetY by remember { mutableStateOf(0f) }
     var isDragging by remember { mutableStateOf(false) }
@@ -98,14 +99,13 @@ fun OrganizeImageCard(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .clip(RectangleShape)
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(0.65f)
+                .fillMaxSize()
                 .graphicsLayer {
                     translationY = offsetY
                     alpha = deleteAlpha * if (isCurrentPage) 1f else 0.7f
