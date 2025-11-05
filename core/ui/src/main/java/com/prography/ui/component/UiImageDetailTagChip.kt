@@ -47,6 +47,7 @@ fun UiImageDetailTagChip(
 
     Box(
         modifier = modifier
+            .heightIn(min = 32.dp)
             .border(1.dp, Divider, RoundedCornerShape(20.dp))
             .background(PureWhite, RoundedCornerShape(20.dp))
             .clickable(
