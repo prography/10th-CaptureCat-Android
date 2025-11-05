@@ -169,7 +169,6 @@ class OrganizeViewModel @Inject constructor(
         val hadTag = currentTags.any { it.name == tagText }
         if (hadTag) {
             updateState {
-                // 1) 스샷들에서 태그 제거
                 val updatedScreenshots = when (organizeMode) {
                     OrganizeMode.BATCH -> {
                         screenshots.map { sc ->
@@ -187,17 +186,8 @@ class OrganizeViewModel @Inject constructor(
                     }
                 }
 
-                // 2) 해당 태그가 더 이상 어떤 스샷에서도 안 쓰이면 availableTags에서도 제거
-                val tagStillUsed = updatedScreenshots.any { sc ->
-                    sc.tags.any { it.name.equals(tagText, ignoreCase = true) }
-                }
-                val updatedAvailable =
-                    if (tagStillUsed) availableTags
-                    else availableTags.filterNot { it.name.equals(tagText, ignoreCase = true) }
-
                 copy(
-                    screenshots = updatedScreenshots,
-                    availableTags = updatedAvailable
+                    screenshots = updatedScreenshots
                 )
             }
         } else if (currentTags.size >= 4) {
