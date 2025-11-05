@@ -17,6 +17,12 @@ sealed class HomeAction {
     object DismissErrorReportBanner : HomeAction() // 오류 제보 배너 닫기
     data class OnTabSelected(val tabTag: String) : HomeAction() // 탭 선택
     object NavigateToTagSetting : HomeAction() // 태그 설정으로 이동
+
+
+    data class OnArriveWithIds(val ids: List<String>) : HomeAction()
+    data class OnDeleteChoiceConfirm(val ids: List<String>) : HomeAction()
+    object OnDeleteChoiceLater : HomeAction()
+    data class OnSystemDeleteResult(val successCount: Int) : HomeAction()
 }
 
 // Define Effects
@@ -24,6 +30,8 @@ sealed class HomeEffect {
     data class ShowError(val message: String) : HomeEffect()
     object NavigateToStorage : HomeEffect()
     data class OpenExternalLink(val url: String) : HomeEffect()
+    data class ShowDeleteChoiceBottomSheet(val ids: List<String>) : HomeEffect()
+    data class RequestSystemDelete(val uris: List<android.net.Uri>) : HomeEffect()
 }
 
 // Define UI State

@@ -123,7 +123,7 @@ class SettingViewModel @Inject constructor(
                 MixpanelUtil.reset()
 
                 navigationHelper.navigate(
-                    NavigationEvent.To(AppRoute.Main, popUpTo = true)
+                    NavigationEvent.To(AppRoute.Main(), popUpTo = true)
                 )
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to logout")

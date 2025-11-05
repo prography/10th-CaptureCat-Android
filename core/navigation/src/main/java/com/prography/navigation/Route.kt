@@ -17,7 +17,9 @@ sealed interface AppRoute : Route {
     data object Login : AppRoute
 
     @Serializable
-    data object Main : AppRoute
+    data class Main(
+        val screenshotIds: List<String> = emptyList()
+    ) : AppRoute
 
     @Serializable
     data class Storage(val mode: StorageMode): AppRoute

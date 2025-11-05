@@ -62,7 +62,7 @@ fun UiImageDetailTagChip(
         ) {
             Text(
                 text = text,
-                style = body02Regular.copy(lineHeight = 28.sp),
+                style = body02Regular,
                 color = textColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

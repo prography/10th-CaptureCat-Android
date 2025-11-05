@@ -9,8 +9,7 @@ data class OrganizeState(
     val currentIndex: Int = 0,
     val organizeMode: OrganizeMode = OrganizeMode.BATCH,
     val availableTags: List<TagModel> = emptyList(),
-    val isLoading: Boolean = false,
-    val showCompletionMessage: Boolean = false
+    val isLoading: Boolean = false
 )
 
 enum class OrganizeMode {

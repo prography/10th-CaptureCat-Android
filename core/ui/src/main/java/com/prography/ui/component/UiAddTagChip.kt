@@ -30,13 +30,12 @@ fun UiAddTagChip(
         tonalElevation = 0.dp,
         shadowElevation = 0.dp,
         color = Gray02,
-        border = BorderStroke(1.dp, Divider),
-        modifier = modifier.height(36.dp)
+        border = BorderStroke(1.dp, Divider)
     ) {
         Row(
             modifier = Modifier
                 .clickableWithoutRipple(onClick = onClick)
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 14.dp, vertical = 9.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {

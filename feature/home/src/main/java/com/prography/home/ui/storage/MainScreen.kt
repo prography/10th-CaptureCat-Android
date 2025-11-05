@@ -25,7 +25,7 @@ import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 import com.prography.ui.theme.Divider
 
 @Composable
-fun MainScreen() {
+fun MainScreen(screenshotIds: List<String>) {
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -62,8 +62,8 @@ fun MainScreen() {
             .padding(innerPadding)
         ) {
             MainNavigationHost(
-                navController = navController,
-                screenshotViewModel = screenshotViewModel
+                screenshotIds = screenshotIds,
+                navController = navController
             )
         }
     }

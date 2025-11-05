@@ -53,11 +53,11 @@ class UploadViewModel @Inject constructor(
             is UploadAction.CancelUpload -> updateState { copy(showConfirmDialog = true) }
             is UploadAction.ConfirmCancelUpload -> {
                 isCanceled = true
-                navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
+                navigationHelper.navigate(NavigationEvent.To(AppRoute.Main()))
             }
 
             is UploadAction.DismissCancelDialog -> updateState { copy(showConfirmDialog = false) }
-            is UploadAction.Finish -> navigationHelper.navigate(NavigationEvent.To(AppRoute.Main))
+            is UploadAction.Finish -> navigationHelper.navigate(NavigationEvent.To(AppRoute.Main()))
         }
     }
 

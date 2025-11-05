@@ -19,6 +19,10 @@ interface UserPreferenceRepository {
     val isDeletePromptEnabled: Flow<Boolean>
     suspend fun setDeletePromptEnabled(enabled: Boolean)
 
+
+    val isShownDeleteChoiceBottomSheet: Flow<Boolean>
+    suspend fun setShownDeleteChoiceBottomSheet(enabled: Boolean)
+
     val recentLoginProvider: Flow<LoginProvider>
     suspend fun setRecentLoginProvider(provider: LoginProvider)
 }

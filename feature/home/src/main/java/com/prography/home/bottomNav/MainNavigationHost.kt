@@ -14,9 +14,9 @@ import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 
 @Composable
 fun MainNavigationHost(
+    screenshotIds: List<String>,
     navController: NavHostController,
-    modifier: Modifier = Modifier,
-    screenshotViewModel: ScreenshotViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
@@ -28,6 +28,7 @@ fun MainNavigationHost(
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(
+                screenshotIds = screenshotIds,
                 onNavigateToStorage = {
                     navController.navigate(BottomNavItem.Favorite.route) {
                         popUpTo(navController.graph.findStartDestination().id) {

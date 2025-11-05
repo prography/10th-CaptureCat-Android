@@ -11,6 +11,11 @@ import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
 import com.prography.domain.model.UiScreenshotModel
+import com.prography.domain.usecase.user.GetDeleteChoiceSettingUseCase
+import com.prography.domain.usecase.user.GetDeletePromptSettingUseCase
+import com.prography.domain.usecase.user.SetDeleteChoiceSettingUseCase
+import com.prography.domain.usecase.user.SetDeletePromptSettingUseCase
+import com.prography.home.ui.home.component.GetImageUrisByIdsUseCase
 import com.prography.home.ui.home.component.ScreenshotPagingSource
 import com.prography.home.ui.home.contract.HomeAction
 import com.prography.home.ui.home.contract.HomeEffect
@@ -32,7 +37,12 @@ class HomeViewModel @Inject constructor(
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
-    private val navigationHelper: NavigationHelper
+    private val navigationHelper: NavigationHelper,
+    private val getDeletePromptSettingUseCase: GetDeletePromptSettingUseCase,
+    private val getDeleteChoiceSettingUseCase: GetDeleteChoiceSettingUseCase,
+    private val setDeletePromptSettingUseCase: SetDeletePromptSettingUseCase,
+    private val setDeleteChoiceSettingUseCase: SetDeleteChoiceSettingUseCase,
+    private val getImageUrisByIdsUseCase: GetImageUrisByIdsUseCase
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
 
     private var hasCheckedLoginStatus = false
@@ -152,7 +162,59 @@ class HomeViewModel @Inject constructor(
                     NavigationEvent.To(AppRoute.TagSetting)
                 )
             }
+            is HomeAction.OnArriveWithIds -> handleArriveWithIds(action.ids)
+
+            is HomeAction.OnDeleteChoiceConfirm -> {
+                // 버튼 누르면: 선택값 저장 + 즉시 시스템 알럿
+                viewModelScope.launch {
+                    runCatching { setDeleteChoiceSettingUseCase(true) }
+                    requestSystemDeleteByIds(action.ids)
+                }
+            }
+
+            HomeAction.OnDeleteChoiceLater -> {
+                // 버튼 누르면: 선택값 저장 + 아무 것도 안 함(바텀싯만 닫기)
+                viewModelScope.launch {
+                    runCatching {
+                        setDeleteChoiceSettingUseCase(true)
+                        setDeletePromptSettingUseCase(false)
+                    }
+                }
+            }
+
+            is HomeAction.OnSystemDeleteResult -> {
+                // 시스템 알럿 결과(성공 개수) 처리
+                val n = action.successCount
+                if (n > 0) showToast("${n}장 삭제되었어요.")
+            }
         }
+    }
+
+    private fun handleArriveWithIds(ids: List<String>) {
+        if (ids.isEmpty()) return
+
+        viewModelScope.launch {
+            val hasChosen = getDeleteChoiceSettingUseCase().getOrElse { false }
+            val promptEnabled = getDeletePromptSettingUseCase().getOrElse { false }
+
+            if (!hasChosen) {
+                // 1) 아직 선택한 적이 없다면: 바텀싯 표시
+                emitEffect(HomeEffect.ShowDeleteChoiceBottomSheet(ids))
+                return@launch
+            }
+
+            if (promptEnabled) {
+                // 2) 이미 선택했고 프롬프트도 허용 → 즉시 시스템 알럿
+                requestSystemDeleteByIds(ids)
+            }
+            // 3) hasChosen = true 이지만 promptEnabled = false 이면 아무 것도 안함
+        }
+    }
+
+    private suspend fun requestSystemDeleteByIds(ids: List<String>) {
+        val uris = runCatching { getImageUrisByIdsUseCase(ids) }.getOrDefault(emptyList())
+        if (uris.isEmpty()) return
+        emitEffect(HomeEffect.RequestSystemDelete(uris))
     }
 
     private fun handleScreenshotClick(clickedScreenshot: UiScreenshotModel) {

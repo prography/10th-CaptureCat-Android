@@ -127,8 +127,11 @@ fun AppNavGraph(
         composable<AppRoute.Upload> {
             UploadRoute()
         }
-        composable<AppRoute.Main> {
-            MainRoute()
+        composable<AppRoute.Main> { backStackEntry ->
+            val organize = backStackEntry.toRoute<AppRoute.Main>()
+            MainRoute(
+                screenshotIds = organize.screenshotIds
+            )
         }
         composable<AppRoute.MyPage> {
             SettingRoute()

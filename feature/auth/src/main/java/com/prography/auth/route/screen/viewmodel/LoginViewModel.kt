@@ -86,7 +86,7 @@ class LoginViewModel @Inject constructor(
 
                     LoginNavigationResult.NavigateToHome -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
-                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
                     }
                     LoginNavigationResult.NavigateToUpload -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "guest"))
@@ -140,7 +140,7 @@ class LoginViewModel @Inject constructor(
 
                     LoginNavigationResult.NavigateToHome -> {
                         MixpanelUtil.track("complete_login", mapOf("user_type_before" to "known"))
-                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                        navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
                     }
 
                     LoginNavigationResult.NavigateToUpload -> {
@@ -188,7 +188,7 @@ class LoginViewModel @Inject constructor(
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Start, popUpTo = true))
 
                 LoginNavigationResult.NavigateToHome ->
-                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+                    navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
 
                 LoginNavigationResult.NavigateToUpload ->
                     navigationHelper.navigate(NavigationEvent.To(AppRoute.Upload, popUpTo = true))

@@ -41,6 +41,14 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     override val isDeletePromptEnabled: Flow<Boolean>
         get() = userPrefs.isDeletePromptEnabled
 
+    override val isShownDeleteChoiceBottomSheet: Flow<Boolean>
+        get() = userPrefs.isShownDeleteChoiceBottomSheet
+
+    override suspend fun setShownDeleteChoiceBottomSheet(enabled: Boolean) {
+        userPrefs.setShownDeleteChoiceBottomSheet(enabled)
+    }
+
+
     override suspend fun setDeletePromptEnabled(enabled: Boolean) {
         userPrefs.setDeletePromptEnabled(enabled)
     }

@@ -77,13 +77,12 @@ fun GlobalUiHandler() {
         }
     }
 
-    // ✅ 2초 후 자동 숨김 처리
+    // ✅ 1초 후 자동 숨김 처리
     LaunchedEffect(toastMessage) {
         if (toastMessage != null) {
             showToast = true
-            kotlinx.coroutines.delay(1700)
+            kotlinx.coroutines.delay(1000)
             showToast = false
-            kotlinx.coroutines.delay(300) // 애니메이션 끝나고 메시지 제거
             toastMessage = null
         }
     }

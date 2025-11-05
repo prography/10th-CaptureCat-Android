@@ -20,10 +20,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.prography.ui.R
 import com.prography.ui.theme.Primary
 import com.prography.ui.theme.PureWhite
 import com.prography.ui.theme.Secondary
+import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.subhead02Bold
 
 @Composable
@@ -38,7 +40,7 @@ fun UiTagSelectedChip(
                 color = Secondary,
                 shape = RoundedCornerShape(20.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 10.5.dp),
+            .padding(horizontal = 16.dp, vertical = 5.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(

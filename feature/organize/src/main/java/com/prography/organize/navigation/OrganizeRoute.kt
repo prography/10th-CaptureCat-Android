@@ -66,7 +66,7 @@ fun OrganizeRoute(
         },
         onComplete = {
             // 메인 화면으로 돌아가기 (전체 스택 정리)
-            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main, popUpTo = true))
+            navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
         },
         entryPoint = entryPoint
     )

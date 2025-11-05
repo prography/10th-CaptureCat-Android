@@ -1,5 +1,6 @@
 package com.prography.home.ui.home
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,6 +15,11 @@ import com.prography.navigation.NavigationHelper
 import kotlinx.coroutines.flow.collectLatest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
@@ -27,10 +33,12 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.prography.ui.component.UiCommonDialog
 import androidx.core.net.toUri
+import com.prography.home.ui.home.component.DeleteChoiceBottomSheet
 import com.prography.util.MixpanelUtil
 
 @Composable
 fun HomeScreen(
+    screenshotIds: List<String>,
     onNavigateToStorage: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
@@ -46,6 +54,29 @@ fun HomeScreen(
         viewModel.checkLoginStatusOnFirstAccess()
         viewModel.loadMostUsedTags()
     }
+
+    LaunchedEffect(screenshotIds) {
+        if (screenshotIds.isNotEmpty()) {
+            viewModel.sendAction(HomeAction.OnArriveWithIds(screenshotIds))
+        }
+    }
+
+
+    // 시스템 삭제 런처
+    var pendingUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val deleteLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        // 성공 개수는 OS에서 직접 주지 않으니 "시도 개수"로 보고
+        val successCount = if (result.resultCode == Activity.RESULT_OK) pendingUris.size else 0
+        viewModel.sendAction(HomeAction.OnSystemDeleteResult(successCount))
+        pendingUris = emptyList()
+    }
+
+    // 바텀싯 표시 여부
+    var showDeleteSheet by remember { mutableStateOf(false) }
+    var idsForSheet by remember { mutableStateOf<List<String>>(emptyList()) }
+
 
     LaunchedEffect(effectFlow) {
         effectFlow.collectLatest { effect ->
@@ -64,11 +95,43 @@ fun HomeScreen(
 
                     }
                 }
+                is HomeEffect.ShowDeleteChoiceBottomSheet -> {
+                    idsForSheet = effect.ids
+                    showDeleteSheet = true
+                }
+
+                is HomeEffect.RequestSystemDelete -> {
+                    val uris = effect.uris
+                    if (uris.isEmpty()) return@collectLatest
+                    pendingUris = uris
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        runCatching {
+                            val req = MediaStore.createDeleteRequest(
+                                context.contentResolver, uris
+                            )
+                            deleteLauncher.launch(
+                                IntentSenderRequest.Builder(req.intentSender).build()
+                            )
+                        }.onFailure {
+                            // 실패 시 결과 0으로 보고
+                            viewModel.sendAction(HomeAction.OnSystemDeleteResult(0))
+                            pendingUris = emptyList()
+                        }
+                    } else {
+                        var success = 0
+                        uris.forEach { u ->
+                            if (runCatching { context.contentResolver.delete(u, null, null) }.isSuccess) {
+                                success++
+                            }
+                        }
+                        viewModel.sendAction(HomeAction.OnSystemDeleteResult(success))
+                        pendingUris = emptyList()
+                    }
+                }
             }
         }
     }
-
-    var isFabMenuOpen by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize()) {
         HomeContent(
@@ -79,6 +142,19 @@ fun HomeScreen(
         CaptureCatFab(
             onUploadClick = { viewModel.sendAction(HomeAction.NavigateToStorageUpload) },
             onOrganizeClick = { viewModel.sendAction(HomeAction.NavigateToStorageOrganize) }
+        )
+    }
+
+    if (showDeleteSheet) {
+        DeleteChoiceBottomSheet(
+            onDeleteNow = {
+                showDeleteSheet = false
+                viewModel.sendAction(HomeAction.OnDeleteChoiceConfirm(idsForSheet))
+            },
+            onDismiss = {
+                showDeleteSheet = false
+                viewModel.sendAction(HomeAction.OnDeleteChoiceLater)
+            }
         )
     }
 

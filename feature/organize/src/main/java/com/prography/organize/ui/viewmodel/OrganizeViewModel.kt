@@ -30,6 +30,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import com.prography.domain.usecase.storage.SaveOrganizedIdsUseCase
 import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.domain.usecase.user.GetDeletePromptSettingUseCase
+import com.prography.navigation.AppRoute
+import com.prography.navigation.NavigationEvent
+import com.prography.navigation.NavigationHelper
+import kotlinx.coroutines.delay
 import java.io.IOException
 
 @HiltViewModel
@@ -39,6 +43,7 @@ class OrganizeViewModel @Inject constructor(
     private val addRecentTagUseCase: AddRecentTagUseCase,
     private val saveOrganizedIdsUseCase: SaveOrganizedIdsUseCase,
     private val getDeletePromptSettingUseCase: GetDeletePromptSettingUseCase,
+    private val navigationHelper: NavigationHelper,
     @ApplicationContext private val context: Context
 ) : BaseComposeViewModel<OrganizeState, OrganizeEffect, OrganizeAction>(
     initialState = OrganizeState()
@@ -290,7 +295,6 @@ class OrganizeViewModel @Inject constructor(
     private fun saveScreenshots() {
         val screenshotsToSave = currentState.screenshots
         viewModelScope.launch {
-            showLoading()
             runCatching {
                 val uiScreenshots = screenshotsToSave.map { screenshot ->
                     val now = Date()
@@ -313,6 +317,7 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                showToast("${screenshotsToSave.size}장 저장 완료되었어요.")
                 // 정리 완료된 스샷 ID 저장 (기존 로직 유지)
                 runCatching { saveOrganizedIdsUseCase(screenshotsToSave.map { it.id }) }
                     .onFailure { Timber.e(it, "Failed to persist organized ids") }
@@ -328,9 +333,20 @@ class OrganizeViewModel @Inject constructor(
                     )
                 )
 
-                hideLoading()
+                val promptEnabled = getDeletePromptSettingUseCase().getOrElse { false }
+                val deleteIds: List<String> =
+                    if (promptEnabled) screenshotsToSave.map { it.id } else emptyList()
 
-                // ✅ 설정 확인 후 시스템 삭제 알럿 유도
+                delay(1000)
+                navigationHelper.navigate(
+                    NavigationEvent.To(
+                        AppRoute.Main(
+                            screenshotIds = deleteIds
+                        )
+                    )
+                )
+
+/*                // ✅ 설정 확인 후 시스템 삭제 알럿 유도
                 val promptEnabled = getDeletePromptSettingUseCase().getOrElse { false }
 
                 Timber.d("promptEnabled: $promptEnabled")
@@ -341,11 +357,11 @@ class OrganizeViewModel @Inject constructor(
                 } else {
                     // 기존 동작
                     emitEffect(OrganizeEffect.NavigateToComplete)
-                }
+                }*/
 
             }.onFailure {
                 hideLoading()
-                showToast("스크린샷 업로드에 실패했습니다.")
+                showToast("${screenshotsToSave.size}장 저장하지 못했어요.")
             }
         }
     }
