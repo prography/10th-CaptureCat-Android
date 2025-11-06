@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -59,6 +60,7 @@ fun UiTagChip(
 
     Box(
         modifier = modifier
+            .heightIn(min = 32.dp)
             .border(
                 width = if (isSelected) 0.dp else 1.5.dp,
                 color = borderColor,
@@ -71,7 +73,7 @@ fun UiTagChip(
             ) {
                 onClick()
             }
-            .padding(horizontal = 16.dp, vertical = 10.5.dp),
+            .padding(horizontal = 16.dp, vertical = 5.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
