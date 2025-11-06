@@ -286,6 +286,7 @@ class OrganizeViewModel @Inject constructor(
         val screenshotsToSave = currentState.screenshots
         viewModelScope.launch {
             runCatching {
+                updateState { copy(isLoading = true) }
                 val uiScreenshots = screenshotsToSave.map { screenshot ->
                     val now = Date()
                     val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
@@ -307,6 +308,7 @@ class OrganizeViewModel @Inject constructor(
                 }
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
+                updateState { copy(isLoading = false) }
                 showToast("${screenshotsToSave.size}장 저장 완료되었어요.")
                 // 정리 완료된 스샷 ID 저장 (기존 로직 유지)
                 runCatching { saveOrganizedIdsUseCase(screenshotsToSave.map { it.id }) }
@@ -335,22 +337,8 @@ class OrganizeViewModel @Inject constructor(
                         )
                     )
                 )
-
-/*                // ✅ 설정 확인 후 시스템 삭제 알럿 유도
-                val promptEnabled = getDeletePromptSettingUseCase().getOrElse { false }
-
-                Timber.d("promptEnabled: $promptEnabled")
-                if (promptEnabled) {
-                    // 현재 화면에 보이는 스크린샷들(정리한 것들)을 갤러리에서 삭제 요청
-                    val uris = screenshotsToSave.mapNotNull { it.uri as? Uri ?: runCatching { Uri.parse(it.uri.toString()) }.getOrNull() }
-                    emitEffect(OrganizeEffect.RequestSystemDelete(uris))
-                } else {
-                    // 기존 동작
-                    emitEffect(OrganizeEffect.NavigateToComplete)
-                }*/
-
             }.onFailure {
-                hideLoading()
+                updateState { copy(isLoading = false) }
                 showToast("${screenshotsToSave.size}장 저장하지 못했어요.")
             }
         }

@@ -1,11 +1,15 @@
 // ui/component/Buttons.kt
 package com.prography.ui.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
@@ -65,18 +69,19 @@ private fun BaseButton(
     Button(
         onClick = { if (enabled) onClick?.invoke() },
         modifier = modifier,
-        enabled = enabled,
         shape = RoundedCornerShape(4.dp),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
         contentPadding = paddingFor(size),
         colors = ButtonDefaults.buttonColors(containerColor = palette.container)
     ) {
         if (state == ButtonState.Loading) {
-            CircularProgressIndicator(
-                color = palette.indicator,
-                strokeWidth = 2.dp,
-                modifier = Modifier.size(20.dp)
-            )
+            Box(modifier = Modifier.fillMaxWidth().padding(5.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    color = palette.indicator,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
         } else {
             Text(
                 text = text,

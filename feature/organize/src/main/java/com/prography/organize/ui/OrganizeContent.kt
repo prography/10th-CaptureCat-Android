@@ -35,6 +35,7 @@ import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
 import com.prography.ui.component.AddTagChipState
 import com.prography.ui.component.ButtonSize
+import com.prography.ui.component.ButtonState
 import com.prography.ui.component.UiAddTagChip
 import com.prography.ui.component.UiBottomInputButton
 import com.prography.ui.component.UiLabelAddButton
@@ -176,13 +177,16 @@ fun OrganizeContent(
             )
         }
 
+        HorizontalDivider(color = com.prography.ui.theme.Divider, thickness = 1.dp)
+
         UiLabelAddButton(
             onClick = { onAction(OrganizeAction.OnSaveScreenshots) },
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth(),
             text = "저장하기",
-            size = ButtonSize.LARGE
+            size = ButtonSize.LARGE,
+            state = if(state.isLoading) ButtonState.Loading else ButtonState.Enabled
         )
     }
 }
