@@ -145,20 +145,6 @@ fun HomeScreen(
         )
     }
 
-    if (showDeleteSheet) {
-        DeleteChoiceBottomSheet(
-            onDeleteNow = {
-                showDeleteSheet = false
-                viewModel.sendAction(HomeAction.OnDeleteChoiceConfirm(idsForSheet))
-            },
-            onDismiss = {
-                showDeleteSheet = false
-                viewModel.sendAction(HomeAction.OnDeleteChoiceLater)
-            }
-        )
-    }
-
-    // 로그인 유도 다이얼로그
     if (state.showLoginDialog) {
         UiCommonDialog(
             isVisible = true,
@@ -168,6 +154,18 @@ fun HomeScreen(
             rightButtonText = stringResource(com.prography.ui.R.string.common_confirm),
             onDismiss = { viewModel.sendAction(HomeAction.HideLoginDialog) },
             onConfirm = { viewModel.sendAction(HomeAction.NavigateToLogin) }
+        )
+    }
+    else if (showDeleteSheet) {
+        DeleteChoiceBottomSheet(
+            onDeleteNow = {
+                showDeleteSheet = false
+                viewModel.sendAction(HomeAction.OnDeleteChoiceConfirm(idsForSheet))
+            },
+            onDismiss = {
+                showDeleteSheet = false
+                viewModel.sendAction(HomeAction.OnDeleteChoiceLater)
+            }
         )
     }
 }
