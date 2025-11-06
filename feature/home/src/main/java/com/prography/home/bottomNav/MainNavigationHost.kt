@@ -1,6 +1,11 @@
 package com.prography.home.bottomNav
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -18,6 +23,8 @@ fun MainNavigationHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    var initialScreenshotIds by remember { mutableStateOf(screenshotIds) }
+
     NavHost(
         navController = navController,
         startDestination = BottomNavItem.Home.route,
@@ -28,7 +35,7 @@ fun MainNavigationHost(
         }
         composable(BottomNavItem.Home.route) {
             HomeScreen(
-                screenshotIds = screenshotIds,
+                screenshotIds = initialScreenshotIds,
                 onNavigateToStorage = {
                     navController.navigate(BottomNavItem.Favorite.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
@@ -39,6 +46,13 @@ fun MainNavigationHost(
                     }
                 }
             )
+            LaunchedEffect(Unit) {
+                if (initialScreenshotIds.isNotEmpty()) {
+                    // 약간의 딜레이 후 초기화 (HomeScreen이 처리할 시간 주기)
+                    kotlinx.coroutines.delay(100)
+                    initialScreenshotIds = emptyList()
+                }
+            }
         }
         composable(BottomNavItem.Search.route) {
             SearchScreen(
