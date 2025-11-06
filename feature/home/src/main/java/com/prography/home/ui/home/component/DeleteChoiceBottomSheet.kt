@@ -43,6 +43,7 @@ fun DeleteChoiceBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        scrimColor = Color.Black.copy(alpha = 0.40f),
         dragHandle = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Box(
@@ -71,7 +72,7 @@ private fun DeleteChoiceBottomSheetContent(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 24.dp)
+            .padding(top = 24.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
             .background(White)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
