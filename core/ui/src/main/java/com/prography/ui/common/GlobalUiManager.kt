@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -35,6 +38,8 @@ import androidx.compose.ui.window.PopupProperties
 import com.prography.ui.theme.Error
 import com.prography.ui.theme.OverlayDim
 import com.prography.ui.theme.Primary
+import com.prography.ui.theme.Secondary
+import com.prography.ui.theme.body02Regular
 import com.prography.ui.theme.subhead02Bold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -106,15 +111,16 @@ fun GlobalUiHandler() {
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, bottom = 26.dp)
-                            .background(OverlayDim, shape = RoundedCornerShape(6.dp))
-                            .padding(horizontal = 20.dp, vertical = 15.5.dp),
+                            .padding(bottom = 79.dp)
+                            .wrapContentWidth()
+                            .widthIn(max = LocalConfiguration.current.screenWidthDp.dp - 32.dp)
+                            .background(Secondary, shape = RoundedCornerShape(6.dp))
+                            .padding(horizontal = 24.dp, vertical = 10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = message,
-                            style = subhead02Bold,
+                            style = body02Regular,
                             color = when (toastType) {
                                 ToastType.Default -> Color.White
                                 ToastType.Error -> Error
