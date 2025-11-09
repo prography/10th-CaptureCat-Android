@@ -147,7 +147,7 @@ private fun TagSettingContent(
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
-                    text = "($tagCount/30)",
+                    text = "($tagCount/40)",
                     style = headline02Regular,
                     color = Text03
                 )

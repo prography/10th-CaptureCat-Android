@@ -139,8 +139,8 @@ class TagSettingViewModel @Inject constructor(
                     updateState { copy(errorMessage = "동일한 태그가 이미 존재합니다.") }
                     return@launch
                 }
-                currentState.tagCount >= 30 -> {
-                    updateState { copy(errorMessage = "최대 30개까지 등록 가능해요.") }
+                currentState.tagCount >= 40 -> {
+                    updateState { copy(errorMessage = "최대 40개까지 등록 가능해요.") }
                     return@launch
                 }
             }
