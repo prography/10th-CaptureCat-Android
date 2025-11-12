@@ -42,7 +42,7 @@ class SocialLoginUseCase @Inject constructor(
                     if (!loginResult.tutorialCompleted)
                         completeTutorialUseCase()
 
-                    // 2. 동기화 여부 판단
+                    // 2. 동기화 여부 판단 (로컬 유저 태그, 스크린샷 데이터)
                     // 로컬 데이터가 있음 > 동기화 업로드 화면으로 이동
                     // 로컬 데이터가 없음 > 홈 화면으로 이동
                     val localScreenshots = getAllLocalScreenshotsUseCase().first()

@@ -37,6 +37,10 @@ class TagRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getLocalUserTags(): Flow<List<TagModel>> {
+        return localDataSource.getRecentTags()
+    }
+
     override suspend fun addUserTag(tag: String): Flow<TagModel> {
         return modeExecutor.executeWithMode(
             localAction = {
