@@ -266,14 +266,4 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
             Result.failure(e)
         }
     }
-
-    override suspend fun deleteAllTags(): Result<Unit> {
-        return try {
-            // 로컬에서는 단순히 성공을 반환 (실제 삭제는 서버에서 처리)
-            Timber.d("Local deleteAllTags called")
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 }

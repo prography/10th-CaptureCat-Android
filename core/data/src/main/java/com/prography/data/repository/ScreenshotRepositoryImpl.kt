@@ -109,7 +109,6 @@ class ScreenshotRepositoryImpl @Inject constructor(
 
     override suspend fun deleteAll() {
         localDataSource.deleteAll()
-        localDataSource.deleteAllTags()
     }
 
     override suspend fun deleteScreenshot(screenshotId: String) {
@@ -300,7 +299,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
 
     override suspend fun deleteAllTags() {
         return modeExecutor.executeWithModeAndFallback(
-            localAction = { localDataSource.deleteAllTags() },
+            localAction = {  },
             remoteAction = { remoteDataSource.deleteAllTags() }
         )
     }

@@ -1,13 +1,16 @@
 package com.prography.data.di
 
+import android.nfc.Tag
 import com.prography.domain.repository.ScreenshotRepository
-import com.prography.domain.repository.UserPreferenceRepository
+import com.prography.domain.repository.TagRepository
 import com.prography.domain.usecase.screenshot.GetScreenshotByIdUseCase
 import com.prography.domain.usecase.screenshot.DeleteScreenshotUseCase
 import com.prography.domain.usecase.screenshot.UpdateScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteTagUseCase
 import com.prography.domain.usecase.screenshot.AddTagsToScreenshotUseCase
-import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllScreenshotUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllTagsUseCase
 import com.prography.domain.usecase.screenshot.GetFavoriteImagesUseCase
 import com.prography.domain.usecase.screenshot.ToggleBookmarkUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
@@ -73,7 +76,8 @@ object UseCaseModule {
     ): GetRelatedTagsUseCase = GetRelatedTagsUseCase(repository)
 
     @Provides
-    fun provideDeleteAllScreenshotsUseCase(
-        repository: ScreenshotRepository
-    ): DeleteAllScreenshotsUseCase = DeleteAllScreenshotsUseCase(repository)
+    fun provideDeleteAllDataUseCase(
+        deleteAllScreenshotUseCase: DeleteAllScreenshotUseCase,
+        deleteAllTagsUseCase: DeleteAllTagsUseCase
+    ): DeleteAllDataUseCase = DeleteAllDataUseCase(deleteAllScreenshotUseCase, deleteAllTagsUseCase)
 }

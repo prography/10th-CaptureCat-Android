@@ -4,8 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.prography.ui.BaseComposeViewModel
 import com.prography.domain.usecase.auth.WithdrawUseCase
-import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
-import com.prography.domain.usecase.user.SetOnboardingShownUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
 import com.prography.domain.repository.UserPreferenceRepository
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.user.SetStartTagScreenShownUseCase
@@ -15,7 +14,7 @@ import timber.log.Timber
 @HiltViewModel
 class WithdrawViewModel @Inject constructor(
     private val withdrawUseCase: WithdrawUseCase,
-    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase,
+    private val deleteAllScreenshotsUseCase: DeleteAllDataUseCase,
     private val setStartTagScreenShownUseCase: SetStartTagScreenShownUseCase,
     private val userPreferenceRepository: UserPreferenceRepository
 ) : BaseComposeViewModel<WithdrawState, WithdrawEffect, WithdrawAction>(

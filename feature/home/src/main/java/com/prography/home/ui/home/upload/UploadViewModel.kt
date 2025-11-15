@@ -2,7 +2,7 @@ package com.prography.home.ui.home.upload
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.screenshot.BulkInsertScreenshotUseCase
-import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
 import com.prography.domain.usecase.screenshot.GetAllLocalScreenshotsUseCase
 import com.prography.domain.usecase.tag.AddUserTagUseCase
 import com.prography.domain.usecase.tag.GetLocalUserTagsUseCase
@@ -42,7 +42,7 @@ sealed class UploadEffect {
 class UploadViewModel @Inject constructor(
     private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase,
     private val getAllLocalScreenshotsUseCase: GetAllLocalScreenshotsUseCase,
-    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase,
+    private val deleteAllDataUseCase: DeleteAllDataUseCase,
     private val addUserTagUseCase: AddUserTagUseCase,
     private val getLocalUserTagsUseCase: GetLocalUserTagsUseCase,
     private val navigationHelper: NavigationHelper
@@ -90,18 +90,17 @@ class UploadViewModel @Inject constructor(
 
                 if (!isCanceled && successCount == screenshots.size) {
                     try {
-                        // 1) 로컬 이미지 정리
-                        deleteAllScreenshotsUseCase()
-
-                        // 2) 유저 태그 로컬 스냅샷 → 서버에 반영
+                        // 1) 유저 로컬 스크린샷 데이터 → 서버에 반영
                         val userTagModels = getLocalUserTagsUseCase().first()
                         val tagNames = userTagModels.mapNotNull { it.name?.trim() }.filter { it.isNotEmpty() }.distinct()
 
+                        Timber.d("tagNames $tagNames")
+
+                        // 2) 유저 로컬 태그 리스트 → 서버에 반영
                         if (tagNames.isNotEmpty()) {
                             addUserTagUseCase(tagNames)
                                 .catch { t ->
                                     Timber.e(t, "Failed to sync user tags")
-                                    showToast("태그 동기화에 실패했습니다")
                                 }
                                 .collect { saved ->
                                     Timber.d("Saved TagModels: $saved")
@@ -109,6 +108,9 @@ class UploadViewModel @Inject constructor(
                                         mapOf("count" to tagNames.size, "tags" to tagNames))
                                 }
                         }
+
+                        // 3. 태그 업로드 후 로컬 스크린샷, 태그 데이터 삭제
+                        deleteAllDataUseCase()
 
                         updateState { copy(uploading = false, completed = true) }
                         emitEffect(UploadEffect.NavigateToUploaded)

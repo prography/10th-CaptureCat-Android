@@ -73,7 +73,6 @@ class TagRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteUserTags(tagIds: List<Long>) {
-        // 일괄 삭제 API가 없으므로 개별 호출
         tagIds.forEach { id ->
             remoteDataSource.deleteUserTag(id)
         }

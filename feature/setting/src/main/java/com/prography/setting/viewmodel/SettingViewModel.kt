@@ -3,7 +3,7 @@ package com.prography.setting.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.auth.GetAuthTokenUseCase
 import com.prography.domain.usecase.auth.LogoutUseCase
-import com.prography.domain.usecase.screenshot.DeleteAllScreenshotsUseCase
+import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
 import com.prography.domain.usecase.user.GetUserInfoUseCase
 import com.prography.setting.contract.SettingAction
 import com.prography.setting.contract.SettingEffect
@@ -23,7 +23,7 @@ class SettingViewModel @Inject constructor(
     private val getAuthTokenUseCase: GetAuthTokenUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
-    private val deleteAllScreenshotsUseCase: DeleteAllScreenshotsUseCase,
+    private val deleteAllScreenshotsUseCase: DeleteAllDataUseCase,
     private val navigationHelper: NavigationHelper
 ) : BaseComposeViewModel<SettingState, SettingEffect, SettingAction>(
     initialState = SettingState()
