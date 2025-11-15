@@ -100,7 +100,7 @@ private fun DeleteChoiceBottomSheetContent(
 
         UiLabelAddButton(
             onClick = onDeleteNow,
-            text = "삭제 설정하기",
+            text = "삭제 허용하기",
             size = ButtonSize.LARGE,
             type = ButtonType.DEFAULT,
             modifier = Modifier.fillMaxWidth()
