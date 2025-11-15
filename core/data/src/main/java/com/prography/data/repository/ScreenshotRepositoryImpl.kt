@@ -168,12 +168,7 @@ class ScreenshotRepositoryImpl @Inject constructor(
     ): Result<List<TagModel>> {
         return modeExecutor.executeWithMode(
             localAction = {
-                Result.success(tagNames.map {
-                    TagModel(
-                        System.currentTimeMillis(),
-                        it
-                    )
-                })
+                localDataSource.addTagsToScreenshot(screenshotId, tagNames)
             },
             remoteAction = {
                 // 서버 모드

@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
     fun loadMostUsedTags() {
         viewModelScope.launch {
             try {
-                val tags = getMostUsedTagsUseCase(size = 5)
+                val tags = getMostUsedTagsUseCase(size = 20)
                 updateState { copy(popularTags = tags) }
             } catch (exception: Exception) {
                 Timber.e(exception, "Failed to load most used tags")

@@ -13,7 +13,7 @@ class TagLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getRecentTags(): Flow<List<TagModel>> {
         return tagDataStore.recentTags.map { tags ->
-            tags.map { TagModel(id = null, name = it) } // id는 로컬이므로 null
+            tags.map { TagModel(id = null, name = it) }
         }
     }
 

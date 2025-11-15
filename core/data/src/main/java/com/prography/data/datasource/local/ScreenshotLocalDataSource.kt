@@ -14,7 +14,7 @@ interface ScreenshotLocalDataSource {
     suspend fun deleteAll()
     suspend fun deleteById(screenshotId: String)
     suspend fun deleteTag(imageId: String, tagName: String)
-    suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>)
+    suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>):  Result<List<TagModel>>
     suspend fun getMostUsedTags(size: Int): List<TagWithCount>
     suspend fun getFavoriteTags(size: Int): List<TagWithCount>
     suspend fun searchImagesByTags(

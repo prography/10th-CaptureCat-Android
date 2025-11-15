@@ -66,7 +66,7 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
         return dao.getById(screenshotId)?.toDomain()
     }
 
-    override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>) {
+    override suspend fun addTagsToScreenshot(screenshotId: String, tagNames: List<String>): Result<List<TagModel>> {
         val screenshotEntity = dao.getById(screenshotId)
         if (screenshotEntity != null) {
             val screenshot = screenshotEntity.toDomain()
@@ -83,8 +83,10 @@ class ScreenshotLocalDataSourceImpl @Inject constructor(
             val updatedScreenshot = screenshot.copy(tags = allTags)
             dao.update(updatedScreenshot.toEntity())
             Timber.d("Added tags $tagNames to screenshot $screenshotId")
+            return Result.success(newTags)
         } else {
             Timber.w("addTagsToScreenshot: Screenshot with id $screenshotId not found.")
+            return Result.failure(Exception("Screenshot not found"))
         }
     }
 

@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
@@ -86,13 +87,17 @@ class ImageDetailViewModel @Inject constructor(
         loadScreenshotsByIds()
     }
 
-    fun loadTags() = viewModelScope.launch {
-        try {
-            getUserTagsUseCase().collect { tags ->
-                updateState { copy(userTags = tags) }
-            }
-        } catch (e: Exception) {
-            showToast("태그를 불러오는데 실패했습니다.")
+    fun loadTags() {
+        viewModelScope.launch {
+            getUserTagsUseCase()
+                .catch { e ->
+                    if (e is CancellationException) return@catch
+                    Timber.d("Exception:loadTags $e")
+                    showToast("태그를 불러오는데 실패했습니다.")
+                }
+                .collect { tags ->
+                    updateState { copy(userTags = tags) }
+                }
         }
     }
 
