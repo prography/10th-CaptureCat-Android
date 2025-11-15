@@ -15,7 +15,11 @@ import retrofit2.http.Query
 
 interface TagService {
     @GET("v1/user-tags")
-    suspend fun getUserTags(): NetworkState<ApiListResponse<TagResponse>>
+    suspend fun getUserTags(
+        @Query("hasTags") hasTags: Boolean? = null,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 40
+    ): NetworkState<ApiListResponse<TagResponse>>
 
     @POST("v1/user-tags")
     suspend fun addUserTag(
