@@ -2,10 +2,12 @@ package com.prography.tag
 
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.TagModel
+import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.tag.AddRecentTagUseCase
 import com.prography.domain.usecase.tag.DeleteUserTagUseCase
 import com.prography.domain.usecase.tag.GetUserTagsUseCase
 import com.prography.domain.usecase.tag.UpdateUserTagUseCase
+import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
@@ -23,7 +25,8 @@ data class TagSettingUiState(
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val selectedTags: Set<String> = emptySet()
+    val selectedTags: Set<String> = emptySet(),
+    val isLoggedIn: Boolean = true
 )
 
 sealed class TagSettingEffect {
@@ -41,10 +44,12 @@ sealed class TagSettingAction {
     object DeleteSelectedTags : TagSettingAction()
     data class UpdateTag(val tagId: Long, val newTagName: String) : TagSettingAction()
     object NavigateBack : TagSettingAction()
+    object NavigateToLogin : TagSettingAction()
 }
 
 @HiltViewModel
 class TagSettingViewModel @Inject constructor(
+    private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val getUserTagsUseCase: GetUserTagsUseCase,
     private val addUserTagsUseCase: AddRecentTagUseCase,
     private val deleteUserTagUseCase: DeleteUserTagUseCase,
@@ -63,7 +68,12 @@ class TagSettingViewModel @Inject constructor(
             is TagSettingAction.DeleteSelectedTags -> deleteSelectedTags()
             is TagSettingAction.UpdateTag -> updateTag(action.tagId, action.newTagName)
             is TagSettingAction.NavigateBack -> navigationHelper.navigate(NavigationEvent.Up)
+            is TagSettingAction.NavigateToLogin -> navigationHelper.navigate(NavigationEvent.To(AppRoute.Login))
         }
+    }
+
+    init {
+        loadTags()
     }
 
     fun loadTags() {
@@ -73,12 +83,15 @@ class TagSettingViewModel @Inject constructor(
 
             try {
                 val tags = getUserTagsUseCase().first()
+                val isLoggedIn = checkLoginStatusUseCase()
+
                 updateState {
                     copy(
                         tags = tags,
                         tagCount = tags.size,
                         isLoading = false,
-                        errorMessage = null
+                        errorMessage = null,
+                        isLoggedIn = isLoggedIn
                     )
                 }
             } catch (e: Exception) {
@@ -86,7 +99,12 @@ class TagSettingViewModel @Inject constructor(
                     is IOException -> "네트워크 연결 오류입니다. 다시 시도해 주세요."
                     else -> "태그를 불러오는데 실패했습니다: ${e.message}"
                 }
-                updateState { copy(isLoading = false, errorMessage = errorMessage) }
+                updateState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = errorMessage
+                    )
+                }
                 showToast(errorMessage)
             } finally {
                 hideLoading()
@@ -275,7 +293,4 @@ class TagSettingViewModel @Inject constructor(
         }
     }
 
-    init {
-        loadTags()
-    }
 }

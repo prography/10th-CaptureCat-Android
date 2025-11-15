@@ -34,9 +34,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.prography.domain.model.TagWithCount
 import com.prography.ui.R
 import com.prography.ui.component.BottomInputButtonVariant
+import com.prography.ui.component.ButtonSize
 import com.prography.ui.component.TagAddBottomSheet
 import com.prography.ui.component.TagEditBottomSheet
 import com.prography.ui.component.UiBottomInputButton
+import com.prography.ui.component.UiLabelAddButton
 import com.prography.ui.component.clickableWithoutRipple
 import com.prography.ui.theme.*
 
@@ -84,6 +86,22 @@ fun TagSettingScreen(
             showEditSheet = true
         }
     )
+    if (!uiState.isLoggedIn) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .clickableWithoutRipple(enabled = true, onClick = {}),
+            contentAlignment = Alignment.Center
+        ) {
+            UiLabelAddButton(
+                text = stringResource(R.string.storage_login_required),
+                size = ButtonSize.LARGE,
+                onClick = { viewModel.handleAction(TagSettingAction.NavigateToLogin) },
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+        }
+    }
     // ✅ 수정 시트
     if (showEditSheet && editTarget != null) {
         val tgt = editTarget!!
