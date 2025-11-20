@@ -86,43 +86,57 @@ class UploadViewModel @Inject constructor(
                         successCount++
                         updateState { copy(uploadedCount = successCount) }
                     } catch (e: Exception) {
+                        Timber.e(e, "Screenshot upload failed: ${e.message}")
                         updateState { copy(error = app.getString(R.string.error_image_upload_failed, e.message)) }
-                        emitEffect(UploadEffect.NavigateToUploaded)
+                        showToast(app.getString(R.string.error_partial_upload_failed))
+                        // 에러 발생 시 루프 중단
+                        break
                     }
                 }
 
-                if (!isCanceled && successCount == screenshots.size) {
+                // 업로드된 스크린샷이 하나라도 있으면 태그 동기화 진행
+                if (!isCanceled && successCount > 0) {
                     try {
-                        // 1) 유저 로컬 스크린샷 데이터 → 서버에 반영
+                        // 1) 유저 로컬 태그 리스트 가져오기
                         val userTagModels = getLocalUserTagsUseCase().first()
                         val tagNames = userTagModels.mapNotNull { it.name?.trim() }.filter { it.isNotEmpty() }.distinct()
 
-                        Timber.d("tagNames $tagNames")
-
                         // 2) 유저 로컬 태그 리스트 → 서버에 반영
+                        var tagSyncSuccess = true
                         if (tagNames.isNotEmpty()) {
-                            addUserTagUseCase(tagNames)
-                                .catch { t ->
-                                    Timber.e(t, "Failed to sync user tags")
-                                }
-                                .collect { saved ->
+                            try {
+                                addUserTagUseCase(tagNames).collect { saved ->
                                     Timber.d("Saved TagModels: $saved")
                                     MixpanelUtil.track("sync_user_tags_after_upload",
                                         mapOf("count" to tagNames.size, "tags" to tagNames))
                                 }
+                            } catch (tagError: Exception) {
+                                Timber.e(tagError, "Failed to sync user tags")
+                                tagSyncSuccess = false
+                                // 태그 동기화 실패 시 경고만 표시하고 계속 진행
+                                showToast(app.getString(R.string.error_finish_work_failed))
+                            }
                         }
 
-                        // 3. 태그 업로드 후 로컬 스크린샷, 태그 데이터 삭제
-                        deleteAllDataUseCase()
+                        // 3. 모든 스크린샷이 성공적으로 업로드되고 태그 동기화도 성공한 경우에만 로컬 데이터 삭제
+                        if (successCount == screenshots.size && tagSyncSuccess) {
+                            deleteAllDataUseCase()
+                            Timber.d("Local data deleted successfully")
+                        } else {
+                            Timber.w("Partial upload: $successCount/${screenshots.size}, keeping local data")
+                        }
 
                         updateState { copy(uploading = false, completed = true) }
                         emitEffect(UploadEffect.NavigateToUploaded)
                     } catch (e: Exception) {
+                        Timber.e(e, "Error during tag sync or cleanup")
                         updateState { copy(error = app.getString(R.string.error_sync_failed, e.message)) }
                         showToast(app.getString(R.string.error_finish_work_failed))
+                        updateState { copy(uploading = false) }
                         emitEffect(UploadEffect.NavigateToUploaded)
                     }
                 } else if (!isCanceled) {
+                    // 업로드 실패 시
                     updateState { copy(uploading = false) }
                 }
             }
