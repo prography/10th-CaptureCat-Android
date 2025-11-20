@@ -344,6 +344,9 @@
     <string name="toast_images_deleted">%d images deleted.</string>
 
     <!-- Delete Choice Dialog -->
+    <string name="delete_choice_title_prefix">Would you like to </string>
+    <string name="delete_choice_title_emphasis">delete from gallery</string>
+    <string name="delete_choice_title_suffix"> the uploaded screenshots?</string>
     <string name="delete_choice_description">Organize duplicate images and keep your gallery cleaner. You can choose whether to delete each time.</string>
     <string name="delete_choice_allow">Allow deletion</string>
     <string name="delete_choice_later">Later</string>

@@ -344,6 +344,9 @@
     <string name="toast_images_deleted">%d장 삭제되었어요.</string>
 
     <!-- Delete Choice Dialog -->
+    <string name="delete_choice_title_prefix">업로드 된 캡처를 </string>
+    <string name="delete_choice_title_emphasis">갤러리에서 삭제</string>
+    <string name="delete_choice_title_suffix">할까요?</string>
     <string name="delete_choice_description">중복 이미지는 정리하고, 갤러리를 더 깔끔하게 정리할 수 있어요. 삭제 여부는 매번 선택할 수 있어요.</string>
     <string name="delete_choice_allow">삭제 허용하기</string>
     <string name="delete_choice_later">나중에</string>

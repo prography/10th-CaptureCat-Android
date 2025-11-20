@@ -344,6 +344,9 @@
     <string name="toast_images_deleted">%d枚削除されました。</string>
 
     <!-- 削除選択ダイアログ -->
+    <string name="delete_choice_title_prefix">アップロードされたキャプチャを</string>
+    <string name="delete_choice_title_emphasis">ギャラリーから削除</string>
+    <string name="delete_choice_title_suffix">しますか？</string>
     <string name="delete_choice_description">重複画像を整理し、ギャラリーをより綺麗に保つことができます。削除するかどうかは毎回選択できます。</string>
     <string name="delete_choice_allow">削除を許可</string>
     <string name="delete_choice_later">後で</string>

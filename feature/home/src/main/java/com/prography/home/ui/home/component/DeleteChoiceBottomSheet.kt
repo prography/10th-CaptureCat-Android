@@ -81,11 +81,11 @@ private fun DeleteChoiceBottomSheetContent(
     ) {
         Text(
             text = buildAnnotatedString {
-                append("업로드 된 캡처를 ")
+                append(stringResource(R.string.delete_choice_title_prefix))
                 withStyle(style = SpanStyle(color = Primary)) {
-                    append("갤러리에서 삭제")
+                    append(stringResource(R.string.delete_choice_title_emphasis))
                 }
-                append("할까요?")
+                append(stringResource(R.string.delete_choice_title_suffix))
             },
             style = headline02Bold,
             color = Text01
