@@ -59,7 +59,7 @@ fun OrganizeTopBar(
                     .clickable { onNavigateUp() }
             )
             Text(
-                text = "태그하기",
+                text = stringResource(com.prography.ui.R.string.label_tagging),
                 style = headline02Bold,
                 color = Text01
             )

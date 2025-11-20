@@ -1,5 +1,6 @@
 package com.prography.imageDetail.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.TagModel
 import com.prography.domain.model.UiScreenshotModel
@@ -16,6 +17,7 @@ import com.prography.imageDetail.ui.contract.ImageDetailAction
 import com.prography.imageDetail.ui.contract.ImageDetailEffect
 import com.prography.imageDetail.ui.contract.ImageDetailState
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -28,6 +30,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
+    private val app: Application,
     private val getScreenshotByIdUseCase: GetScreenshotByIdUseCase,
     private val deleteScreenshotUseCase: DeleteScreenshotUseCase,
     private val updateScreenshotUseCase: UpdateScreenshotUseCase,
@@ -93,7 +96,7 @@ class ImageDetailViewModel @Inject constructor(
                 .catch { e ->
                     if (e is CancellationException) return@catch
                     Timber.d("Exception:loadTags $e")
-                    showToast("태그를 불러오는데 실패했습니다.")
+                    showToast(app.getString(R.string.error_load_tags_failed))
                 }
                 .collect { tags ->
                     updateState { copy(userTags = tags) }
@@ -121,11 +124,11 @@ class ImageDetailViewModel @Inject constructor(
                     Timber.d("Successfully loaded and cached screenshot: ${screenshot.id}")
                 } else {
                     Timber.w("Screenshot not found for ID: $screenshotId")
-                    emitEffect(ImageDetailEffect.ShowError("스크린샷을 찾을 수 없습니다."))
+                    emitEffect(ImageDetailEffect.ShowError(app.getString(R.string.error_screenshot_not_found)))
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Failed to load screenshot: $screenshotId")
-                emitEffect(ImageDetailEffect.ShowError("스크린샷을 불러오는데 실패했습니다."))
+                emitEffect(ImageDetailEffect.ShowError(app.getString(R.string.error_load_screenshot_failed)))
             }
         }
     }
@@ -265,7 +268,7 @@ class ImageDetailViewModel @Inject constructor(
                 val cur = currentState.currentScreenshot ?: return
                 Timber.d("cur.tags.size ${cur.tags.size}")
                 if (cur.tags.size >= 4) {
-                    showToast("태그는 최대 4개까지 등록할 수 있습니다.")
+                    showToast(app.getString(R.string.error_max_tags_limit))
                     return
                 }
                 if(cur.tags.any { it.id == action.tag.id }) return
@@ -275,7 +278,7 @@ class ImageDetailViewModel @Inject constructor(
                             val added = server.firstOrNull() ?: return@onSuccess
                             applyTagChange(cur.copy(tags = cur.tags + TagModel(added.id, added.name)))
                         }
-                        .onFailure { emitEffect(ImageDetailEffect.ShowError("태그 추가 실패")) }
+                        .onFailure { emitEffect(ImageDetailEffect.ShowError(app.getString(R.string.error_tag_add_failed))) }
                 }
             }
 
@@ -408,7 +411,7 @@ class ImageDetailViewModel @Inject constructor(
                 notifySearchRefresh()
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to update favorite status")
-                emitEffect(ImageDetailEffect.ShowError("즐겨찾기 업데이트에 실패했습니다."))
+                emitEffect(ImageDetailEffect.ShowError(app.getString(R.string.error_favorite_update_failed)))
             }
         }
     }
@@ -464,7 +467,7 @@ class ImageDetailViewModel @Inject constructor(
                         currentScreenshot = currentScreenshot
                     )
                 }
-                emitEffect(ImageDetailEffect.ShowError("태그 삭제에 실패했습니다."))
+                emitEffect(ImageDetailEffect.ShowError(app.getString(R.string.error_tag_delete_failed)))
             }
         }
         hasDataChanges = true
@@ -578,7 +581,7 @@ class ImageDetailViewModel @Inject constructor(
                 }
             }.onFailure { exception ->
                 Timber.e(exception, "Failed to delete screenshot")
-                showToast("스크린샷 삭제에 실패했습니다.")
+                showToast(app.getString(R.string.error_screenshot_delete_failed))
                 updateState { copy(isLoading = false) }
             }
         }

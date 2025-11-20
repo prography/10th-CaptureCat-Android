@@ -258,4 +258,84 @@
         <item>エクササイズ</item>
         <item>趣味</item>
     </string-array>
+
+    <!-- Toast/エラーメッセージ -->
+    <string name="error_max_tags_selection">最大%d個まで選択できます。</string>
+    <string name="error_max_screenshots_selection">最大%d個まで選択可能です。</string>
+    <string name="error_load_tags_failed">タグの読み込みに失敗しました。</string>
+    <string name="error_screenshot_not_found">スクリーンショットが見つかりません。</string>
+    <string name="error_load_screenshot_failed">スクリーンショットの読み込みに失敗しました。</string>
+    <string name="error_max_tags_limit">タグは最大4個まで登録できます。</string>
+    <string name="error_tag_add_failed">タグの追加に失敗しました</string>
+    <string name="error_tag_input_empty">タグを入力してください。</string>
+    <string name="error_tag_registration_failed_detail">タグの登録に失敗しました。</string>
+    <string name="error_favorite_update_failed">お気に入りの更新に失敗しました。</string>
+    <string name="error_tag_delete_failed">タグの削除に失敗しました。</string>
+    <string name="error_screenshot_delete_failed">スクリーンショットの削除に失敗しました。</string>
+    <string name="error_network_connection">ネットワーク接続エラーです。もう一度お試しください。</string>
+    <string name="error_unknown">不明なエラーが発生しました。</string>
+    <string name="error_general">エラーが発生しました。</string>
+    <string name="error_load_screenshots">スクリーンショットの読み込み中にエラーが発生しました。</string>
+    <string name="error_load_uncategorized">未分類のスクリーンショットの読み込み中にエラーが発生しました。</string>
+    <string name="error_load_related_tags">関連タグの読み込み中にエラーが発生しました。</string>
+    <string name="error_save_screenshots">%d枚の保存に失敗しました。</string>
+    <string name="error_load_settings">設定の読み込みに失敗しました。</string>
+    <string name="error_save_settings">設定の保存に失敗しました。</string>
+    <string name="error_google_login_failed">Googleログインに失敗しました</string>
+    <string name="error_kakao_user_info_failed">カカオユーザー情報の取得に失敗しました</string>
+    <string name="error_kakao_login_failed">カカオログイン中にエラーが発生しました</string>
+    <string name="error_account_link_failed">アカウントの連携に失敗しました</string>
+    <string name="error_load_favorites_failed">お気に入りリストの読み込み中にエラーが発生しました。</string>
+    <string name="error_filter_tags_failed">タグフィルタリング中にエラーが発生しました。</string>
+    <string name="error_unfavorite_failed">お気に入り解除中にエラーが発生しました。</string>
+    <string name="error_image_upload_failed">画像アップロード失敗: %s</string>
+    <string name="error_partial_upload_failed">一部の画像のアップロードに失敗しました</string>
+    <string name="error_sync_failed">ローカル削除/タグ同期失敗: %s</string>
+    <string name="error_finish_work_failed">最終作業中にエラーが発生しました</string>
+    <string name="error_withdraw_failed">アカウント削除に失敗しました。</string>
+
+    <!-- UIラベル -->
+    <string name="label_tag_edit">タグ編集</string>
+    <string name="label_registered_tags">登録されたタグ</string>
+    <string name="label_add">追加</string>
+    <string name="label_view_existing_tags">既存タグを見る</string>
+    <string name="label_collapse">閉じる</string>
+    <string name="label_expand">もっと見る</string>
+    <string name="label_no_registered_tags">まだ登録されたタグがありません</string>
+    <string name="label_tagging">タグ付け</string>
+    <string name="label_save">保存</string>
+    <string name="label_edit_mode">編集</string>
+    <string name="label_no_tags_yet">登録されたタグがありません。</string>
+    <string name="label_tag_description">タグで分類すると、欲しい画像を\n簡単に見つけることができます！</string>
+    <string name="label_edit">編集</string>
+    <string name="label_delete_all">全て削除</string>
+    <string name="label_delete_button">削除</string>
+    <string name="label_register">登録</string>
+    <string name="label_all">全て</string>
+    <string name="label_no_favorites_for_tag">選択したタグに該当するお気に入りがありません</string>
+    <string name="label_untagged">タグなし</string>
+    <string name="label_latest_version">最新バージョン</string>
+
+    <!-- ダイアログメッセージ -->
+    <string name="dialog_existing_account_title">既存のアカウントがあります</string>
+    <string name="dialog_existing_account_message">すでに%1$sで簡単登録されています。\n%1$sアカウントと%2$sアカウントを統合しますか？</string>
+    <string name="dialog_close">閉じる</string>
+    <string name="dialog_link_account">アカウント統合</string>
+    <string name="dialog_recent_login">最近のログイン</string>
+
+    <!-- プロバイダー名 -->
+    <string name="provider_kakao">カカオ</string>
+    <string name="provider_google">Google</string>
+    <string name="provider_apple">Apple</string>
+
+    <!-- コンテンツ説明 -->
+    <string name="cd_back_button">戻る</string>
+    <string name="cd_tag_remove">タグを削除</string>
+    <string name="cd_tag_settings">タグ設定</string>
+    <string name="cd_unfavorite">お気に入り解除</string>
+    <string name="cd_add_favorite">お気に入りに追加</string>
+    <string name="cd_select">選択</string>
+
+    <!-- 日付フォーマット -->
+    <string name="date_format_korean">yyyy年M月d日</string>
 </resources>

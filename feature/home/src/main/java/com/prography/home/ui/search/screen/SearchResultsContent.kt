@@ -143,7 +143,7 @@ fun SelectedTagsSearchHeader(
     ) {
         Icon(
             painter = painterResource(UiR.drawable.ic_arrow_backward),
-            contentDescription = "뒤로가기",
+            contentDescription = androidx.compose.ui.res.stringResource(UiR.string.cd_back_button),
             tint = Text02,
             modifier = Modifier
                 .clickable { onBackClick() }
@@ -175,7 +175,7 @@ fun SelectedTagsSearchHeader(
                         )
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "태그 삭제",
+                            contentDescription = androidx.compose.ui.res.stringResource(UiR.string.cd_tag_remove),
                             tint = Primary,
                             modifier = Modifier
                                 .size(14.sp.value.dp)

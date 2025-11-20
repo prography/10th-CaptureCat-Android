@@ -54,7 +54,7 @@ fun TagAddContent(
                     .clickableWithoutRipple { onAction(ImageDetailAction.ShowSheet(Sheet.Edit))  }
             )
             Text(
-                text = "태그 추가",
+                text = androidx.compose.ui.res.stringResource(com.prography.ui.R.string.image_detail_tag_add),
                 style = headline03Bold,
                 color = Text01,
                 modifier = Modifier.align(Alignment.Center)
@@ -98,7 +98,7 @@ fun TagAddContent(
         Spacer(Modifier.height(12.dp))
 
         UiBottomInputButton(
-            text = "저장하기",
+            text = androidx.compose.ui.res.stringResource(com.prography.ui.R.string.label_save),
             enabled = state.newTagText.isNotBlank(),
             onClick = {
                 if (state.newTagText.isNotBlank()) onAction(ImageDetailAction.OnAddNewTag)

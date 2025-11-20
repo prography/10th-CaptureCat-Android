@@ -1,10 +1,12 @@
 package com.android.start
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.user.GetStartTagScreenShownUseCase
 import com.prography.domain.usecase.auth.CompleteTutorialUseCase
 import com.prography.domain.usecase.tag.AddUserTagUseCase
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +30,7 @@ sealed class StartTagAction {
 
 @HiltViewModel
 class StartTagViewModel @Inject constructor(
+    private val app: Application,
     private val addUserTagUseCase: AddUserTagUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
     private val completeTutorialUseCase: CompleteTutorialUseCase
@@ -62,7 +65,7 @@ class StartTagViewModel @Inject constructor(
         } else {
             Timber.d("startTag: 최대 태그 개수 초과")
             // 5개 초과 시 토스트 메시지
-            showToast("최대 ${maxTags}개까지만 선택할 수 있습니다.")
+            showToast(app.getString(R.string.error_max_tags_selection, maxTags))
         }
     }
 

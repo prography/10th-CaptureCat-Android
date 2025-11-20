@@ -258,4 +258,84 @@
         <item>Recipes</item>
         <item>Fitness</item>
     </string-array>
+
+    <!-- Toast/Error Messages -->
+    <string name="error_max_tags_selection">You can select up to %d tags.</string>
+    <string name="error_max_screenshots_selection">You can select up to %d screenshots.</string>
+    <string name="error_load_tags_failed">Failed to load tags.</string>
+    <string name="error_screenshot_not_found">Screenshot not found.</string>
+    <string name="error_load_screenshot_failed">Failed to load screenshot.</string>
+    <string name="error_max_tags_limit">You can add up to 4 tags.</string>
+    <string name="error_tag_add_failed">Failed to add tag</string>
+    <string name="error_tag_input_empty">Please enter a tag.</string>
+    <string name="error_tag_registration_failed_detail">Failed to register tag.</string>
+    <string name="error_favorite_update_failed">Failed to update favorite.</string>
+    <string name="error_tag_delete_failed">Failed to delete tag.</string>
+    <string name="error_screenshot_delete_failed">Failed to delete screenshot.</string>
+    <string name="error_network_connection">Network connection error. Please try again.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_general">An error occurred.</string>
+    <string name="error_load_screenshots">An error occurred while loading screenshots.</string>
+    <string name="error_load_uncategorized">An error occurred while loading uncategorized screenshots.</string>
+    <string name="error_load_related_tags">An error occurred while loading related tags.</string>
+    <string name="error_save_screenshots">Failed to save %d screenshot(s).</string>
+    <string name="error_load_settings">Failed to load settings.</string>
+    <string name="error_save_settings">Failed to save settings.</string>
+    <string name="error_google_login_failed">Google login failed</string>
+    <string name="error_kakao_user_info_failed">Failed to get Kakao user information</string>
+    <string name="error_kakao_login_failed">An error occurred during Kakao login</string>
+    <string name="error_account_link_failed">Failed to link accounts</string>
+    <string name="error_load_favorites_failed">An error occurred while loading favorites.</string>
+    <string name="error_filter_tags_failed">An error occurred while filtering tags.</string>
+    <string name="error_unfavorite_failed">An error occurred while unfavoriting.</string>
+    <string name="error_image_upload_failed">Image upload failed: %s</string>
+    <string name="error_partial_upload_failed">Some images failed to upload</string>
+    <string name="error_sync_failed">Local deletion/tag sync failed: %s</string>
+    <string name="error_finish_work_failed">An error occurred during finishing work</string>
+    <string name="error_withdraw_failed">Failed to withdraw account.</string>
+
+    <!-- UI Labels -->
+    <string name="label_tag_edit">Edit Tags</string>
+    <string name="label_registered_tags">Registered Tags</string>
+    <string name="label_add">Add</string>
+    <string name="label_view_existing_tags">View Existing Tags</string>
+    <string name="label_collapse">Collapse</string>
+    <string name="label_expand">Expand</string>
+    <string name="label_no_registered_tags">No registered tags yet</string>
+    <string name="label_tagging">Tagging</string>
+    <string name="label_save">Save</string>
+    <string name="label_edit_mode">Edit</string>
+    <string name="label_no_tags_yet">No tags registered yet.</string>
+    <string name="label_tag_description">Organize with tags to easily find\nthe images you want!</string>
+    <string name="label_edit">Edit</string>
+    <string name="label_delete_all">Delete All</string>
+    <string name="label_delete_button">Delete</string>
+    <string name="label_register">Register</string>
+    <string name="label_all">All</string>
+    <string name="label_no_favorites_for_tag">No favorites for the selected tag</string>
+    <string name="label_untagged">Untagged</string>
+    <string name="label_latest_version">Latest version</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_existing_account_title">You have an existing account</string>
+    <string name="dialog_existing_account_message">You\'re already signed up with %1$s.\nWould you like to link your %1$s account with your %2$s account?</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_link_account">Link Account</string>
+    <string name="dialog_recent_login">Recent Login</string>
+
+    <!-- Provider Names -->
+    <string name="provider_kakao">Kakao</string>
+    <string name="provider_google">Google</string>
+    <string name="provider_apple">Apple</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back_button">Back</string>
+    <string name="cd_tag_remove">Remove tag</string>
+    <string name="cd_tag_settings">Tag settings</string>
+    <string name="cd_unfavorite">Unfavorite</string>
+    <string name="cd_add_favorite">Add to favorites</string>
+    <string name="cd_select">Select</string>
+
+    <!-- Date Format -->
+    <string name="date_format_korean">MMMM d, yyyy</string>
 </resources>

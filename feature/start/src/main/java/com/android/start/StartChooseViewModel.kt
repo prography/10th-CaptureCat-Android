@@ -8,6 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -85,7 +86,7 @@ class StartChooseViewModel @Inject constructor(
                 copy(selectedScreenshots = selectedScreenshots + item)
             }
         } else {
-            showToast("최대 ${maxSelectable}개까지 선택 가능합니다.")
+            showToast(app.getString(R.string.error_max_screenshots_selection, maxSelectable))
         }
     }
 }

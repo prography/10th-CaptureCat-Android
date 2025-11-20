@@ -1,5 +1,6 @@
 package com.prography.auth.route.screen.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.kakao.sdk.user.UserApiClient
 import com.prography.auth.route.screen.contract.LoginAction
@@ -17,6 +18,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -29,6 +31,7 @@ import timber.log.Timber
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val app: Application,
     private val socialLoginUseCase: SocialLoginUseCase,
     private val getStartTagScreenShownUseCase: GetStartTagScreenShownUseCase,
     private val getRecentLoginProvider: GetRecentLoginProviderUseCase,
@@ -107,7 +110,7 @@ class LoginViewModel @Inject constructor(
                 }
             }.onFailure {
                 hideLoading()
-                showToast("구글 로그인에 실패했습니다")
+                showToast(app.getString(R.string.error_google_login_failed))
             }
         }
     }
@@ -119,7 +122,7 @@ class LoginViewModel @Inject constructor(
             val user = getKakaoUserInfo()
             if (user == null) {
                 hideLoading()
-                showToast("카카오 사용자 정보를 가져오는 데 실패했어요")
+                showToast(app.getString(R.string.error_kakao_user_info_failed))
                 return@launch
             }
 
@@ -162,7 +165,7 @@ class LoginViewModel @Inject constructor(
                 }
             }.onFailure {
                 hideLoading()
-                showToast("카카오 로그인 중 오류가 발생했습니다")
+                showToast(app.getString(R.string.error_kakao_login_failed))
             }
         }
     }
@@ -201,7 +204,7 @@ class LoginViewModel @Inject constructor(
             }
         }.onFailure {
             hideLoading()
-            showToast("계정 통합에 실패했어요")
+            showToast(app.getString(R.string.error_account_link_failed))
         }
     }
 

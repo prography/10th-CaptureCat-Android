@@ -77,7 +77,7 @@ fun TagEditContent(
                     .clickableWithoutRipple { onAction(ImageDetailAction.HideSheet) }
             )
             Text(
-                text = "태그 수정",
+                text = stringResource(com.prography.ui.R.string.label_tag_edit),
                 style = headline03Bold,
                 color = Text01,
                 modifier = Modifier.align(Alignment.Center)
@@ -95,7 +95,7 @@ fun TagEditContent(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "등록된 태그", style = subhead01Bold, color = Text02)
+                Text(text = stringResource(com.prography.ui.R.string.label_registered_tags), style = subhead01Bold, color = Text02)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "(${state.currentScreenshot?.tags?.size ?: 0}/4)",
@@ -118,7 +118,7 @@ fun TagEditContent(
                     )
                 }
                 UiImageDetailTagChip(
-                    text = "추가하기",
+                    text = stringResource(com.prography.ui.R.string.label_add),
                     state = TagChipState.ADD,
                     onClick = { onAction(ImageDetailAction.ShowSheet(Sheet.Add)) }
                 )
@@ -134,10 +134,10 @@ fun TagEditContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "기존태그 보기", style = subhead01Bold, color = Text02)
+                Text(text = stringResource(com.prography.ui.R.string.label_view_existing_tags), style = subhead01Bold, color = Text02)
                 Row {
                     UnderlinedClickableText(
-                        text = if (state.isUserTagsExpanded) "접기" else "더보기",
+                        text = if (state.isUserTagsExpanded) stringResource(com.prography.ui.R.string.label_collapse) else stringResource(com.prography.ui.R.string.label_expand),
                         onClick = { onAction(ImageDetailAction.OnToggleUserTagsExpanded) }
                     )
                     Icon(
@@ -173,7 +173,7 @@ fun TagEditContent(
                     }
                 }
             } else {
-                Text("아직 등록된 태그가 없어요")
+                Text(stringResource(com.prography.ui.R.string.label_no_registered_tags))
             }
         }
 

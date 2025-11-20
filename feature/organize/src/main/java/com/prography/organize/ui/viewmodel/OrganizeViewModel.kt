@@ -12,6 +12,7 @@ import com.prography.organize.ui.contract.OrganizeEffect
 import com.prography.organize.ui.contract.OrganizeMode
 import com.prography.organize.ui.contract.OrganizeState
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -191,7 +192,7 @@ class OrganizeViewModel @Inject constructor(
                 )
             }
         } else if (currentTags.size >= 4) {
-            showToast("태그는 최대 4개까지 등록할 수 있습니다.")
+            showToast(context.getString(R.string.error_max_tags_limit))
         } else {
             val newTagModel = TagModel(System.currentTimeMillis(), tagText)
             updateState {
@@ -233,7 +234,7 @@ class OrganizeViewModel @Inject constructor(
 
     private fun addNewTagToScreenshot(screenshotId: String, tagText: String) {
         val t = tagText.trim()
-        if (t.isEmpty()) { showToast("태그를 입력해 주세요."); return }
+        if (t.isEmpty()) { showToast(context.getString(R.string.error_tag_input_empty)); return }
 
         viewModelScope.launch {
             showLoading()
@@ -275,7 +276,7 @@ class OrganizeViewModel @Inject constructor(
 
             }.onFailure { e ->
                 Timber.e(e, "Failed to persist recent tag")
-                showToast("태그 저장 실패: ${e.message ?: ""}")
+                showToast(context.getString(R.string.error_tag_registration_failed_detail))
             }
             hideLoading()
         }
@@ -339,7 +340,7 @@ class OrganizeViewModel @Inject constructor(
                 )
             }.onFailure {
                 updateState { copy(isLoading = false) }
-                showToast("${screenshotsToSave.size}장 저장하지 못했어요.")
+                showToast(context.getString(R.string.error_save_screenshots, screenshotsToSave.size))
             }
         }
     }

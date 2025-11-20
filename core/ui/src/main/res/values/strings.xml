@@ -258,4 +258,84 @@
         <item>레시피</item>
         <item>운동</item>
     </string-array>
+
+    <!-- Toast/Error Messages -->
+    <string name="error_max_tags_selection">최대 %d개까지만 선택할 수 있습니다.</string>
+    <string name="error_max_screenshots_selection">최대 %d개까지 선택 가능합니다.</string>
+    <string name="error_load_tags_failed">태그를 불러오는데 실패했습니다.</string>
+    <string name="error_screenshot_not_found">스크린샷을 찾을 수 없습니다.</string>
+    <string name="error_load_screenshot_failed">스크린샷을 불러오는데 실패했습니다.</string>
+    <string name="error_max_tags_limit">태그는 최대 4개까지 등록할 수 있습니다.</string>
+    <string name="error_tag_add_failed">태그 추가 실패</string>
+    <string name="error_tag_input_empty">태그를 입력해주세요.</string>
+    <string name="error_tag_registration_failed_detail">태그 등록에 실패했습니다.</string>
+    <string name="error_favorite_update_failed">즐겨찾기 업데이트에 실패했습니다.</string>
+    <string name="error_tag_delete_failed">태그 삭제에 실패했습니다.</string>
+    <string name="error_screenshot_delete_failed">스크린샷 삭제에 실패했습니다.</string>
+    <string name="error_network_connection">네트워크 연결 오류입니다. 다시 시도해 주세요.</string>
+    <string name="error_unknown">알 수 없는 오류가 발생했습니다.</string>
+    <string name="error_general">오류가 발생했습니다.</string>
+    <string name="error_load_screenshots">스크린샷을 불러오는 중 오류가 발생했습니다.</string>
+    <string name="error_load_uncategorized">미분류 스크린샷을 불러오는 중 오류가 발생했습니다.</string>
+    <string name="error_load_related_tags">연관 태그를 불러오는 중 오류가 발생했습니다.</string>
+    <string name="error_save_screenshots">%d장 저장하지 못했어요.</string>
+    <string name="error_load_settings">설정을 불러오지 못했어요.</string>
+    <string name="error_save_settings">설정 저장에 실패했어요.</string>
+    <string name="error_google_login_failed">구글 로그인에 실패했습니다</string>
+    <string name="error_kakao_user_info_failed">카카오 사용자 정보를 가져오는 데 실패했어요</string>
+    <string name="error_kakao_login_failed">카카오 로그인 중 오류가 발생했습니다</string>
+    <string name="error_account_link_failed">계정 통합에 실패했어요</string>
+    <string name="error_load_favorites_failed">즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.</string>
+    <string name="error_filter_tags_failed">태그 필터링 중 오류가 발생했습니다.</string>
+    <string name="error_unfavorite_failed">즐겨찾기 해제 중 오류가 발생했습니다.</string>
+    <string name="error_image_upload_failed">이미지 업로드 실패: %s</string>
+    <string name="error_partial_upload_failed">일부 이미지 업로드 실패</string>
+    <string name="error_sync_failed">로컬 삭제/태그 동기화 실패: %s</string>
+    <string name="error_finish_work_failed">마무리 작업 중 오류가 발생했습니다</string>
+    <string name="error_withdraw_failed">회원탈퇴에 실패했습니다.</string>
+
+    <!-- UI Labels -->
+    <string name="label_tag_edit">태그 수정</string>
+    <string name="label_registered_tags">등록된 태그</string>
+    <string name="label_add">추가하기</string>
+    <string name="label_view_existing_tags">기존태그 보기</string>
+    <string name="label_collapse">접기</string>
+    <string name="label_expand">더보기</string>
+    <string name="label_no_registered_tags">아직 등록된 태그가 없어요</string>
+    <string name="label_tagging">태그하기</string>
+    <string name="label_save">저장하기</string>
+    <string name="label_edit_mode">편집</string>
+    <string name="label_no_tags_yet">등록된 태그가 없어요.</string>
+    <string name="label_tag_description">태그로 분류하면 원하는 이미지를\n쉽게 찾을 수 있어요!</string>
+    <string name="label_edit">수정</string>
+    <string name="label_delete_all">전체삭제</string>
+    <string name="label_delete_button">삭제하기</string>
+    <string name="label_register">등록</string>
+    <string name="label_all">전체</string>
+    <string name="label_no_favorites_for_tag">선택한 태그에 해당하는 즐겨찾기가 없어요</string>
+    <string name="label_untagged">태그 없음</string>
+    <string name="label_latest_version">최신 버전</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_existing_account_title">기존에 사용하던 계정이 있어요</string>
+    <string name="dialog_existing_account_message">이미 %1$s로 간편 가입이 되어 있어요.\n%1$s 계정과 %2$s 계정을 하나로 통합할까요?</string>
+    <string name="dialog_close">닫기</string>
+    <string name="dialog_link_account">계정 통합</string>
+    <string name="dialog_recent_login">최근 로그인</string>
+
+    <!-- Provider Names -->
+    <string name="provider_kakao">카카오</string>
+    <string name="provider_google">구글</string>
+    <string name="provider_apple">애플</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back_button">뒤로가기</string>
+    <string name="cd_tag_remove">태그 삭제</string>
+    <string name="cd_tag_settings">태그 설정</string>
+    <string name="cd_unfavorite">즐겨찾기 해제</string>
+    <string name="cd_add_favorite">즐겨찾기 추가</string>
+    <string name="cd_select">선택</string>
+
+    <!-- Date Format -->
+    <string name="date_format_korean">yyyy년 M월 d일</string>
 </resources>

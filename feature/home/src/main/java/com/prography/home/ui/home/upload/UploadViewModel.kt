@@ -1,5 +1,6 @@
 package com.prography.home.ui.home.upload
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.usecase.screenshot.BulkInsertScreenshotUseCase
 import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
@@ -10,6 +11,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -40,6 +42,7 @@ sealed class UploadEffect {
 
 @HiltViewModel
 class UploadViewModel @Inject constructor(
+    private val app: Application,
     private val bulkInsertScreenshotUseCase: BulkInsertScreenshotUseCase,
     private val getAllLocalScreenshotsUseCase: GetAllLocalScreenshotsUseCase,
     private val deleteAllDataUseCase: DeleteAllDataUseCase,
@@ -83,8 +86,8 @@ class UploadViewModel @Inject constructor(
                         successCount++
                         updateState { copy(uploadedCount = successCount) }
                     } catch (e: Exception) {
-                        updateState { copy(error = "이미지 업로드 실패: ${e.message}") }
-                        showToast("일부 이미지 업로드 실패")
+                        updateState { copy(error = app.getString(R.string.error_image_upload_failed, e.message)) }
+                        showToast(app.getString(R.string.error_partial_upload_failed))
                     }
                 }
 
@@ -115,8 +118,8 @@ class UploadViewModel @Inject constructor(
                         updateState { copy(uploading = false, completed = true) }
                         emitEffect(UploadEffect.NavigateToUploaded)
                     } catch (e: Exception) {
-                        updateState { copy(error = "로컬 삭제/태그 동기화 실패: ${e.message}") }
-                        showToast("마무리 작업 중 오류가 발생했습니다")
+                        updateState { copy(error = app.getString(R.string.error_sync_failed, e.message)) }
+                        showToast(app.getString(R.string.error_finish_work_failed))
                     }
                 } else if (!isCanceled) {
                     updateState { copy(uploading = false) }

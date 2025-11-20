@@ -159,7 +159,7 @@ private fun TagSettingContent(
                     modifier = Modifier.clickableWithoutRipple { onNavigateBack() }
                 )
                 Text(
-                    text = "태그 설정",
+                    text = stringResource(com.prography.ui.R.string.setting_tag_settings),
                     style = headline02Bold,
                     color = Text02
                 )
@@ -172,7 +172,7 @@ private fun TagSettingContent(
             }
 
             Text(
-                text = if (isEditMode) "완료" else "편집",
+                text = if (isEditMode) stringResource(com.prography.ui.R.string.common_complete) else stringResource(com.prography.ui.R.string.label_edit_mode),
                 style = body01Regular,
                 color = Text03,
                 modifier = Modifier
@@ -234,15 +234,14 @@ private fun EmptyTagState(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "등록된 태그가 없어요.",
+            text = stringResource(com.prography.ui.R.string.label_no_tags_yet),
             style = headline02Bold,
             color = Text03,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "태그로 분류하면 원하는 이미지를\n" +
-                    "쉽게 찾을 수 있어요!",
+            text = stringResource(com.prography.ui.R.string.label_tag_description),
             style = body01Regular,
             color = Text03,
             textAlign = TextAlign.Center
@@ -338,7 +337,7 @@ private fun TagListItem(
                     id = if (checked) R.drawable.ic_check_box_able
                     else R.drawable.ic_check_box_disable
                 ),
-                contentDescription = "선택",
+                contentDescription = stringResource(com.prography.ui.R.string.cd_select),
                 tint = Color.Unspecified,
                 modifier = Modifier
                     .size(24.dp)
@@ -358,7 +357,7 @@ private fun TagListItem(
 
         if (!isEditMode) {
             Text(
-                text = "수정",
+                text = stringResource(com.prography.ui.R.string.label_edit),
                 style = body01Regular,
                 color = Gray05,
                 modifier = Modifier
@@ -400,7 +399,7 @@ private fun EditModeBottomBar(
         ) {
             UiBottomInputButton(
                 onClick = onDelete,
-                text = "전체삭제",
+                text = stringResource(com.prography.ui.R.string.label_delete_all),
                 enabled = true,
                 modifier = Modifier.weight(1f),
                 variant = BottomInputButtonVariant.Sub
@@ -410,7 +409,7 @@ private fun EditModeBottomBar(
                 onClick = onDeleteSelected,
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
-                text = "삭제하기"
+                text = stringResource(com.prography.ui.R.string.label_delete_button)
             )
         }
     }

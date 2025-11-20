@@ -109,10 +109,14 @@ fun LoginContent(state: LoginState, onAction: (LoginAction) -> Unit) {
     }
 
     UiCommonDialog(
-        title = "기존에 사용하던 계정이 있어요",
-        message = "이미 ${getProviderDisplayName(state.pendingLink?.existingProvider ?: "")}로 간편 가입이 되어 있어요.\n${getProviderDisplayName(state.pendingLink?.existingProvider ?: "")} 계정과 ${getProviderDisplayName(state.pendingAuth?.provider ?: "")} 계정을 하나로 통합할까요?",
-        leftButtonText = "닫기",
-        rightButtonText = "계정 통합",
+        title = stringResource(R.string.dialog_existing_account_title),
+        message = stringResource(
+            R.string.dialog_existing_account_message,
+            getProviderDisplayName(state.pendingLink?.existingProvider ?: ""),
+            getProviderDisplayName(state.pendingAuth?.provider ?: "")
+        ),
+        leftButtonText = stringResource(R.string.dialog_close),
+        rightButtonText = stringResource(R.string.dialog_link_account),
         onDismiss = { onAction(LoginAction.AccountLinkDismiss) },
         onConfirm = {  onAction(LoginAction.AccountLinkConfirm) },
         isVisible = state.isLinkDialogVisible
@@ -134,7 +138,7 @@ private fun RecentBadge(modifier: Modifier) {
                 .padding(horizontal = 12.5.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("최근 로그인", color = Color.White, style = caption02Regular)
+            Text(stringResource(R.string.dialog_recent_login), color = Color.White, style = caption02Regular)
         }
 
         val TriangleShape = GenericShape { size, _ ->
@@ -217,11 +221,12 @@ fun GoogleLoginButton(isRecent: Boolean, onClick: () -> Unit) {
     }
 }
 
+@Composable
 private fun getProviderDisplayName(provider: String): String {
     return when (provider.lowercase()) {
-        "kakao" -> "카카오"
-        "google" -> "구글"
-        "apple" -> "애플"
+        "kakao" -> stringResource(R.string.provider_kakao)
+        "google" -> stringResource(R.string.provider_google)
+        "apple" -> stringResource(R.string.provider_apple)
         else -> provider
     }
 }

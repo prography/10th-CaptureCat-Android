@@ -1,7 +1,9 @@
 package com.prography.home.ui.search.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
 import com.prography.domain.usecase.screenshot.SearchImagesByTagsUseCase
@@ -21,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    private val app: Application,
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
     private val searchImagesByTagsUseCase: SearchImagesByTagsUseCase,
     private val getRelatedTagsUseCase: GetRelatedTagsUseCase,
@@ -68,7 +71,7 @@ class SearchViewModel @Inject constructor(
                                             0,
                                             TagWithCount(
                                                 0,
-                                                "태그 없음",
+                                                app.getString(R.string.label_untagged),
                                                 uncategorizedScreenshots.size
                                             )
                                         )
@@ -84,7 +87,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
                 .onFailure {
-                    showToast("오류가 발생했습니다.")
+                    showToast(app.getString(R.string.error_general))
                 }
         }
     }
@@ -183,7 +186,7 @@ class SearchViewModel @Inject constructor(
             }
         } else {
             // 미분류가 아닌 태그들만 있는 경우 일반 검색
-            if (!newTags.contains("태그 없음")) {
+            if (!newTags.contains(app.getString(R.string.label_untagged))) {
                 searchBySelectedTags(newTags)
                 updateRelatedTags(newTags)
             } else {
@@ -208,7 +211,7 @@ class SearchViewModel @Inject constructor(
                 }
                 .onFailure { exception ->
                     timber.log.Timber.e(exception, "🔍 Search failed")
-                    emitEffect(SearchEffect.ShowError("스크린샷을 불러오는 중 오류가 발생했습니다."))
+                    emitEffect(SearchEffect.ShowError(app.getString(R.string.error_load_screenshots)))
                 }
         }
     }
@@ -227,7 +230,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
                 .onFailure {
-                    emitEffect(SearchEffect.ShowError("미분류 스크린샷을 불러오는 중 오류가 발생했습니다."))
+                    emitEffect(SearchEffect.ShowError(app.getString(R.string.error_load_uncategorized)))
                 }
         }
     }
@@ -244,7 +247,7 @@ class SearchViewModel @Inject constructor(
                     updateState { copy(relatedTags = relatedTags) }
                 }
                 .onFailure {
-                    emitEffect(SearchEffect.ShowError("연관 태그를 불러오는 중 오류가 발생했습니다."))
+                    emitEffect(SearchEffect.ShowError(app.getString(R.string.error_load_related_tags)))
                 }
         }
     }
@@ -322,7 +325,7 @@ class SearchViewModel @Inject constructor(
         if (selectedTags.isNotEmpty()) {
             timber.log.Timber.d("🔄 Refreshing search results with tags: $selectedTags")
             // 미분류 태그인 경우 특별 처리
-            if (selectedTags.contains("태그 없음")) {
+            if (selectedTags.contains(app.getString(R.string.label_untagged))) {
                 searchUncategorizedScreenshots()
             } else {
                 searchBySelectedTags(selectedTags)

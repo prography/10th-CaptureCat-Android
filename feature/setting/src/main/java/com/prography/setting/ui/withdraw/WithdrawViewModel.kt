@@ -1,8 +1,10 @@
 package com.prography.setting.ui.withdraw
 
+import android.app.Application
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.domain.usecase.auth.WithdrawUseCase
 import com.prography.domain.usecase.screenshot.DeleteAllDataUseCase
 import com.prography.domain.repository.UserPreferenceRepository
@@ -13,6 +15,7 @@ import timber.log.Timber
 
 @HiltViewModel
 class WithdrawViewModel @Inject constructor(
+    private val app: Application,
     private val withdrawUseCase: WithdrawUseCase,
     private val deleteAllScreenshotsUseCase: DeleteAllDataUseCase,
     private val setStartTagScreenShownUseCase: SetStartTagScreenShownUseCase,
@@ -32,7 +35,7 @@ class WithdrawViewModel @Inject constructor(
                         clearUserData()
                         updateState { copy(showWithdrawDialog = true) }
                     }.onFailure {
-                        showToast("회원탈퇴에 실패했습니다.")
+                        showToast(app.getString(R.string.error_withdraw_failed))
                     }
                 }
             }

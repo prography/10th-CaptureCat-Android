@@ -184,7 +184,7 @@ fun OrganizeContent(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth(),
-            text = "저장하기",
+            text = androidx.compose.ui.res.stringResource(com.prography.ui.R.string.label_save),
             size = ButtonSize.LARGE,
             state = if(state.isLoading) ButtonState.Loading else ButtonState.Enabled
         )

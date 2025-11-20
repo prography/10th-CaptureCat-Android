@@ -1,5 +1,6 @@
 package com.prography.favorite.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.prography.domain.model.TagModel
 import com.prography.favorite.ui.contract.FavoriteAction
@@ -16,6 +17,7 @@ import com.prography.navigation.AppRoute
 import com.prography.navigation.NavigationEvent
 import com.prography.navigation.NavigationHelper
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.util.MixpanelUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
+    private val app: Application,
     private val getFavoriteImagesUseCase: GetFavoriteImagesUseCase,
     private val toggleBookmarkUseCase: ToggleBookmarkUseCase,
     private val getFavoriteTagsUseCase: GetFavoriteTagsUseCase,
@@ -67,7 +70,7 @@ class FavoriteViewModel @Inject constructor(
                 }
             }.onFailure {
                 updateState { copy(isLoading = false) }
-                showToast("즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.")
+                showToast(app.getString(R.string.error_load_favorites))
             }
         }
     }
@@ -91,7 +94,7 @@ class FavoriteViewModel @Inject constructor(
                 }
             }?.onFailure {
                 updateState { copy(isFiltering = false) }
-                showToast("태그 필터링 중 오류가 발생했습니다.")
+                showToast(app.getString(R.string.error_filter_tags))
             }
         }
     }
@@ -125,7 +128,7 @@ class FavoriteViewModel @Inject constructor(
                 toggleBookmarkUseCase(screenshot.id, false)
                 loadFavoriteScreenshots()
             } catch (e: Exception) {
-                showToast("즐겨찾기 해제 중 오류가 발생했습니다.")
+                showToast(app.getString(R.string.error_unfavorite))
             }
         }
     }
