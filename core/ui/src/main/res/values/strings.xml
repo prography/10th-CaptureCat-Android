@@ -338,4 +338,18 @@
 
     <!-- Date Format -->
     <string name="date_format_korean">yyyy년 M월 d일</string>
+
+    <!-- Toast Messages -->
+    <string name="toast_images_saved">%d장 저장 완료되었어요.</string>
+    <string name="toast_images_deleted">%d장 삭제되었어요.</string>
+
+    <!-- Delete Choice Dialog -->
+    <string name="delete_choice_description">중복 이미지는 정리하고, 갤러리를 더 깔끔하게 정리할 수 있어요. 삭제 여부는 매번 선택할 수 있어요.</string>
+    <string name="delete_choice_allow">삭제 허용하기</string>
+    <string name="delete_choice_later">나중에</string>
+    <string name="delete_choice_setting_info">설정에서 언제든지 변경할 수 있어요</string>
+
+    <!-- FAB Menu -->
+    <string name="fab_upload">캡처 업로드</string>
+    <string name="fab_organize">캡처 정리</string>
 </resources>

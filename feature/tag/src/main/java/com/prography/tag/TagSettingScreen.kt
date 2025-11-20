@@ -490,7 +490,7 @@ fun TagInputWithRegister(
                     )
                 }
                 Text(
-                    text = "등록",
+                    text = stringResource(id = R.string.label_register),
                     color = if (isError) Gray04 else Text03,
                     style = body02Regular,
                     modifier = Modifier

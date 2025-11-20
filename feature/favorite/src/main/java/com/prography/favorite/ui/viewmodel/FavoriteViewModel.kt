@@ -70,7 +70,7 @@ class FavoriteViewModel @Inject constructor(
                 }
             }.onFailure {
                 updateState { copy(isLoading = false) }
-                showToast(app.getString(R.string.error_load_favorites))
+                showToast(app.getString(R.string.error_load_favorites_failed))
             }
         }
     }
@@ -94,7 +94,7 @@ class FavoriteViewModel @Inject constructor(
                 }
             }?.onFailure {
                 updateState { copy(isFiltering = false) }
-                showToast(app.getString(R.string.error_filter_tags))
+                showToast(app.getString(R.string.error_filter_tags_failed))
             }
         }
     }
@@ -128,7 +128,7 @@ class FavoriteViewModel @Inject constructor(
                 toggleBookmarkUseCase(screenshot.id, false)
                 loadFavoriteScreenshots()
             } catch (e: Exception) {
-                showToast(app.getString(R.string.error_unfavorite))
+                showToast(app.getString(R.string.error_unfavorite_failed))
             }
         }
     }

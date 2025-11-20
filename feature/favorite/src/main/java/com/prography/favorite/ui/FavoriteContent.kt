@@ -158,7 +158,7 @@ private fun FavoriteTabSection(
                 // "전체" 탭 (null)
                 item {
                     FavTagChip(
-                        text = "전체", // "전체"
+                        text = stringResource(UiR.string.label_all),
                         isSelected = selectedTag == null,
                         onClick = { onTagSelected(null) }
                     )

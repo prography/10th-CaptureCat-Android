@@ -310,7 +310,7 @@ class OrganizeViewModel @Inject constructor(
                 bulkInsertScreenshotUseCase(uiScreenshots)
             }.onSuccess {
                 updateState { copy(isLoading = false) }
-                showToast("${screenshotsToSave.size}장 저장 완료되었어요.")
+                showToast(context.getString(R.string.toast_images_saved, screenshotsToSave.size))
                 // 정리 완료된 스샷 ID 저장 (기존 로직 유지)
                 runCatching { saveOrganizedIdsUseCase(screenshotsToSave.map { it.id }) }
                     .onFailure { Timber.e(it, "Failed to persist organized ids") }

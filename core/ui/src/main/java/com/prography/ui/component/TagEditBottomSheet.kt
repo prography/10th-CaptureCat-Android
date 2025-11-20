@@ -78,7 +78,7 @@ fun TagEditBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "태그 수정",
+                    text = stringResource(com.prography.ui.R.string.label_tag_edit),
                     style = headline03Bold,
                     color = Text01
                 )

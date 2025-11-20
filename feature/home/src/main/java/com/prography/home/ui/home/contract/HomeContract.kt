@@ -42,6 +42,6 @@ data class HomeState(
     val showErrorReportBanner: Boolean = true, // 오류 제보 배너 표시 여부
     val error: String? = null,
     val popularTags: List<TagWithCount> = emptyList(), // 인기 태그 목록
-    val selectedTab: String = "전체", // 선택된 탭 (기본값: "전체")
+    val selectedTab: String = "", // 선택된 탭 (ViewModel에서 초기화)
     val isLoadingTags: Boolean = false // 태그 로딩 상태
 )

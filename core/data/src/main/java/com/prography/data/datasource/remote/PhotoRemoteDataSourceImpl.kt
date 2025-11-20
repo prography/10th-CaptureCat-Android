@@ -705,23 +705,38 @@ class PhotoRemoteDataSourceImpl @Inject constructor(
 
     private fun formatDateForUpload(dateStr: String): String {
         return try {
-            // dateStr이 "2023년 12월 15일" 또는 "2023년 2월 5일" 형태라면 "2023-12-15"로 변환
-            if (dateStr.contains("년") && dateStr.contains("월") && dateStr.contains("일")) {
-                val yearPart = dateStr.substringBefore("년").trim()
-                val monthPart = dateStr.substringAfter("년").substringBefore("월").trim()
-                val dayPart = dateStr.substringAfter("월").substringBefore("일").trim()
-
-                val year = yearPart
-                val month = monthPart.padStart(2, '0')
-                val day = dayPart.padStart(2, '0')
-
-                "$year-$month-$day"
-            } else if (dateStr.matches(Regex("\\d{4}-\\d{2}-\\d{2}"))) {
-                // 이미 올바른 형태
-                dateStr
-            } else {
-                getCurrentDate()
+            // 이미 ISO 형식이면 그대로 반환
+            if (dateStr.matches(Regex("\\d{4}-\\d{2}-\\d{2}"))) {
+                return dateStr
             }
+
+            // 지원하는 날짜 형식들을 순서대로 시도
+            val dateFormats = listOf(
+                SimpleDateFormat("yyyy년 M월 d일", Locale.KOREAN),     // 한국어: 2023년 12월 15일
+                SimpleDateFormat("yyyy年M月d日", Locale.JAPANESE),     // 일본어: 2023年12月15日
+                SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH),     // 영어: December 15, 2023
+                SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN),   // 한국어 (0 패딩)
+                SimpleDateFormat("yyyy年MM月dd日", Locale.JAPANESE)    // 일본어 (0 패딩)
+            )
+
+            val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            for (format in dateFormats) {
+                try {
+                    format.isLenient = false
+                    val date = format.parse(dateStr)
+                    if (date != null) {
+                        return outputFormat.format(date)
+                    }
+                } catch (e: Exception) {
+                    // 다음 형식 시도
+                    continue
+                }
+            }
+
+            // 모든 형식이 실패하면 현재 날짜 반환
+            Timber.w("Could not parse date: $dateStr, using current date")
+            getCurrentDate()
         } catch (e: Exception) {
             Timber.w(e, "Failed to format date: $dateStr")
             getCurrentDate()

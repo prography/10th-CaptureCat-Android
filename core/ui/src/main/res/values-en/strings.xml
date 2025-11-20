@@ -338,4 +338,18 @@
 
     <!-- Date Format -->
     <string name="date_format_korean">MMMM d, yyyy</string>
+
+    <!-- Toast Messages -->
+    <string name="toast_images_saved">%d images saved successfully.</string>
+    <string name="toast_images_deleted">%d images deleted.</string>
+
+    <!-- Delete Choice Dialog -->
+    <string name="delete_choice_description">Organize duplicate images and keep your gallery cleaner. You can choose whether to delete each time.</string>
+    <string name="delete_choice_allow">Allow deletion</string>
+    <string name="delete_choice_later">Later</string>
+    <string name="delete_choice_setting_info">You can change this in settings anytime</string>
+
+    <!-- FAB Menu -->
+    <string name="fab_upload">Upload screenshots</string>
+    <string name="fab_organize">Organize screenshots</string>
 </resources>

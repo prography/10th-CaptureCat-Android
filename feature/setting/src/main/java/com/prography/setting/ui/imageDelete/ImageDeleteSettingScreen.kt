@@ -91,13 +91,13 @@ fun ImageDetailSettingScreen(
 
             // 하단 주석 두 줄
             Text(
-                text = "· 설정 후에도 삭제는 매번 직접 선택할 수 있어요.",
+                text = stringResource(R.string.image_delete_setting_note_1),
                 style = caption02Regular,
                 color = Text03
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "· 삭제된 이미지는 ‘휴지통’ 또는 ‘최근 삭제된 항목’에 30일간 보관돼요.",
+                text = stringResource(R.string.image_delete_setting_note_2),
                 style = caption02Regular,
                 color = Text03
             )

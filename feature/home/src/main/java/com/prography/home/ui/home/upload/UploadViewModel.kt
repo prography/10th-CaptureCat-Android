@@ -64,11 +64,11 @@ class UploadViewModel @Inject constructor(
             is UploadAction.CancelUpload -> updateState { copy(showConfirmDialog = true) }
             is UploadAction.ConfirmCancelUpload -> {
                 isCanceled = true
-                navigationHelper.navigate(NavigationEvent.To(AppRoute.Main()))
+                navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
             }
 
             is UploadAction.DismissCancelDialog -> updateState { copy(showConfirmDialog = false) }
-            is UploadAction.Finish -> navigationHelper.navigate(NavigationEvent.To(AppRoute.Main()))
+            is UploadAction.Finish -> navigationHelper.navigate(NavigationEvent.To(AppRoute.Main(), popUpTo = true))
         }
     }
 
@@ -87,7 +87,7 @@ class UploadViewModel @Inject constructor(
                         updateState { copy(uploadedCount = successCount) }
                     } catch (e: Exception) {
                         updateState { copy(error = app.getString(R.string.error_image_upload_failed, e.message)) }
-                        showToast(app.getString(R.string.error_partial_upload_failed))
+                        emitEffect(UploadEffect.NavigateToUploaded)
                     }
                 }
 
@@ -120,6 +120,7 @@ class UploadViewModel @Inject constructor(
                     } catch (e: Exception) {
                         updateState { copy(error = app.getString(R.string.error_sync_failed, e.message)) }
                         showToast(app.getString(R.string.error_finish_work_failed))
+                        emitEffect(UploadEffect.NavigateToUploaded)
                     }
                 } else if (!isCanceled) {
                     updateState { copy(uploading = false) }

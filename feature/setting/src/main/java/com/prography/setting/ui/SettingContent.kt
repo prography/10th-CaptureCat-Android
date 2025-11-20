@@ -235,7 +235,7 @@ private fun UserPreferenceSection(onAction: (SettingAction) -> Unit) {
     SettingMenuItem(text = stringResource(UiString.setting_tag_settings)) {
         onAction(SettingAction.OnTagSetting)
     }
-    SettingMenuItem(text = "이미지 삭제 설정") {
+    SettingMenuItem(text = stringResource(UiString.image_delete_setting_title)) {
         onAction(SettingAction.OnImageDeleteSetting)
     }
     Spacer(modifier = Modifier.height(24.dp))
@@ -259,7 +259,7 @@ private fun ServiceInfoSection(
     val trailing: @Composable () -> Unit = if (updateAvailable) {
         { UpdateBadge(onClick = onUpdate) }
     } else {
-        { Text(text = "최신 버전", style = body01Regular, color = Text03) }
+        { Text(text = stringResource(UiString.label_latest_version), style = body01Regular, color = Text03) }
     }
 
     SettingMenuItem(

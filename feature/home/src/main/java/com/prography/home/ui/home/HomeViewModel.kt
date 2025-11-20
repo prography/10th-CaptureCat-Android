@@ -1,11 +1,13 @@
 package com.prography.home.ui.home
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.prography.ui.BaseComposeViewModel
+import com.prography.ui.R
 import com.prography.domain.usecase.auth.CheckLoginStatusUseCase
 import com.prography.domain.usecase.screenshot.GetAllScreenshotsUseCase
 import com.prography.domain.usecase.screenshot.GetMostUsedTagsUseCase
@@ -33,6 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val app: Application,
     private val getScreenshotsUseCase: GetAllScreenshotsUseCase,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
     private val getMostUsedTagsUseCase: GetMostUsedTagsUseCase,
@@ -46,6 +49,11 @@ class HomeViewModel @Inject constructor(
 ) : BaseComposeViewModel<HomeState, HomeEffect, HomeAction>(HomeState()) {
 
     private var hasCheckedLoginStatus = false
+
+    init {
+        // 초기 선택 탭을 "전체"로 설정
+        updateState { copy(selectedTab = app.getString(R.string.label_all)) }
+    }
 
     val screenshotsPagingFlow: Flow<PagingData<UiScreenshotModel>> =
         Pager(
@@ -74,7 +82,7 @@ class HomeViewModel @Inject constructor(
                 updateState { copy(popularTags = tags) }
             } catch (exception: Exception) {
                 Timber.e(exception, "Failed to load most used tags")
-                emitEffect(HomeEffect.ShowError("인기 태그를 불러오는 중 오류가 발생했습니다."))
+                emitEffect(HomeEffect.ShowError(app.getString(R.string.error_load_tags_failed)))
             }
         }
     }
@@ -83,7 +91,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 updateState { copy(selectedTab = tagName, isLoadingTags = true) }
-                val images = if (tagName == "전체") {
+                val images = if (tagName == app.getString(R.string.label_all)) {
                     // 전체인 경우 기본 스크린샷 사용 (paging으로 처리됨)
                     emptyList()
                 } else {
@@ -185,7 +193,7 @@ class HomeViewModel @Inject constructor(
             is HomeAction.OnSystemDeleteResult -> {
                 // 시스템 알럿 결과(성공 개수) 처리
                 val n = action.successCount
-                if (n > 0) showToast("${n}장 삭제되었어요.")
+                if (n > 0) showToast(app.getString(R.string.toast_images_deleted, n))
             }
         }
     }

@@ -9,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.R
 import com.prography.ui.component.TagChipState
 import com.prography.ui.component.UiImageDetailTagChip
 import com.prography.ui.theme.Text01
@@ -37,7 +39,7 @@ fun OrganizeBottomControls(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "모든 태그",
+                text = stringResource(R.string.organize_recent_tags),
                 style = subhead01Bold,
                 color = Text01
             )

@@ -72,6 +72,7 @@ fun HomeContent(
     onAction: (HomeAction) -> Unit,
     pagingItems: LazyPagingItems<UiScreenshotModel>
 ) {
+    val allTabLabel = stringResource(R.string.label_all)
     // 초기 로딩 중인지 확인
     val isInitialLoading = pagingItems.loadState.refresh is LoadState.Loading
 
@@ -144,7 +145,7 @@ fun HomeContent(
 
             else -> {
                 // 스크린샷 그리드 리스트 (한 줄에 3개씩)
-                if (state.selectedTab == "전체") {
+                if (state.selectedTab == allTabLabel) {
                     // "전체" 탭 선택 시: Paging3 사용
                     val screenshotItems = (0 until pagingItems.itemCount).mapNotNull { index ->
                         pagingItems[index]
@@ -286,6 +287,8 @@ fun TabSection(
     onTagSettingClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val allTabLabel = stringResource(R.string.label_all)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -303,9 +306,9 @@ fun TabSection(
                 // "전체" 탭
                 item {
                     TagChip(
-                        text = "전체",
-                        isSelected = selectedTab == "전체",
-                        onClick = { onTabSelected("전체") }
+                        text = allTabLabel,
+                        isSelected = selectedTab == allTabLabel,
+                        onClick = { onTabSelected(allTabLabel) }
                     )
                 }
 
@@ -448,7 +451,7 @@ fun CaptureCatFab(
             ) {
                 FabMenuItem(
                     iconRes = R.drawable.ic_fab_upload,
-                    text = "캡처 업로드",
+                    text = stringResource(com.prography.ui.R.string.fab_upload),
                     onClick = {
                         expanded = false
                         onUploadClick()
@@ -456,7 +459,7 @@ fun CaptureCatFab(
                 )
                 FabMenuItem(
                     iconRes = R.drawable.ic_fab_delete,
-                    text = "캡처 정리",
+                    text = stringResource(com.prography.ui.R.string.fab_organize),
                     onClick = {
                         expanded = false
                         onOrganizeClick()

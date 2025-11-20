@@ -17,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prography.ui.R
 import com.prography.ui.component.ButtonSize
 import com.prography.ui.component.ButtonType
 import com.prography.ui.component.UiLabelAddButton
@@ -90,7 +92,7 @@ private fun DeleteChoiceBottomSheetContent(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "중복 이미지는 정리하고, 갤러리를 더 깔끔하게 정리할 수 있어요. 삭제 여부는 매번 선택할 수 있어요.",
+            text = stringResource(R.string.delete_choice_description),
             style = body02Regular,
             color = Text01,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -100,7 +102,7 @@ private fun DeleteChoiceBottomSheetContent(
 
         UiLabelAddButton(
             onClick = onDeleteNow,
-            text = "삭제 허용하기",
+            text = stringResource(R.string.delete_choice_allow),
             size = ButtonSize.LARGE,
             type = ButtonType.DEFAULT,
             modifier = Modifier.fillMaxWidth()
@@ -108,7 +110,7 @@ private fun DeleteChoiceBottomSheetContent(
         Spacer(Modifier.height(8.dp))
         UiLabelAddButton(
             onClick = onLater,
-            text = "나중에",
+            text = stringResource(R.string.delete_choice_later),
             size = ButtonSize.LARGE,
             type = ButtonType.SUB,
             modifier = Modifier.fillMaxWidth()
@@ -116,7 +118,7 @@ private fun DeleteChoiceBottomSheetContent(
 
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "설정에서 언제든지 변경할 수 있어요",
+            text = stringResource(R.string.delete_choice_setting_info),
             style = caption02Regular,
             color = Text03
         )
