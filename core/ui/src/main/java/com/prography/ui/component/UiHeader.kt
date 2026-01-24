@@ -55,7 +55,7 @@ fun UiHeader(
             Text(
                 text = title,
                 style = headline02Bold,
-                color = Text01
+                color = Text02,
             )
         }
         // 👇 아래쪽 1dp 선

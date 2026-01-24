@@ -53,12 +53,14 @@ class MainViewModel @Inject constructor(
             val isLoggedIn = checkLoginStatusUseCase()
             val isStartTagScreenShown = getStartTagScreenShownUseCase().first()
 
-            _startDestination.value  = when {
+            _startDestination.value  = AppRoute.Main()
+
+/*            _startDestination.value  = when {
                 !isOnboardingShown -> AppRoute.InitOnboarding // 온보딩을 보지 않은 경우, 초기 온보딩 화면
                 isLoggedIn -> AppRoute.Main() // 로그인 유저일 경우, 메인 화면
                 !isStartTagScreenShown -> AppRoute.Login // 게스트 모드일 경우, 시작하기를 안봤다면 로그인 화면
                 else -> AppRoute.Main()  // 시작하기를 봤다면 메인 화면
-            }
+            }*/
 
             isReady.value = true
         }

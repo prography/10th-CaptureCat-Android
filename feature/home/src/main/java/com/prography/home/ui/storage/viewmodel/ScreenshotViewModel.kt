@@ -179,6 +179,11 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
 
+            ScreenshotAction.GoToNotice -> {
+                navigationHelper.navigate(NavigationEvent.To(AppRoute.SettingRoute.Notice))
+            }
+
+
             ScreenshotAction.DismissDeleteDialog -> {
                 updateState { copy(showDeleteDialog = false) }
             }

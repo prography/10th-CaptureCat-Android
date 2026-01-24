@@ -117,6 +117,7 @@ fun SettingContent(
             item {
                 HelpSection(
                     isLoggedIn = state.isLoggedIn,
+                    onNotice = { onAction(SettingAction.OnClickNotice) },
                     onChannel = {
                         val intent = Intent(Intent.ACTION_VIEW, "https://pf.kakao.com/_AKjvn".toUri())
                         context.startActivity(intent)
@@ -276,12 +277,14 @@ private fun ServiceInfoSection(
 @Composable
 private fun HelpSection(
     isLoggedIn: Boolean,
+    onNotice: () -> Unit,
     onChannel: () -> Unit,
     onReset: () -> Unit,
     onLogout: () -> Unit,
     onWithdraw: () -> Unit
 ) {
     SettingTitleMenuItem(text = stringResource(UiString.setting_help))
+    SettingMenuItem(text = "공지사항", onClick = onNotice)
     SettingMenuItem(text = stringResource(UiString.setting_channel_inquiry), onClick = onChannel)
 
     // 👇 게스트 전용: 스크린샷 초기화

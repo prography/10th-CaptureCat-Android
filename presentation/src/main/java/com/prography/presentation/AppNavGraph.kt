@@ -30,6 +30,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.prography.home.ui.storage.screen.SelectPictureScreen
+import com.prography.setting.route.NoticeRoute
 import com.prography.tag.navigation.TagSettingRoute
 
 
@@ -164,6 +165,9 @@ fun AppNavGraph(
         }
         composable<AppRoute.SettingRoute.Withdraw> {
             WithdrawRoute(navigationHelper = navigationHelper)
+        }
+        composable<AppRoute.SettingRoute.Notice> {
+            NoticeRoute(navigationHelper = navigationHelper)
         }
         composable<AppRoute.TagSetting> {
             TagSettingRoute()

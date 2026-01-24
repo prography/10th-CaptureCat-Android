@@ -69,6 +69,11 @@ class SettingViewModel @Inject constructor(
             SettingAction.OnClickLogout -> updateState { copy(showLogoutDialog = true) }
             SettingAction.DismissLogoutDialog -> updateState { copy(showLogoutDialog = false) }
             SettingAction.OnClickWithdraw -> updateState { copy(showWithdrawDialog = true) }
+            SettingAction.OnClickNotice -> {
+                navigationHelper.navigate(
+                    NavigationEvent.To(AppRoute.SettingRoute.Notice)
+                )
+            }
             SettingAction.DismissWithdrawDialog -> updateState { copy(showWithdrawDialog = false) }
             SettingAction.OnClickReset -> updateState { copy(showResetDialog = true) }
             SettingAction.DismissResetDialog -> updateState { copy(showResetDialog = false) }

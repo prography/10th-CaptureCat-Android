@@ -107,7 +107,7 @@ fun UiLabelAddButton(
         type = type,
         size = size,
         state = state,
-        fontSize = 16.sp,
+        fontSize = 14.sp,
         onClick = onClick
     )
 }

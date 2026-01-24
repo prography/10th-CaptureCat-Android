@@ -62,6 +62,9 @@ sealed interface AppRoute : Route {
 
         @Serializable
         data object Withdraw : SettingRoute
+
+        @Serializable
+        data object Notice : SettingRoute
     }
 
     @Serializable

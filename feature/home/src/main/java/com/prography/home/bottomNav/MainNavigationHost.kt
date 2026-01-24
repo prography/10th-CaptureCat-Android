@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,7 +14,6 @@ import androidx.navigation.compose.composable
 import com.prography.favorite.ui.route.FavoriteRoute
 import com.prography.home.ui.home.HomeScreen
 import com.prography.home.ui.search.screen.SearchScreen
-import com.prography.home.ui.storage.viewmodel.ScreenshotViewModel
 
 @Composable
 fun MainNavigationHost(

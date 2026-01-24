@@ -25,6 +25,7 @@ sealed class SettingAction {
 
     object OnClickLogout : SettingAction()
     object OnClickWithdraw : SettingAction()
+    object OnClickNotice : SettingAction()
     object OnClickReset : SettingAction()
     object DismissLogoutDialog : SettingAction()
     object DismissWithdrawDialog : SettingAction()
